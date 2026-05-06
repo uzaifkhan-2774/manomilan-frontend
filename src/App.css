@@ -1,0 +1,115 @@
+.bgBanner {
+  background-image: url("./assets/BannerImage.jpeg");
+  /* background-position-y: 200px;
+    background-position-x: -40px;
+    background-size: cover; */
+}
+@layer utilities {
+  @media (min-width: 768px) {
+    .md\:custom-bg-position {
+      background-position-x: -40px;
+      background-position-y: 200px;
+      background-size: cover;
+    }
+  }
+}
+.effect:nth-child(1)::after{
+  content: '';
+  height: 2px;
+  width: 200px;
+  border-bottom: 3px dashed gainsboro;
+  position: absolute;
+  top: 25px;
+  left: 50px;
+} 
+.effect:nth-child(2)::after{
+  content: '';
+  height: 2px;
+  width: 200px;
+  border-bottom: 3px dashed gainsboro;
+  position: absolute;
+  top: 25px;
+  left: 50px;
+} 
+.effect:nth-child(3)::after{
+  content: '';
+  height: 2px;
+  width: 200px;
+  border-bottom: 3px dashed gainsboro;
+  position: absolute;
+  top: 25px;
+  left: 50px;
+}
+
+.colorEffect:nth-child(1)::after{
+  content: '';
+  height: 2px;
+  width: 200px;
+  border-bottom: 3px dashed black;
+  position: absolute;
+  top: 25px;
+  left: 50px;
+} 
+.colorEffect:nth-child(2)::after{
+  content: '';
+  height: 2px;
+  width: 200px;
+  border-bottom: 3px dashed black;
+  position: absolute;
+  top: 25px;
+  left: 50px;
+} 
+.colorEffect:nth-child(3)::after{
+  content: '';
+  height: 2px;
+  width: 200px;
+  border-bottom: 3px dashed black;
+  position: absolute;
+  top: 25px;
+  left: 50px;
+}
+
+.react-time-picker__wrapper {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.navs::after{
+  content: '';
+  height: 1px;
+  /* width: 45px; */
+  width: 0px;
+  transition: all 0.3s;
+  position: absolute;
+  background-color: white;
+  left: 0;
+  bottom: 0;
+}
+
+.navs:hover::after{
+  width: 115px;
+}
+
+.ephesis-regular {
+  font-family: "Ephesis", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.open-sans{
+  font-family: "Open Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.poetsen-one-regular {
+  font-family: "Poetsen One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.girlBanner{
+  background-image: url('./assets/girl_without_bg.png');
+}

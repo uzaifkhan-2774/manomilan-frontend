@@ -1,0 +1,321 @@
+/* Clean Print CSS for Biodata Profile - No Tailwind conflicts */
+@media print {
+  /* Force color printing */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Page setup */
+  @page {
+    size: A4;
+    margin: 0.5in;
+  }
+
+  /* Hide buttons */
+  button {
+    display: none !important;
+  }
+
+  /* Body setup */
+  body {
+    background: white !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Main container adjustments */
+  .min-h-screen {
+    min-height: auto !important;
+    background: white !important;
+    padding: 8px !important;
+  }
+
+  .max-w-6xl {
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Header with red background */
+  .bg-gradient-to-r {
+    background: linear-gradient(to right, #7d0a0a, #a01a1a) !important;
+    color: white !important;
+    padding: 16px 24px !important;
+  }
+
+  /* Main grid layout */
+  .grid {
+    display: grid !important;
+  }
+
+  .lg\:grid-cols-3 {
+    grid-template-columns: 1fr 2fr !important;
+    gap: 24px !important;
+  }
+
+  /* Profile card with red background */
+  .bg-gradient-to-b {
+    background: linear-gradient(to bottom, #7d0a0a, #a01a1a) !important;
+    color: white !important;
+    padding: 24px !important;
+    border-radius: 8px !important;
+    margin-bottom: 24px !important;
+  }
+
+  /* Profile image container */
+  .w-32 {
+    width: 128px !important;
+    height: 160px !important;
+    margin: 0 auto 16px auto !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    background: #d1d5db !important;
+  }
+
+  .w-32 img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  /* Section cards with light background */
+  .bg-red-900\/10,
+  .bg-\[--tw-color-7d0a0a\]\/10,
+  [class*="bg-[#7d0a0a]/10"] {
+    background: #f9f9f9 !important;
+    border: 1px solid #e5e5e5 !important;
+    border-radius: 8px !important;
+    padding: 16px !important;
+    margin-bottom: 16px !important;
+    break-inside: avoid !important;
+  }
+
+  /* Section headings */
+  .font-bold[class*="text-[#7d0a0a]"],
+  .text-red-900 {
+    color: #7d0a0a !important;
+    font-weight: bold !important;
+    font-size: 14px !important;
+    margin-bottom: 12px !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid rgba(125, 10, 10, 0.2) !important;
+  }
+
+  /* Two column grids in sections */
+  .md\:grid-cols-2 {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Text sizes */
+  .text-sm {
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+  }
+
+  .text-xs {
+    font-size: 10px !important;
+    line-height: 1.3 !important;
+  }
+
+  .text-2xl {
+    font-size: 18px !important;
+    font-weight: bold !important;
+  }
+
+  .text-xl {
+    font-size: 16px !important;
+    font-weight: bold !important;
+  }
+
+  /* Spacing utilities */
+  .space-y-2 > * + * {
+    margin-top: 8px !important;
+  }
+
+  .space-y-6 > * + * {
+    margin-top: 20px !important;
+  }
+
+  .gap-4 {
+    gap: 12px !important;
+  }
+
+  .gap-6 {
+    gap: 24px !important;
+  }
+
+  /* Padding utilities */
+  .p-4 {
+    padding: 16px !important;
+  }
+
+  .p-6 {
+    padding: 24px !important;
+  }
+
+  .px-6 {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+
+  .py-4 {
+    padding-top: 16px !important;
+    padding-bottom: 16px !important;
+  }
+
+  /* Margin utilities */
+  .mb-2 {
+    margin-bottom: 8px !important;
+  }
+
+  .mb-3 {
+    margin-bottom: 12px !important;
+  }
+
+  .mb-4 {
+    margin-bottom: 16px !important;
+  }
+
+  .mb-6 {
+    margin-bottom: 24px !important;
+  }
+
+  .mt-4 {
+    margin-top: 16px !important;
+  }
+
+  /* Footer with red background */
+  .bg-\[--tw-color-7d0a0a\],
+  [class*="bg-[#7d0a0a]"]:not([class*="/10"]) {
+    background: #7d0a0a !important;
+    color: white !important;
+    text-align: center !important;
+    padding: 16px !important;
+  }
+
+  /* Footer dots */
+  .w-3 {
+    width: 12px !important;
+    height: 12px !important;
+    background: #3b82f6 !important;
+    border-radius: 50% !important;
+    display: inline-block !important;
+    margin: 0 2px 8px 2px !important;
+  }
+
+  /* Text alignment */
+  .text-center {
+    text-align: center !important;
+  }
+
+  .text-right {
+    text-align: right !important;
+  }
+
+  /* Flex utilities */
+  .flex {
+    display: flex !important;
+  }
+
+  .justify-center {
+    justify-content: center !important;
+  }
+
+  .justify-between {
+    justify-content: space-between !important;
+  }
+
+  .items-center {
+    align-items: center !important;
+  }
+
+  /* White text in profile section */
+  .text-white {
+    color: white !important;
+  }
+
+  /* Font weights */
+  .font-medium {
+    font-weight: 600 !important;
+  }
+
+  .font-bold {
+    font-weight: bold !important;
+  }
+
+  /* Ensure no page breaks in sections */
+  .lg\:col-span-1,
+  .lg\:col-span-2 {
+    break-inside: avoid !important;
+  }
+
+  /* Remove any animations or transitions */
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* Ensure proper column widths */
+  .lg\:col-span-1 {
+    grid-column: span 1 !important;
+  }
+
+  .lg\:col-span-2 {
+    grid-column: span 1 !important;
+  }
+
+  /* Round corners */
+  .rounded-lg {
+    border-radius: 8px !important;
+  }
+
+  .rounded-xl {
+    border-radius: 12px !important;
+  }
+
+  /* Overflow handling */
+  .overflow-hidden {
+    overflow: hidden !important;
+  }
+
+    /* ===============================
+     SAFE A4 FIT (NO UI CHANGE)
+     =============================== */
+
+  /* Lock printable width to A4 */
+  html, body {
+    width: 210mm !important;
+    max-width: 210mm !important;
+    margin: 0 auto !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Scale down slightly to fit margins */
+  body {
+    transform: scale(0.95);
+    transform-origin: top center;
+  }
+
+  /* Keep containers inside page */
+  .min-h-screen,
+  .max-w-6xl {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+  }
+
+  /* Prevent elements from pushing width */
+  * {
+    box-sizing: border-box !important;
+  }
+
+  /* Images never overflow */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+}
