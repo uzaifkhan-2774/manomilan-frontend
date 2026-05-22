@@ -40,7 +40,7 @@ const UserPreferencesManager = () => {
   const getMotherTongues = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-mother-tongue"
+        "http://localhost:8000/api/admin/get-mother-tongue"
       );
       if (response.data.status === true) {
         // Assuming your API returns an array like [{ id: 1, name: 'Hindi' }, ...]
@@ -59,7 +59,7 @@ const UserPreferencesManager = () => {
   const getFoodPref = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-foodPref"
+        "http://localhost:8000/api/admin/get-foodPref"
       );
       const fetched = response.data.result.map((item) => ({
         id: Date.now(),
@@ -75,7 +75,7 @@ const UserPreferencesManager = () => {
   const getSect = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-sect"
+        "http://localhost:8000/api/admin/get-sect"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -93,7 +93,7 @@ const UserPreferencesManager = () => {
   const getManglik = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-manglik"
+        "http://localhost:8000/api/admin/get-manglik"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -111,7 +111,7 @@ const UserPreferencesManager = () => {
   const getComplexion = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-complexion"
+        "http://localhost:8000/api/admin/get-complexion"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -129,7 +129,7 @@ const UserPreferencesManager = () => {
   const getBodyType = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-bodytype"
+        "http://localhost:8000/api/admin/get-bodytype"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -147,7 +147,7 @@ const UserPreferencesManager = () => {
   const getPosition = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-position"
+        "http://localhost:8000/api/admin/get-position"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -166,7 +166,7 @@ const UserPreferencesManager = () => {
   const getFamBg = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-familybg"
+        "http://localhost:8000/api/admin/get-familybg"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -208,7 +208,7 @@ const UserPreferencesManager = () => {
   const addFoodPreference = async () => {
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/add-foodPref",
+        "http://localhost:8000/api/admin/add-foodPref",
         { foodPreference: foodPreferenceInput }
       );
       if (response.data.status === true) {
@@ -224,7 +224,7 @@ const UserPreferencesManager = () => {
   const addSect = async () => {
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/add-sect",
+        "http://localhost:8000/api/admin/add-sect",
         { sect: sectInput }
       );
       if (response.data.status === true) {
@@ -240,7 +240,7 @@ const UserPreferencesManager = () => {
   const addManglik = async () => {
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/add-manglik",
+        "http://localhost:8000/api/admin/add-manglik",
         { manglik: manglikInput }
       );
       if (response.data.status === true) {
@@ -255,7 +255,7 @@ const UserPreferencesManager = () => {
   };
   const addComplexion = async () =>{
     try {
-      const response= await axios.post('https://api.manomilan.com/api/admin/add-complexion',{complexion:complexionInput})
+      const response= await axios.post('http://localhost:8000/api/admin/add-complexion',{complexion:complexionInput})
       if(response.data.status===true){
         toast.success(response.data.message)
         setComplexionInput("")
@@ -268,7 +268,7 @@ const UserPreferencesManager = () => {
   }
   const addBodyType = async () =>{
     try {
-      const response= await axios.post("https://api.manomilan.com/api/admin/add-bodytype",{bodyType:bodyTypeInput})
+      const response= await axios.post("http://localhost:8000/api/admin/add-bodytype",{bodyType:bodyTypeInput})
       console.log(response.data)
       if(response.data.status===true){
         toast.success(response.data.message)
@@ -282,7 +282,7 @@ const UserPreferencesManager = () => {
   }
   const addFamilyBackground =async () =>{
     try {
-      const response= await axios.post("https://api.manomilan.com/api/admin/add-familybg",{familyBg:familyBackgroundInput})
+      const response= await axios.post("http://localhost:8000/api/admin/add-familybg",{familyBg:familyBackgroundInput})
       console.log(response.data)
       if(response.data.status===true){
         toast.success(response.data.message)
@@ -296,7 +296,7 @@ const UserPreferencesManager = () => {
   }
   const addPosition = async() =>{
     try {
-      const response= await axios.post("https://api.manomilan.com/api/admin/add-position",{position:positionInput})
+      const response= await axios.post("http://localhost:8000/api/admin/add-position",{position:positionInput})
       console.log(positionInput)
       console.log(response.data)
       if(response.data.status===true){
@@ -312,7 +312,7 @@ const UserPreferencesManager = () => {
   const addMotherTongue = async () => {
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/add-mother-tongue",
+        "http://localhost:8000/api/admin/add-mother-tongue",
         { motherTongue: motherTongueInput }
       );
       if (response.data.status === true) {
@@ -391,7 +391,7 @@ const UserPreferencesManager = () => {
     }
 
     try {
-      const response = await axios.delete(`https://api.manomilan.com${endpoint}`, {
+      const response = await axios.delete(`http://localhost:8000${endpoint}`, {
         data: item.name,
       });
 

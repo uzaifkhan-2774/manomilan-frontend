@@ -46,7 +46,7 @@ export default function TableGenerator({ data, activeTab }) {
   const singleDistributor = async (userId) => {
     try {
       const response = await axios.get(
-        `https://api.manomilan.com/api/admin/get-single-distributor/${userId}`,
+        `http://localhost:8000/api/admin/get-single-distributor/${userId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       console.log(response.data)
@@ -70,7 +70,7 @@ export default function TableGenerator({ data, activeTab }) {
     const result=confirm("Are you sure to inactivate distributor!")
     if(result){
       try {
-        const response = await axios.put("https://api.manomilan.com/api/admin/inactivate-distributor",{
+        const response = await axios.put("http://localhost:8000/api/admin/inactivate-distributor",{
         distributorId : dist._id
       },{
         headers:{
@@ -92,7 +92,7 @@ export default function TableGenerator({ data, activeTab }) {
     if (distId) {
       try {
         const response = await axios.get(
-          `https://api.manomilan.com/api/admin/get-franchise-under/${distId}`
+          `http://localhost:8000/api/admin/get-franchise-under/${distId}`
         );
         setDisplayFranchiseUnderDist(response.data?.franchiseUnder || []);
       } catch (error) {
@@ -106,7 +106,7 @@ export default function TableGenerator({ data, activeTab }) {
     if (!distributorId) return;
     try {
       const response = await axios.get(
-        `https://api.manomilan.com/api/admin/get/pointsLog/${distributorId}`,
+        `http://localhost:8000/api/admin/get/pointsLog/${distributorId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (response.data.status) {
@@ -120,7 +120,7 @@ export default function TableGenerator({ data, activeTab }) {
   const addPointsToSinDist = async () => {
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/give-points-to-distributor",
+        "http://localhost:8000/api/admin/give-points-to-distributor",
         addPointsToDist,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -268,7 +268,7 @@ export default function TableGenerator({ data, activeTab }) {
 
   <div className="w-[25%] gap-4 space-y-4 flex flex-col items-center">
     <div className="border border-gray-400 w-48 h-48 rounded-md bg-gray-100 flex items-center justify-center text-gray-400">
-      <img src={`https://api.manomilan.com/upload/${singleDist.distributorPhoto}`} alt="distributor photo" />
+      <img src={`http://localhost:8000/upload/${singleDist.distributorPhoto}`} alt="distributor photo" />
     </div>
     <button className="bg-red-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-600 transition" onClick={()=>{inactiveDistributor(singleDist)}}>
       Inactivate

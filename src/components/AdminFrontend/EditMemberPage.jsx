@@ -4,7 +4,6 @@ import axios from "axios";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import { SearchableDropdown } from "../CommonComponents/SearchableDDM";
-import { Fetch } from "socket.io-client";
 
 const PreferenceSelector = ({
   title,
@@ -120,11 +119,11 @@ const PreferenceSelector = ({
 
     if (label2.includes("caste")) {
       url = `${api3Url}${sep}caste=${encodeURIComponent(
-        val2
+        val2,
       )}&religion=${encodeURIComponent(val1)}`;
     } else {
       url = `${api3Url}${sep}state=${encodeURIComponent(
-        val2
+        val2,
       )}&country=${encodeURIComponent(val1)}`;
     }
 
@@ -156,7 +155,7 @@ const PreferenceSelector = ({
       (p) =>
         p[api1Key] === newPref[api1Key] &&
         p[api2Key] === newPref[api2Key] &&
-        p[api3Key] === newPref[api3Key]
+        p[api3Key] === newPref[api3Key],
     );
     if (dup) {
       setError("This preference already exists");
@@ -197,8 +196,8 @@ const PreferenceSelector = ({
               {idx === 0
                 ? dropdown1Label
                 : idx === 1
-                ? dropdown2Label
-                : dropdown3Label}
+                  ? dropdown2Label
+                  : dropdown3Label}
             </label>
             <select
               value={selectedValues[idx]}
@@ -343,6 +342,8 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
       expectedMaritalStatus: "",
       expectedNationality: ["India"],
       childAccepted: "No",
+      workAbroadpref: "No", 
+      divyangPrefer: "No", 
 
       sect: "",
       manglik: "",
@@ -395,7 +396,6 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
   const [castes, setCastes] = useState([]);
   const [selectedCaste, setSelectedCaste] = useState("");
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-
 
   const casteOptions = castes.map((ele) => ({
     label: `${ele.subCaste} - ${ele.casteReligion?.caste} - ${ele.casteReligion?.religion}`,
@@ -460,14 +460,14 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
           manglikRes,
           foodRes,
         ] = await Promise.all([
-          axios.get("https://api.manomilan.com/api/user/get-all-stream"),
-          axios.get("https://api.manomilan.com/api/user/get-all-countries"),
-          axios.get("https://api.manomilan.com/api/user/get-all-cities"),
-          axios.get("https://api.manomilan.com/api/user/get-all-subcaste"),
-          axios.get("https://api.manomilan.com/api/admin/get-mother-tongue"),
-          axios.get("https://api.manomilan.com/api/user/get-sect"),
-          axios.get("https://api.manomilan.com/api/user/get-manglik"),
-          axios.get("https://api.manomilan.com/api/user/food-choices"),
+          axios.get("http://localhost:8000/api/user/get-all-stream"),
+          axios.get("http://localhost:8000/api/user/get-all-countries"),
+          axios.get("http://localhost:8000/api/user/get-all-cities"),
+          axios.get("http://localhost:8000/api/user/get-all-subcaste"),
+          axios.get("http://localhost:8000/api/admin/get-mother-tongue"),
+          axios.get("http://localhost:8000/api/user/get-sect"),
+          axios.get("http://localhost:8000/api/user/get-manglik"),
+          axios.get("http://localhost:8000/api/user/food-choices"),
         ]);
 
         if (streamsRes?.data?.status) {
@@ -480,11 +480,11 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
           for (const stream of fetchedStreams) {
             try {
               const response = await axios.post(
-                "https://api.manomilan.com/api/user/get-degree-by-stream",
+                "http://localhost:8000/api/user/get-degree-by-stream",
                 null,
                 {
                   params: { stream: stream.stream },
-                }
+                },
               );
               if (response.data.status) {
                 degreesData[stream.stream] = response.data.data;
@@ -494,7 +494,7 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
             } catch (err) {
               console.error(
                 `Failed to fetch degrees for ${stream.stream}:`,
-                err
+                err,
               );
               degreesData[stream.stream] = [];
             }
@@ -535,13 +535,13 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
             setFoodPref(
               foodRes.data.result.map((it) => ({
                 name: it.foodPreference || it,
-              }))
+              })),
             );
           } else if (Array.isArray(foodRes.data.result)) {
             setFoodPref(
               foodRes.data.result.map((it) => ({
                 name: it.foodPreference || it,
-              }))
+              })),
             );
           }
         }
@@ -561,10 +561,10 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
     const fetchUser = async () => {
       try {
         const res = await axios.get(
-          `https://api.manomilan.com/api/admin/get-single-user/${uid}`,
+          `http://localhost:8000/api/admin/get-single-user/${uid}`,
           {
             headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-          }
+          },
         );
         if (res.data?.status) {
           const u = res.data.user || res.data.result || {};
@@ -591,8 +591,8 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
             nationality: Array.isArray(u.nationality)
               ? u.nationality
               : u.nationality
-              ? [u.nationality]
-              : ["India"],
+                ? [u.nationality]
+                : ["India"],
             caste: u.caste || "",
             motherTongue: u.motherTongue || "",
             divyang: u.divyang || "No",
@@ -604,7 +604,8 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
             parentsContact: u.parentsContact ? String(u.parentsContact) : "",
             whatsApp: u.whatsApp ? String(u.whatsApp) : "",
             alternateNumber: u.alternateNumber ? String(u.alternateNumber) : "",
-            brothersCount: u.brothersCount !== undefined ? String(u.brothersCount) : "",
+            brothersCount:
+              u.brothersCount !== undefined ? String(u.brothersCount) : "",
             brothers: u.brothers || "",
             sisters: u.sisters ? String(u.sisters) : "",
             sistersExactCount: u.sistersExactCount || "",
@@ -615,8 +616,8 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
             education: Array.isArray(u.education)
               ? u.education
               : u.education
-              ? u.education
-              : [],
+                ? u.education
+                : [],
             companyName: u.companyName || "",
             designation: u.designation || "",
             candidateNumber: u.candidateNumber || "",
@@ -631,15 +632,15 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
             expectedIncome: u.expectedMonthlyIncome
               ? String(u.expectedMonthlyIncome)
               : u.expectedIncome
-              ? String(u.expectedIncome)
-              : "",
+                ? String(u.expectedIncome)
+                : "",
             workAbroad: u.workAbroad || "No",
             expectedMaritalStatus: u.expectedMaritalStatus || "",
             expectedNationality: Array.isArray(u.expectedNationality)
               ? u.expectedNationality
               : u.expectedNationality
-              ? [u.expectedNationality]
-              : ["India"],
+                ? [u.expectedNationality]
+                : ["India"],
             childAccepted: u.childAccepted || "No",
 
             sect: u.sect || "",
@@ -648,7 +649,7 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
             bloodGroup: u.bloodGroup || "",
             specs: u.specs || "",
             gotra: u.gotra || "",
-            otherInfo: u.otherInfo || u.otherInformation || ""
+            otherInfo: u.otherInfo || u.otherInformation || "",
           };
           // Reset the form with mapped values
           reset(mapped);
@@ -656,7 +657,7 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
           // --- NEW: ensure education is in the form shape expected by the UI (objects with degree) ---
           if (Array.isArray(u.education)) {
             const normalizedEdu = u.education.map((e) =>
-              typeof e === "string" ? { degree: e, category: "" } : e
+              typeof e === "string" ? { degree: e, category: "" } : e,
             );
             setValue("education", normalizedEdu);
           }
@@ -672,7 +673,10 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
             replaceReligion(rels);
           }
 
-          if (Array.isArray(u.expectedNativeLocation) && replaceNativeLocation) {
+          if (
+            Array.isArray(u.expectedNativeLocation) &&
+            replaceNativeLocation
+          ) {
             const natives = u.expectedNativeLocation.map((it) => ({
               id: it._id || it.id || `${Date.now()}_${Math.random()}`,
               country: it.country ?? "ANY",
@@ -682,7 +686,10 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
             replaceNativeLocation(natives);
           }
 
-          if (Array.isArray(u.expectedWorkingLocation) && replaceWorkingLocation) {
+          if (
+            Array.isArray(u.expectedWorkingLocation) &&
+            replaceWorkingLocation
+          ) {
             const works = u.expectedWorkingLocation.map((it) => ({
               id: it._id || it.id || `${Date.now()}_${Math.random()}`,
               country: it.country ?? "ANY",
@@ -694,11 +701,13 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
 
           // Backward-compatible field names
           if (u.religionFields) replaceReligion(u.religionFields);
-          if (u.nativeLocationFields) replaceNativeLocation(u.nativeLocationFields);
-          if (u.workingLocationFields) replaceWorkingLocation(u.workingLocationFields);
+          if (u.nativeLocationFields)
+            replaceNativeLocation(u.nativeLocationFields);
+          if (u.workingLocationFields)
+            replaceWorkingLocation(u.workingLocationFields);
 
           // populate expectedEducation server-side array for partner education selection
-         if (Array.isArray(u.expectedEducation)) {
+    if (Array.isArray(u.expectedEducation)) {
   const expEdu = u.expectedEducation
     .map((e) => {
       if (typeof e === "string") return e;
@@ -718,14 +727,12 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
         console.error("fetch user err", err);
       }
     };
-
     fetchUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid]);
 
   const onSubmit = async (vals) => {
     if (!uid) return toast.error("User id missing");
-    
     try {
       // keep it simple: send json body, convert numeric strings to numbers where appropriate
       const payload = { ...vals };
@@ -734,11 +741,8 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
         payload.monthlyIncome = Number(payload.monthlyIncome);
       if (payload.expectedIncome)
         payload.expectedIncome = Number(payload.expectedIncome);
-        
-        // console.log( "payload" ,payload)
-      
-   
-            const  result =  await fetch(`https://api.manomilan.com/api/admin/update-user/${uid}`, {method :"PUT",
+
+            const  result =  await fetch(`http://localhost:8000/api/admin/update-user/${uid}`, {method :"PUT",
         headers:{
           "Content-Type" : "application/json",
           "Authorization" : `Bearer ${token}`
@@ -761,7 +765,8 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
     }
   };
   const [partnerEducation, setPartnerEducation] = useState([]);
-  const [expectedEducationFromServer, setExpectedEducationFromServer] = useState([]);
+  const [expectedEducationFromServer, setExpectedEducationFromServer] =
+    useState([]);
 
   // toggle for partner degree selection (same behaviour as RegisterFresh)
   const partnerDegreeToggle = (degree, categoryName) => {
@@ -772,7 +777,7 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
         .filter((deg, index, self) => self.indexOf(deg) === index);
 
       const allSelected = allDegrees.every((deg) =>
-        partnerEducation.some((edu) => edu.degree === deg)
+        partnerEducation.some((edu) => edu.degree === deg),
       );
 
       if (allSelected) {
@@ -802,7 +807,7 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
     name: stream.stream,
     degrees: (degreesByStream[stream.stream] || []).map((d) => d.degree || d),
   }));
-  console.log(educationCategories);
+  // console.log(educationCategories);
   const partnerEducationCategories = [
     { name: "ANY", degrees: [] },
     ...educationCategories,
@@ -810,30 +815,26 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
 
   // populate partnerEducation from server-provided expectedEducation once lookups are loaded
   useEffect(() => {
-    if (!expectedEducationFromServer || expectedEducationFromServer.length === 0) return;
+    if (
+      !expectedEducationFromServer ||
+      expectedEducationFromServer.length === 0
+    )
+      return;
     // build a map of degree -> stream name for easy lookup (case-insensitive)
-   const degreeToStream = {};
+    const degreeToStream = {};
+    Object.entries(degreesByStream).forEach(([streamName, degrees]) => {
+      (degrees || []).forEach((d) => {
+        const degName = (d.degree || d).toString();
+        degreeToStream[degName.toLowerCase()] = streamName;
+      });
+    });
 
-Object.entries(degreesByStream).forEach(([stream, degrees]) => {
-  (degrees || []).forEach((d) => {
-    const name = typeof d === "string" ? d : d?.degree;
-    if (typeof name === "string" && name.trim()) {
-      degreeToStream[name.toLowerCase()] = stream;
-    }
-  });
-});
-
-const normalized = (expectedEducationFromServer || [])
-  .map((deg) => {
-    const degStr = typeof deg === "string" ? deg : deg?.degree;
-    if (!degStr) return null;
-
-    return {
-      degree: degStr,
-      category: degreeToStream[degStr.toLowerCase()] || ""
-    };
-  })
-  .filter(Boolean);
+    const normalized = expectedEducationFromServer.map((deg) => {
+      const degStr = typeof deg === "string" ? deg : deg.degree || "";
+      const match = degreeToStream[degStr.toLowerCase()];
+      const category = match || "";
+      return { degree: degStr, category };
+    });
 
     // avoid unnecessary updates
     if (JSON.stringify(normalized) !== JSON.stringify(partnerEducation)) {
@@ -1024,7 +1025,7 @@ const normalized = (expectedEducationFromServer || [])
                     // Open child modal for these statuses
                     if (
                       ["widowed", "divorced", "divorce in process"].includes(
-                        e.target.value
+                        e.target.value,
                       )
                     ) {
                       setShowChildModal(true);
@@ -1169,7 +1170,7 @@ const normalized = (expectedEducationFromServer || [])
                     casteOptions.find(
                       (opt) =>
                         JSON.stringify(opt.value) ===
-                        JSON.stringify(field.value)
+                        JSON.stringify(field.value),
                     ) || null
                   }
                   onChange={(selectedOption) => {
@@ -1410,8 +1411,8 @@ const normalized = (expectedEducationFromServer || [])
                 <Select
                   {...field}
                   options={cities}
-                  value={cities.find(
-                    (opt) => opt.value === field.value || null
+                  value={casteOptions.find(
+                    (opt) => opt.value === field.value || null,
                   )}
                   onChange={(selectedOption) => {
                     field.onChange(selectedOption.value);
@@ -1433,7 +1434,14 @@ const normalized = (expectedEducationFromServer || [])
                     indicatorSeparator: () => ({ display: "none" }), // optional: remove vertical separator
                   }}
                   className="w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                />
+                >
+                  <option value="">Select City</option>
+                  {cities.map((ele, index) => (
+                    <option key={index}>
+                      {ele.city}, {ele.state}, {ele.country}
+                    </option>
+                  ))}
+                </Select>
               )}
             />
             {errors.parentsCity && (
@@ -1847,12 +1855,12 @@ const normalized = (expectedEducationFromServer || [])
                 <Select
                   {...field}
                   options={cities}
-                  value={cities.find(
-                    (opt) => opt.value === field.value || null
+                  value={casteOptions.find(
+                    (opt) => opt.value === field.value || null,
                   )}
                   onChange={(selectedOption) => {
                     field.onChange(selectedOption.value);
-                    setSelectedNativeCity(selectedOption.label);
+                    setSelectedParentCity(selectedOption.label);
                   }}
                   classNamePrefix="react-select"
                   placeholder="Select City"
@@ -1870,7 +1878,14 @@ const normalized = (expectedEducationFromServer || [])
                     indicatorSeparator: () => ({ display: "none" }), // optional: remove vertical separator
                   }}
                   className="w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                />
+                >
+                  <option value="">Select City</option>
+                  {cities.map((ele, index) => (
+                    <option key={index}>
+                      {ele.city}, {ele.state}, {ele.country}
+                    </option>
+                  ))}
+                </Select>
               )}
             />
             {errors.nativeCity && (
@@ -1918,7 +1933,7 @@ const normalized = (expectedEducationFromServer || [])
                                 onClick={() => {
                                   const cur = getValues("education") || [];
                                   const exists = cur.some(
-                                    (e) => e.degree === deg
+                                    (e) => e.degree === deg,
                                   );
                                   const updated = exists
                                     ? cur.filter((e) => e.degree !== deg)
@@ -1961,7 +1976,7 @@ const normalized = (expectedEducationFromServer || [])
                 control={control}
                 rules={{ required: "This is required" }}
                 render={({ field }) => (
-                  <div className="space-y-2 flex justify-start gap-6">
+                  <div className="flex justify-start items-center gap-6">
                     <div className="flex items-center">
                       <input
                         {...field}
@@ -1977,7 +1992,7 @@ const normalized = (expectedEducationFromServer || [])
                         Yes
                       </label>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center ">
                       <input
                         {...field}
                         type="radio"
@@ -1987,7 +2002,7 @@ const normalized = (expectedEducationFromServer || [])
                       />
                       <label
                         htmlFor="female"
-                        className="ml-2 text-sm text-red-700"
+                        className="ml-2  text-sm text-red-700"
                       >
                         No
                       </label>
@@ -2097,7 +2112,7 @@ const normalized = (expectedEducationFromServer || [])
                     {...field}
                     options={cities}
                     value={cities.find(
-                      (opt) => opt.value === field.value || null
+                      (opt) => opt.value === field.value || null,
                     )}
                     onChange={(selectedOption) => {
                       field.onChange(selectedOption.value);
@@ -2119,7 +2134,7 @@ const normalized = (expectedEducationFromServer || [])
                       indicatorSeparator: () => ({ display: "none" }), // optional: remove vertical separator
                     }}
                     className="w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  />
+                  ></Select>
                 )}
               />
             </div>
@@ -2132,7 +2147,8 @@ const normalized = (expectedEducationFromServer || [])
             Partner Expectations
           </h4>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 md:grid-cols- gap-4">
+            {/* Age From */}
             <div>
               <label className="block text-sm font-medium text-red-700 mb-2">
                 Age Difference
@@ -2140,49 +2156,66 @@ const normalized = (expectedEducationFromServer || [])
               <Controller
                 name="ageFrom"
                 control={control}
+                rules={{ required: "Age from is required" }}
                 render={({ field }) => (
                   <select
                     {...field}
-                    className="w-full px-3 py-2 border rounded-md"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                   >
                     <option value="">From</option>
-                    {Array.from({ length: 60 }, (_, i) => i + 18).map((a) => (
-                      <option key={a} value={a}>
-                        {a}
+                    {Array.from({ length: 31 }, (_, i) => i).map((age) => (
+                      <option key={age} value={age}>
+                        {age}
                       </option>
                     ))}
                   </select>
                 )}
               />
+              {errors.ageFrom && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.ageFrom.message}
+                </p>
+              )}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-red-700 mb-2">
-                To
-              </label>
+            {/* Age To */}
+            <div className="mt-5">
+              <label className="block text-sm font-medium text-red-700 mb-2"></label>
               <Controller
                 name="ageTo"
                 control={control}
+                rules={{ required: "Age to is required" }}
                 render={({ field }) => (
                   <select
                     {...field}
-                    className="w-full px-3 py-2 border rounded-md"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                   >
                     <option value="">To</option>
-                    {Array.from({ length: 60}, (_, i) => i + 18)
-                      .filter((a) => !ageFrom || a > Number(ageFrom))
-                      .map((a) => (
-                        <option key={a} value={a}>
-                          {a}
-                        </option>
-                      ))}
+                    {Array.from({ length: 31 }, (_, i) => i).map((age) => (
+                      <option
+                        key={age}
+                        value={age}
+                        disabled={
+                          ageFrom !== undefined &&
+                          ageFrom !== "" &&
+                          age <= parseInt(ageFrom)
+                        }
+                      >
+                        {age}
+                      </option>
+                    ))}
                   </select>
                 )}
               />
+              {errors.ageTo && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.ageTo.message}
+                </p>
+              )}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-red-700 mb-2">
-                Height Difference
+                Height From
               </label>
               <Controller
                 name="heightFrom"
@@ -2205,7 +2238,7 @@ const normalized = (expectedEducationFromServer || [])
 
             <div>
               <label className="block text-sm font-medium text-red-700 mb-2">
-                To
+                Height To
               </label>
               <Controller
                 name="heightTo"
@@ -2312,7 +2345,7 @@ const normalized = (expectedEducationFromServer || [])
                 Do you prefer candidate working abroad?
               </label>
               <Controller
-                name="workAbroad"
+                name="workAbroadpref"
                 control={control}
                 rules={{
                   required: "Please select work abroad preference",
@@ -2333,7 +2366,7 @@ const normalized = (expectedEducationFromServer || [])
                         type="radio"
                         {...field}
                         value="No"
-                        defaultChecked
+                        // defaultChecked
                         className="accent-[#7d0a0a] w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500"
                       />
                       <span className="ml-2 text-sm text-gray-700">No</span>
@@ -2386,7 +2419,7 @@ const normalized = (expectedEducationFromServer || [])
                         type="radio"
                         {...field}
                         value="No"
-                        defaultChecked
+                        // defaultChecked
                         className="accent-[#7d0a0a] w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500"
                       />
                       <span className="ml-2 text-sm text-gray-700">No</span>
@@ -2419,48 +2452,111 @@ const normalized = (expectedEducationFromServer || [])
             </div>
 
             {/* Marital Status */}
-            <div className="mt-6">
+            <div className="mt-6 w-full col-span-3">
               <label className="block text-sm font-medium text-red-700 mb-2">
                 Marital Status
               </label>
               <Controller
                 name="expectedMaritalStatus"
                 control={control}
-                rules={{ required: "Marital status is required" }}
-                render={({ field }) => (
-                  <div className="space-y-3 flex gap-4">
-                    {[
-                      { value: "Unmarried", label: "Unmarried" },
-                      { value: "divorced", label: "Divorced" },
-                      { value: "widowed", label: "Widowed" },
-                      {
-                        value: "divorce_in_progress",
-                        label: "Divorce in Progress",
-                      },
-                      { value: "any", label: "ANY" },
-                    ].map((option) => (
-                      <label
-                        key={option.value}
-                        className="flex items-center space-x-3 cursor-pointer"
-                      >
-                        <input
-                          type="radio"
-                          {...field}
-                          value={option.value}
-                          checked={field.value === option.value}
-                          onChange={(e) => {
-                            field.onChange(e);
-                            setShowChildAcceptance(
-                              e.target.value !== "Unmarried"
-                            );
-                          }}
-                          className="w-4 h-4 accent-[#7d0a0a] text-red-500 border-gray-300 focus:ring-red-500 focus:ring-2"
-                        />
-                        <span className="text-gray-700">{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
+                defaultValue={[]}
+                rules={{
+                  validate: (value) =>
+                    value.length > 0 || "Marital status is required",
+                }}
+                render={({ field }) => {
+                  const options = [
+                    { value: "Unmarried", label: "Unmarried" },
+                    { value: "divorced", label: "Divorced" },
+                    { value: "widowed", label: "Widowed" },
+                    {
+                      value: "divorce_in_progress",
+                      label: "Divorce in Progress",
+                    },
+                    { value: "any", label: "ANY" },
+                  ];
+
+                  const allOptionsExceptAny = options
+                    .filter((o) => o.value !== "any")
+                    .map((o) => o.value);
+
+                  return (
+                    <div className="space-y-3 flex gap-4 flex-wrap">
+                      {options.map((option) => {
+                        const isChecked = field.value?.includes(option.value);
+
+                        return (
+                          <label
+                            key={option.value}
+                            className="flex items-center space-x-2 cursor-pointer"
+                          >
+                            <input
+                              type="checkbox"
+                              value={option.value}
+                              checked={isChecked}
+                              onChange={(e) => {
+                                let updatedValues = [...(field.value || [])];
+
+                                // ===== ANY CLICKED =====
+                                if (option.value === "any") {
+                                  if (e.target.checked) {
+                                    updatedValues = [
+                                      "any",
+                                      ...allOptionsExceptAny,
+                                    ];
+                                  } else {
+                                    updatedValues = [];
+                                  }
+                                } else {
+                                  // ===== NORMAL OPTIONS =====
+                                  if (e.target.checked) {
+                                    updatedValues.push(option.value);
+                                  } else {
+                                    updatedValues = updatedValues.filter(
+                                      (v) => v !== option.value,
+                                    );
+                                  }
+
+                                  // remove ANY if user manually changes selections
+                                  updatedValues = updatedValues.filter(
+                                    (v) => v !== "any",
+                                  );
+
+                                  // if all normal options selected -> auto check ANY
+                                  const selectedWithoutAny =
+                                    updatedValues.filter((v) => v !== "any");
+
+                                  const isAllSelected =
+                                    allOptionsExceptAny.every((v) =>
+                                      selectedWithoutAny.includes(v),
+                                    );
+
+                                  if (isAllSelected) {
+                                    updatedValues.push("any");
+                                  }
+                                }
+
+                                field.onChange(updatedValues);
+
+                                // Child acceptance logic
+                                const shouldShow = updatedValues.some(
+                                  (v) => v !== "Unmarried" && v !== "any",
+                                );
+
+                                setShowChildAcceptance(shouldShow);
+                              }}
+                              className="w-4 h-4 accent-[#7d0a0a] border-gray-300 focus:ring-red-500"
+                            />
+
+                            <span className="text-gray-700">
+                              {option.label}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  );
+                }}
               />
               {errors.expectedMaritalStatus && (
                 <p className="text-red-500 text-xs mt-1">
@@ -2523,7 +2619,7 @@ const normalized = (expectedEducationFromServer || [])
                         Category
                       </th>
                       <th className="px-4 py-3 text-left text-sm font-medium text-red-800">
-                        Degrees
+                        Education
                       </th>
                     </tr>
                   </thead>
@@ -2533,7 +2629,7 @@ const normalized = (expectedEducationFromServer || [])
                         key={category.name}
                         className={`hover:bg-red-25 ${
                           category.name === "ANY" && isAnySelected
-                            ? "bg-white border-l-4 border-purple-400 cursor-pointer"
+                            ? "bg-white border-l-4 border-purple-400"
                             : ""
                         }`}
                       >
@@ -2542,44 +2638,57 @@ const normalized = (expectedEducationFromServer || [])
                             category.name === "ANY" && isAnySelected
                               ? "text-red-700 bg-white border-2 border-red-500"
                               : category.name === "ANY"
-                              ? "text-red-700 bg-white border border-red-200 hover:bg-red-50 cursor-pointer"
-                              : "text-red-700 bg-red-25"
+                                ? "text-red-700 border border-red-200 bg-gray-50"
+                                : "text-red-700 bg-red-25"
                           }`}
-                          onClick={() =>
-                            partnerDegreeToggle(null, category.name)
-                          }
                         >
-                          {category.name === "ANY" && isAnySelected && (
-                            <span className="mr-2">🌟</span>
-                          )}
-                          {category.name}
+                          {category.name === "ANY" ? " " : category.name}
                         </td>
                         <td className="px-4 py-3 align-top">
                           <div className="flex flex-wrap gap-2">
-                            {category.degrees.map((degree) => {
-                              const isSelected = partnerEducation.some(
-                                (edu) => edu.degree === degree
-                              );
-                              return (
-                                <button
-                                  key={degree}
-                                  type="button"
-                                  onClick={() =>
-                                    partnerDegreeToggle(degree, category.name)
-                                  }
-                                  className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
-                                    isSelected
-                                      ? "bg-red-600 text-white hover:bg-red-700"
-                                      : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-300"
-                                  }`}
-                                >
-                                  {degree}
-                                  {isSelected && (
-                                    <span className="ml-1">✓</span>
-                                  )}
-                                </button>
-                              );
-                            })}
+                            {category.name === "ANY" ? (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  partnerDegreeToggle(null, category.name)
+                                }
+                                className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                                  isAnySelected
+                                    ? "bg-red-600 text-white hover:bg-red-700"
+                                    : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-300"
+                                }`}
+                              >
+                                ANY
+                                {isAnySelected && (
+                                  <span className="ml-1">✓</span>
+                                )}
+                              </button>
+                            ) : (
+                              category.degrees.map((degree) => {
+                                const isSelected = partnerEducation.some(
+                                  (edu) => edu.degree === degree,
+                                );
+                                return (
+                                  <button
+                                    key={degree}
+                                    type="button"
+                                    onClick={() =>
+                                      partnerDegreeToggle(degree, category.name)
+                                    }
+                                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                                      isSelected
+                                        ? "bg-red-600 text-white hover:bg-red-700"
+                                        : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-300"
+                                    }`}
+                                  >
+                                    {degree}
+                                    {isSelected && (
+                                      <span className="ml-1">✓</span>
+                                    )}
+                                  </button>
+                                );
+                              })
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -2600,9 +2709,9 @@ const normalized = (expectedEducationFromServer || [])
               dropdown1Label="Religion"
               dropdown2Label="Caste"
               dropdown3Label="Subcaste"
-              api1Url="https://api.manomilan.com/api/user/get-religions"
-              api2Url="https://api.manomilan.com/api/user/get-caste-by-religion"
-              api3Url="https://api.manomilan.com/api/user/get-subcaste-by-caste"
+              api1Url="http://localhost:8000/api/user/get-religions"
+              api2Url="http://localhost:8000/api/user/get-caste-by-religion"
+              api3Url="http://localhost:8000/api/user/get-subcaste-by-caste"
               api1Key="religion"
               api2Key="caste"
               api3Key="subCaste"
@@ -2624,9 +2733,9 @@ const normalized = (expectedEducationFromServer || [])
               dropdown1Label="Country"
               dropdown2Label="State"
               dropdown3Label="City"
-              api1Url="https://api.manomilan.com/api/user/get-all-countries"
-              api2Url="https://api.manomilan.com/api/user/get-state-by-country"
-              api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
+              api1Url="http://localhost:8000/api/user/get-all-countries"
+              api2Url="http://localhost:8000/api/user/get-state-by-country"
+              api3Url="http://localhost:8000/api/user/get-cities-by-state"
               api1Key="country"
               api2Key="state"
               api3Key="city"
@@ -2648,9 +2757,9 @@ const normalized = (expectedEducationFromServer || [])
               dropdown1Label="Country"
               dropdown2Label="State"
               dropdown3Label="City"
-              api1Url="https://api.manomilan.com/api/user/get-all-countries"
-              api2Url="https://api.manomilan.com/api/user/get-state-by-country"
-              api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
+              api1Url="http://localhost:8000/api/user/get-all-countries"
+              api2Url="http://localhost:8000/api/user/get-state-by-country"
+              api3Url="http://localhost:8000/api/user/get-cities-by-state"
               api1Key="country"
               api2Key="state"
               api3Key="city"
@@ -2665,96 +2774,28 @@ const normalized = (expectedEducationFromServer || [])
 
         {/* Special Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-red-700 mb-2">
-              Sect
-            </label>
-            <Controller
-              name="sect"
-              control={control}
-              render={({ field }) => (
-                <select
-                  {...field}
-                  className="w-full px-3 py-2 border rounded-md"
-                >
-                  <option value="">Select</option>
-                  {sect.map((s, i) => (
-                    <option key={i} value={s.sect || s.name || s}>
-                      {s.sect || s.name || s}
-                    </option>
-                  ))}
-                </select>
-              )}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-red-700 mb-2">
-              Manglik
-            </label>
-            <Controller
-              name="manglik"
-              control={control}
-              render={({ field }) => (
-                <select
-                  {...field}
-                  className="w-full px-3 py-2 border rounded-md"
-                >
-                  <option value="">Select</option>
-                  {manglik.map((m, i) => (
-                    <option key={i} value={m.manglik || m.name || m}>
-                      {m.manglik || m.name || m}
-                    </option>
-                  ))}
-                </select>
-              )}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-red-700 mb-2">
-              Food Preference
-            </label>
-            <Controller
-              name="foodPreference"
-              control={control}
-              render={({ field }) => (
-                <select
-                  {...field}
-                  className="w-full px-3 py-2 border rounded-md"
-                >
-                  <option value="">Select</option>
-                  {foodPref.map((f, i) => (
-                    <option key={i} value={f.foodPreference || f.name || f}>
-                      {f.foodPreference || f.name || f}
-                    </option>
-                  ))}
-                </select>
-              )}
-            />
-          </div>
-          <div className="space-y-8">
+          <div className="space-y-8 space-x-1">
             {/* Sect Section */}
             <div>
               <label className="block text-sm font-medium text-red-700 mb-3">
-                Sect
+                Sect ( Panth )
               </label>
               <Controller
                 name="sect"
                 control={control}
                 // rules={{ required: "Sect is required" }}
                 render={({ field }) => (
-                  <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-1 sm:gap-4">
+                  <div className="space-y-3 space-x-2 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-1 sm:gap-4">
                     <div className="flex items-center">
                       {sect.map((ele, index) => (
-                        <div className="flex w-full" key={index}>
+                        <div className="flex w-full px-2" key={index}>
                           <input
                             {...field}
                             type="radio"
-                            value={ele.name}
+                            value={ele.sect}
                             className="mr-2 flex-shrink-0 accent-[#7d0a0a] text-md"
                           />
-                          <span className="text-sm">{ele.name}</span>
+                          <span className="text-sm">{ele.sect}</span>
                         </div>
                       ))}
                     </div>
@@ -2781,15 +2822,15 @@ const normalized = (expectedEducationFromServer || [])
                   <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-1 lg:grid-cols-1 sm:gap-4">
                     <div className="flex items-center">
                       {manglik.map((ele, index) => (
-                        <div className="flex w-full " key={index}>
+                        <div className="flex w-full px-2" key={index}>
                           <input
                             key={index}
                             {...field}
                             type="radio"
-                            value={ele.name}
+                            value={ele.manglik}
                             className="mr-2 flex-shrink-0 accent-[#7d0a0a] text-md"
                           />
-                          <span className="text-sm">{ele.name}</span>
+                          <span className="text-sm">{ele.manglik}</span>
                         </div>
                       ))}
                     </div>
@@ -2806,7 +2847,7 @@ const normalized = (expectedEducationFromServer || [])
             {/* Food Choices Section */}
             <div>
               <label className="block text-sm font-medium text-red-700 mb-3">
-                Food Choices
+                Food Preference
               </label>
               <Controller
                 name="foodPreference"
@@ -2816,7 +2857,7 @@ const normalized = (expectedEducationFromServer || [])
                   <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-1 lg:grid-cols-1 sm:gap-4">
                     <div className="flex items-center">
                       {foodPref.map((ele, index) => (
-                        <div className="flex w-full " key={index}>
+                        <div className="flex w-full px-2 " key={index}>
                           <input
                             key={index}
                             {...field}
@@ -2849,7 +2890,7 @@ const normalized = (expectedEducationFromServer || [])
                 render={({ field }) => (
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {bloodGroups.map((group) => (
-                      <label key={group} className="flex items-center">
+                      <label key={group} className="flex items-center px-2">
                         <input
                           {...field}
                           type="radio"
@@ -2866,23 +2907,22 @@ const normalized = (expectedEducationFromServer || [])
 
             <div className="w-1/3">
               <label className="block text-sm font-medium text-red-700 mb-2">
-                Other Information
+                Other Information ( MAX 300 Characters )
               </label>
               <Controller
                 name="otherInfo"
                 control={control}
                 render={({ field }) => (
-                  <input
+                  <textarea
                     {...field}
                     type="text"
+                    maxLength={300}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    placeholder="Enter Hobbies, Achivements"
+                    placeholder="Enter Hobbies, Achivements, etc. "
                   />
                 )}
               />
             </div>
-
-
           </div>
         </div>
 
@@ -2892,12 +2932,13 @@ const normalized = (expectedEducationFromServer || [])
             onClick={handleSubmit(onSubmit)}
             disabled={!isDirty}
             className={`px-6 py-3 rounded-md text-white ${
-              isDirty ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"
+              isDirty
+                ? "bg-blue-600 hover:bg-blue-700"
+                : "bg-gray-400 cursor-not-allowed"
             }`}
           >
             Update User
           </button>
-
         </div>
       </form>
 
@@ -3154,7 +3195,7 @@ const normalized = (expectedEducationFromServer || [])
                             // Rebuild the children array without the removed index
                             const currentChildren = getValues("children") || [];
                             const newChildren = currentChildren.filter(
-                              (_, i) => i !== index
+                              (_, i) => i !== index,
                             );
 
                             // Add empty objects if needed to maintain the count

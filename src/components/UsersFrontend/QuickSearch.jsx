@@ -116,7 +116,7 @@ const QuickSearchCards = () => {
   const findCaste = async () => {
     try {
       const res = await axios.get(
-        "https://api.manomilan.com/api/user/get-all-subcaste"
+        "http://localhost:8000/api/user/get-all-subcaste"
       );
       console.log(res.data.result);
       setCaste(res?.data?.result);
@@ -143,7 +143,33 @@ const QuickSearchCards = () => {
 
   // 🔸 Handle mandatory field changes
   const handleMandatoryChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: value };
+      // If gender changes, ensure age respects new minimums
+      if (field === "gender") {
+        const ageNum = parseInt(updated.age, 10);
+        const min = value === "Bride" ? 18 : value === "Groom" ? 21 : 18;
+        if (!isNaN(ageNum) && ageNum < min) {
+          updated.age = ""; // force user to re-enter valid age
+        }
+      }
+      return updated;
+    });
+  };
+
+  const handleAgeChange = (raw) => {
+    // allow only digits, max 2 chars, and clamp according to gender
+    const digits = (raw || "").toString().replace(/\D/g, "").slice(0, 2);
+    if (!digits) {
+      setFormData((prev) => ({ ...prev, age: "" }));
+      return;
+    }
+    let ageNum = parseInt(digits, 10);
+    const min =
+      formData.gender === "Bride" ? 18 : formData.gender === "Groom" ? 21 : 18;
+    if (ageNum < min) ageNum = min;
+    if (ageNum > 99) ageNum = 99;
+    setFormData((prev) => ({ ...prev, age: String(ageNum) }));
   };
 
   const handleSubmit = (e) => {
@@ -225,7 +251,7 @@ const QuickSearchCards = () => {
   const fetchStreams = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-streams"
+        "http://localhost:8000/api/admin/get-streams"
       );
       if (response.data.status) {
         setStreams(response.data.data);
@@ -243,7 +269,7 @@ const QuickSearchCards = () => {
     for (const stream of streamsArr) {
       try {
         const response = await axios.get(
-          "https://api.manomilan.com/api/admin/get-degrees-by-stream",
+          "http://localhost:8000/api/admin/get-degrees-by-stream",
           { params: { stream: stream.stream } }
         );
         if (response.data.status) {
@@ -288,122 +314,6 @@ const QuickSearchCards = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* ✅ Original Filter Section (untouched) */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-red-100">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-red-900 flex items-center">
-              <Filter className="mr-2" />
-              Search Your Perfect Match
-            </h2>
-            <button
-              onClick={resetFilters}
-              className="text-red-600 hover:text-red-800 font-medium"
-            >
-              Clear Search
-            </button>
-          </div>
-          {/* Age, Religion, Profession, Location Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            {/* Age From */}
-            <div>
-              <label className="block text-sm font-medium text-red-700 mb-2">
-                Age From
-              </label>
-              <select
-                value={filters.ageFrom}
-                onChange={(e) => handleFilterChange("ageFrom", e.target.value)}
-                className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none"
-              >
-                <option value="">From</option>
-                {Array.from({ length: 43 }, (_, i) => 18 + i).map((age) => (
-                  <option key={age} value={age}>
-                    {age}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Age To */}
-            <div>
-              <label className="block text-sm font-medium text-red-700 mb-2">
-                Age To
-              </label>
-              <select
-                value={filters.ageTo}
-                onChange={(e) => handleFilterChange("ageTo", e.target.value)}
-                className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none"
-              >
-                <option value="">To</option>
-                {Array.from({ length: 43 }, (_, i) => 18 + i).map((age) => (
-                  <option
-                    key={age}
-                    value={age}
-                    disabled={
-                      filters.ageFrom && age <= parseInt(filters.ageFrom)
-                    }
-                  >
-                    {age}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Height From */}
-            <div>
-              <label className="block text-sm font-medium text-red-700 mb-2">
-                Height From
-              </label>
-              <select
-                value={filters.heightFrom}
-                onChange={(e) =>
-                  handleFilterChange("heightFrom", e.target.value)
-                }
-                className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none"
-              >
-                <option value="">From</option>
-                {heightOptions.map((h) => (
-                  <option key={h.value} value={h.value}>
-                    {h.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Height To */}
-            <div>
-              <label className="block text-sm font-medium text-red-700 mb-2">
-                Height To
-              </label>
-              <select
-                value={filters.heightTo}
-                onChange={(e) => handleFilterChange("heightTo", e.target.value)}
-                className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none"
-              >
-                <option value="">To</option>
-                {heightOptions.map((h) => (
-                  <option
-                    key={h.value}
-                    value={h.value}
-                    disabled={
-                      filters.heightFrom &&
-                      parseInt(h.value) < parseInt(filters.heightFrom)
-                    }
-                  >
-                    {h.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex items-end">
-              <button
-                onClick={resetFilters}
-                className="text-red-600 hover:text-red-800 font-medium"
-              >
-                Clear Filters
-              </button>
-            </div>
-          </div>
-        </div>
         {/* ✅ Mandatory Fields Form */}
         <form
           onSubmit={handleSubmit}
@@ -515,42 +425,58 @@ const QuickSearchCards = () => {
             </div>
 
             {/* Age */}
-            <div>
-              <label className="block text-red-900 font-semibold mb-2">
-                Age
-              </label>
-              <select
-                value={formData.age}
-                onChange={(e) => handleMandatoryChange("age", e.target.value)}
-                className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none"
-              >
-                <option value="">Select Age</option>
-                <option value="18">18</option>
-                <option value="19">19</option>
-                <option value="20">20</option>
-                <option value="21">21</option>
-              </select>
-            </div>
+<div>
+  <label className="block text-red-900 font-semibold mb-2">
+    Age
+  </label>
 
+  <input
+    type="number"
+    value={formData.age}
+    onChange={(e) => handleAgeChange(e.target.value)}
+    max={99}
+    className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none"
+    placeholder={
+      formData.gender === "Bride"
+        ? "Enter age (18-99)"
+        : formData.gender === "Groom"
+        ? "Enter age (21-99)"
+        : "Enter age (18-99)"
+    }
+  />
+
+  {/* Validation Message */}
+  {formData.age && (
+    Number(formData.age) <
+      (formData.gender === "Bride" ? 18 : 21) && (
+      <p className="text-red-500 text-sm mt-1">
+        Minimum age for{" "}
+        {formData.gender === "Bride" ? "Bride" : "Groom"} is{" "}
+        {formData.gender === "Bride" ? 18 : 21}
+      </p>
+    )
+  )}
+</div>
             {/* Height */}
-            <div>
-              <label className="block text-red-900 font-semibold mb-2">
-                Height
-              </label>
-              <select
-                value={formData.height}
-                onChange={(e) =>
-                  handleMandatoryChange("height", e.target.value)
-                }
-                className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none"
-              >
-                <option value="">Select Height</option>
-                <option value="5'0 - 5'5">5'0 - 5'5"</option>
-                <option value="5'6 - 5'10">5'6 - 5'10"</option>
-                <option value="5'11 - 6'2">5'11 - 6'2"</option>
-                <option value="6'3+">6'3+"</option>
-              </select>
-            </div>
+                  <div>
+                    <label className="block text-red-900 font-semibold mb-2">
+                      Height
+                    </label>
+                    <select
+                      value={formData.height}
+                      onChange={(e) =>
+                        handleMandatoryChange("height", e.target.value)
+                      }
+                      className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none"
+                    >
+                      <option value="">Select Height</option>
+                      {heightOptions.map((h) => (
+                        <option key={h.value} value={h.value}>
+                          {h.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
             {/* Occupation */}
             <div>
@@ -579,82 +505,98 @@ const QuickSearchCards = () => {
             </div>
 
           </div>
-            <div className="w-full  mx-auto p-6">
-              <div className="bg-white border border-red-200 rounded-lg overflow-hidden mb-4">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full">
-                    <thead className="bg-red-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-red-800 border-r border-red-200">
-                          Category
-                        </th>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-red-800">
-                          Degrees
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-red-200">
-                      {partnerEducationCategories.map((category) => (
-                        <tr
-                          key={category.name}
-                          className={`hover:bg-red-25 ${
-                            category.name === "ANY" && isAnySelected
-                              ? "bg-white border-l-4 border-purple-400 cursor-pointer"
-                              : ""
-                          }`}
-                        >
-                          <td
-                            className={`px-4 py-3 font-bold border-r border-red-200 align-top ${
-                              category.name === "ANY" && isAnySelected
-                                ? "text-red-700 bg-white border-2 border-red-500"
-                                : category.name === "ANY"
-                                ? "text-red-700 bg-white border border-red-200 hover:bg-red-50 cursor-pointer"
-                                : "text-red-700 bg-red-25"
-                            }`}
-                            onClick={() =>
-                              partnerDegreeToggle(null, category.name)
-                            }
-                          >
-                            {category.name === "ANY" && isAnySelected && (
-                              <span className="mr-2">🌟</span>
-                            )}
-                            {category.name}
-                          </td>
-                          <td className="px-4 py-3 align-top">
-                            <div className="flex flex-wrap gap-2">
-                              {category.degrees.map((degree) => {
-                                const isSelected = partnerEducation.some(
-                                  (edu) => edu.degree === degree
-                                );
-                                return (
-                                  <button
-                                    key={degree}
-                                    type="button"
-                                    onClick={() =>
-                                      partnerDegreeToggle(degree, category.name)
-                                    }
-                                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
-                                      isSelected
-                                        ? "bg-red-600 text-white hover:bg-red-700"
-                                        : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-300"
-                                    }`}
-                                  >
-                                    {degree}
-                                    {isSelected && (
-                                      <span className="ml-1">✓</span>
-                                    )}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+            <div className="max-w-6xl mx-auto p-6">
+                  <div className="bg-white border border-red-200 rounded-lg overflow-hidden mb-4">
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full">
+                        <thead className="bg-red-50">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-sm font-medium text-red-800 border-r border-red-200">
+                              Category
+                            </th>
+                            <th className="px-4 py-3 text-left text-sm font-medium text-red-800">
+                              Education
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-red-200">
+                          {partnerEducationCategories.map((category) => (
+                            <tr
+                              key={category.name}
+                              className={`hover:bg-red-25 ${
+                                category.name === "ANY" && isAnySelected
+                                  ? "bg-white border-l-4 border-purple-400"
+                                  : ""
+                              }`}
+                            >
+                              <td
+                                className={`px-4 py-3 font-bold border-r border-red-200 align-top ${
+                                  category.name === "ANY" && isAnySelected
+                                    ? "text-red-700 bg-white border-2 border-red-500"
+                                    : category.name === "ANY"
+                                      ? "text-red-700 border border-red-200 bg-gray-50"
+                                      : "text-red-700 bg-red-25"
+                                }`}
+                              >
+                                {category.name === "ANY" ? " " : category.name}
+                              </td>
+                              <td className="px-4 py-3 align-top">
+                                <div className="flex flex-wrap gap-2">
+                                  {category.name === "ANY" ? (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        partnerDegreeToggle(null, category.name)
+                                      }
+                                      className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                                        isAnySelected
+                                          ? "bg-red-600 text-white hover:bg-red-700"
+                                          : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-300"
+                                      }`}
+                                    >
+                                      ANY
+                                      {isAnySelected && (
+                                        <span className="ml-1">✓</span>
+                                      )}
+                                    </button>
+                                  ) : (
+                                    category.degrees.map((degree) => {
+                                      const isSelected = partnerEducation.some(
+                                        (edu) => edu.degree === degree,
+                                      );
+                                      return (
+                                        <button
+                                          key={degree}
+                                          type="button"
+                                          onClick={() =>
+                                            partnerDegreeToggle(
+                                              degree,
+                                              category.name,
+                                            )
+                                          }
+                                          className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                                            isSelected
+                                              ? "bg-red-600 text-white hover:bg-red-700"
+                                              : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-300"
+                                          }`}
+                                        >
+                                          {degree}
+                                          {isSelected && (
+                                            <span className="ml-1">✓</span>
+                                          )}
+                                        </button>
+                                      );
+                                    })
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
           <div className="text-center mt-6">
             <button

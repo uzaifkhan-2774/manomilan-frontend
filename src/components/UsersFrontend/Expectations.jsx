@@ -370,7 +370,7 @@ const Expectations = ({
   const fetchNationalities = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-all-countries"
+        "http://localhost:8000/api/user/get-all-countries"
       );
       if (response.data.status === true) {
         setNationalities(response.data.result || []);
@@ -391,7 +391,7 @@ const Expectations = ({
     const fetchStreams = async () => {
       try {
         const res = await axios.get(
-          "https://api.manomilan.com/api/user/get-all-stream"
+          "http://localhost:8000/api/user/get-all-stream"
         );
         if (res.data?.status) {
           const streams = res.data.data || [];
@@ -400,7 +400,7 @@ const Expectations = ({
             streams.map(async (s) => {
               try {
                 const r = await axios.post(
-                  "https://api.manomilan.com/api/user/get-degree-by-stream",
+                  "http://localhost:8000/api/user/get-degree-by-stream",
                   null,
                   { params: { stream: s.stream } }
                 );
@@ -430,7 +430,7 @@ const Expectations = ({
     }
     try {
       const res = await axios.get(
-        "https://api.manomilan.com/api/user/getcurrentuser",
+        "http://localhost:8000/api/user/getcurrentuser",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -596,7 +596,7 @@ const Expectations = ({
       };
 
       const res = await axios.put(
-        "https://api.manomilan.com/api/user/expectation-edit",
+        "http://localhost:8000/api/user/expectation-edit",
         payload,
         {
           headers: {
@@ -1040,9 +1040,9 @@ const Expectations = ({
             dropdown1Label="Religion"
             dropdown2Label="Caste"
             dropdown3Label="Subcaste"
-            api1Url="https://api.manomilan.com/api/user/get-religions"
-            api2Url="https://api.manomilan.com/api/user/get-caste-by-religion"
-            api3Url="https://api.manomilan.com/api/user/get-subcaste-by-caste"
+            api1Url="http://localhost:8000/api/user/get-religions"
+            api2Url="http://localhost:8000/api/user/get-caste-by-religion"
+            api3Url="http://localhost:8000/api/user/get-subcaste-by-caste"
             api1Key="religion"
             api2Key="caste"
             api3Key="subCaste"
@@ -1064,9 +1064,9 @@ const Expectations = ({
             dropdown1Label="Country"
             dropdown2Label="State"
             dropdown3Label="City"
-            api1Url="https://api.manomilan.com/api/user/get-all-countries"
-            api2Url="https://api.manomilan.com/api/user/get-state-by-country"
-            api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
+            api1Url="http://localhost:8000/api/user/get-all-countries"
+            api2Url="http://localhost:8000/api/user/get-state-by-country"
+            api3Url="http://localhost:8000/api/user/get-cities-by-state"
             api1Key="country"
             api2Key="state"
             api3Key="city"
@@ -1088,9 +1088,9 @@ const Expectations = ({
             dropdown1Label="Country"
             dropdown2Label="State"
             dropdown3Label="City"
-            api1Url="https://api.manomilan.com/api/user/get-all-countries"
-            api2Url="https://api.manomilan.com/api/user/get-state-by-country"
-            api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
+            api1Url="http://localhost:8000/api/user/get-all-countries"
+            api2Url="http://localhost:8000/api/user/get-state-by-country"
+            api3Url="http://localhost:8000/api/user/get-cities-by-state"
             api1Key="country"
             api2Key="state"
             api3Key="city"

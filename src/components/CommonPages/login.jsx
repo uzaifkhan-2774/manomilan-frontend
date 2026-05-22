@@ -41,17 +41,16 @@ export default function ManomilanLogin() {
 
   let loginEndPt = "";
   if (pathname.includes("franchise")) {
-    loginEndPt = "https://api.manomilan.com/api/franchise/login";
+    loginEndPt = "http://localhost:8000/api/franchise/login";
   } else if (pathname.includes("distributor")) {
-    loginEndPt = "https://api.manomilan.com/api/distributor/login";
+    loginEndPt = "http://localhost:8000/api/distributor/login";
   } else if (pathname.includes("admin")) {
-    loginEndPt = "https://api.manomilan.com/api/admin/login";
+    loginEndPt = "http://localhost:8000/api/admin/login";
   } else {
-    loginEndPt = "https://api.manomilan.com/api/user/login";
+    loginEndPt = "http://localhost:8000/api/user/login";
   }
 
   const handleLogin = async () => {
-   
     const pinValue = pin.join("");
 
     if (!userInput.trim() || pinValue.length !== 6) {
@@ -193,7 +192,7 @@ export default function ManomilanLogin() {
           <div>
             <input
               type="text"
-              placeholder="UserID / Mobile No / Email ID"
+              placeholder="Mobile No / Email ID"
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
               className="w-full px-0 py-3 border-0 border-b-2 border-gray-300 bg-transparent focus:border-blue-500 focus:outline-none text-gray-700 placeholder-gray-500"

@@ -124,14 +124,20 @@ const MemberTable = ({
         .toLowerCase()
         .trim()
         .includes(searchTerm.trim().toLowerCase()) ||
-      (isValidDate(searchTerm) && formattedDob === searchTerm) // DOB exact match
-      (searchTerm.length >= 2 && formattedDob.includes(searchTerm)) // Partial DOB match
-      (isValidDate(searchTerm) && formattedReg === searchTerm) // Reg Date exact match
-      (searchTerm.length >= 2 && formattedReg.includes(searchTerm)) // Partial Reg date match
-      distributor.franchiseUnder
-        ?.toLowerCase()
-        .trim()
-        .includes(searchTerm.trim().toLowerCase());
+      (isValidDate(searchTerm) && formattedDob === searchTerm)(
+        // DOB exact match
+        searchTerm.length >= 2 && formattedDob.includes(searchTerm),
+      )(
+        // Partial DOB match
+        isValidDate(searchTerm) && formattedReg === searchTerm,
+      )(
+        // Reg Date exact match
+        searchTerm.length >= 2 && formattedReg.includes(searchTerm),
+      ); // Partial Reg date match
+    distributor.franchiseUnder
+      ?.toLowerCase()
+      .trim()
+      .includes(searchTerm.trim().toLowerCase());
     return matchesSearch;
   });
 
@@ -140,16 +146,24 @@ const MemberTable = ({
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedDistributors = filteredDistributors.slice(
     startIndex,
-    startIndex + itemsPerPage 
+    startIndex + itemsPerPage,
   );
   const [userId, setUserId] = useState(null);
 
   function cmToFeetInches(cm) {
-    const totalInches = cm / 2.54;
-    const feet = Math.floor(totalInches / 12);
-    const inches = Math.round(totalInches % 12);
-    return `${feet}' ${inches}"`;
+  const totalInches = cm / 2.54;
+
+  let feet = Math.floor(totalInches / 12);
+  let inches = Math.round(totalInches % 12);
+
+  // Handle 12 inches overflow
+  if (inches === 12) {
+    feet += 1;
+    inches = 0;
   }
+
+  return `${feet}' ${inches}"`;
+}
 
   const handleView = async (id) => {
     // Fetch allotted packages first
@@ -158,9 +172,9 @@ const MemberTable = ({
     // Fetch single user details
     let endpoint;
     if (pathname.includes("/admin")) {
-      endpoint = `https://api.manomilan.com/api/admin/get-single-user/${id}`;
+      endpoint = `http://localhost:8000/api/admin/get-single-user/${id}`;
     } else {
-      endpoint = `https://api.manomilan.com/api/franchise/get-single-user/${id}`;
+      endpoint = `http://localhost:8000/api/franchise/get-single-user/${id}`;
     }
     try {
       const response = await axios.get(endpoint, {
@@ -180,7 +194,7 @@ const MemberTable = ({
   const updateProfilePic = async () => {
     try {
       const response = await axios.put(
-        "https://api.manomilan.com/api/admin/update-userpfp",
+        "http://localhost:8000/api/admin/update-userpfp",
         {
           userId: singleUser._id,
           userStatus: "Approved",
@@ -189,7 +203,7 @@ const MemberTable = ({
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data.status) {
         // refresh single user from server so UI reflects new profile pic immediately
@@ -216,7 +230,7 @@ const MemberTable = ({
   const rejectProfilePic = async () => {
     try {
       const response = await axios.put(
-        "https://api.manomilan.com/api/admin/update-userpfp",
+        "http://localhost:8000/api/admin/update-userpfp",
         {
           userId: singleUser._id,
           userStatus: "Rejected",
@@ -225,7 +239,7 @@ const MemberTable = ({
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data.stauts) {
         setUpdateProfile(!updateProfile);
@@ -237,11 +251,11 @@ const MemberTable = ({
     }
   };
   const inactiveUser = async () => {
-    const result = confirm("Do you really want to inactivate member ?")
-    if(result){
+    const result = confirm("Do you really want to inactivate member ?");
+    if (result) {
       try {
         const response = await axios.post(
-          "https://api.manomilan.com/api/franchise/inactivate-user",
+          "http://localhost:8000/api/franchise/inactivate-user",
           {
             userId: singleUser._id,
           },
@@ -249,7 +263,7 @@ const MemberTable = ({
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         if (response.data.status) {
           toast.success(response.data.message);
@@ -296,7 +310,7 @@ const MemberTable = ({
     console.log(currFranchiseId);
     try {
       const response = await axios.get(
-        `https://api.manomilan.com/api/franchise/get-packages/${currFranchiseId}`
+        `http://localhost:8000/api/franchise/get-packages/${currFranchiseId}`,
       );
       console.log(response.data);
       if (response.data.status) {
@@ -310,9 +324,9 @@ const MemberTable = ({
   const allotPackageToUser = async (data) => {
     let endpoint;
     if (data.vipPackage === undefined) {
-      endpoint = "https://api.manomilan.com/api/franchise/allot-main-addOnpackage";
+      endpoint = "http://localhost:8000/api/franchise/allot-main-addOnpackage";
     } else {
-      endpoint = "https://api.manomilan.com/api/franchise/allot-vip-package";
+      endpoint = "http://localhost:8000/api/franchise/allot-vip-package";
     }
 
     const payload = {
@@ -347,19 +361,19 @@ const MemberTable = ({
   const getAllotedPackages = async (data) => {
     try {
       const response = await axios.get(
-        `https://api.manomilan.com/api/user/get-packages/${data}`
+        `http://localhost:8000/api/user/get-packages/${data}`,
       );
       console.log(response.data);
       if (response.data?.status && response.data?.userPackages) {
         // Check if any package has mainPackageId
         const hasMainPackage = response.data.userPackages.some(
-          (pkg) => pkg.franchisePackage?.mainPackageId
+          (pkg) => pkg.franchisePackage?.mainPackageId,
         );
 
         // Sort packages by createdAt to get the latest package
         const latestPackage =
           response.data.userPackages.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
           )[0] || {};
 
         setAllotedPackages({
@@ -494,8 +508,8 @@ const MemberTable = ({
                           distributor.ActiveStatus === false
                             ? "bg-red-200 text-white"
                             : index % 2 === 0
-                            ? "bg-white"
-                            : "bg-gray-50"
+                              ? "bg-white"
+                              : "bg-gray-50"
                         }`}
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -525,7 +539,7 @@ const MemberTable = ({
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={getStatusBadge(
-                              distributor.userPhotoStatus
+                              distributor.userPhotoStatus,
                             )}
                           >
                             {distributor.userPhotoStatus}
@@ -553,14 +567,14 @@ const MemberTable = ({
                                 day: "2-digit",
                                 month: "2-digit",
                                 year: "numeric",
-                              }
+                              },
                             )}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={getStatusBadge(
-                              distributor.ActiveStatus ? "Active" : "Inactive"
+                              distributor.ActiveStatus ? "Active" : "Inactive",
                             )}
                           >
                             {distributor.ActiveStatus ? "Active" : "Inactive"}
@@ -579,7 +593,7 @@ const MemberTable = ({
                               <Eye className="w-3 h-3 mr-1" />
                               View
                             </button>
-                            {pathname.includes("/franchise") ? (
+                            {pathname.includes("/franchise" || "/admin") ? (
                               <button
                                 onClick={() => {
                                   handleEditFrDetails(distributor);
@@ -593,7 +607,9 @@ const MemberTable = ({
                                 <Edit3 className="w-3 h-3 mr-1" />
                                 Edit
                               </button>
-                            ) : " "} 
+                            ) : (
+                              " "
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -608,7 +624,7 @@ const MemberTable = ({
                     Showing {startIndex + 1} to{" "}
                     {Math.min(
                       startIndex + itemsPerPage,
-                      filteredDistributors.length
+                      filteredDistributors.length,
                     )}{" "}
                     of {filteredDistributors.length} results
                   </div>
@@ -655,9 +671,7 @@ const MemberTable = ({
     );
   } else {
     if (detailProfile) {
-      return (
-        <EditMemberTable userId={singleUser._id} token={token}/>
-      );
+      return <EditMemberTable userId={singleUser._id} token={token} />;
     } else {
       return (
         <>
@@ -677,7 +691,7 @@ const MemberTable = ({
                   <img
                     src={
                       singleUser.userPhotoStatus === "Approved"
-                        ? `https://api.manomilan.com/upload/${singleUser.profilePic}${updatePic ? `?t=${updatePic}` : ""}`
+                        ? `http://localhost:8000/upload/${singleUser.profilePic}${updatePic ? `?t=${updatePic}` : ""}`
                         : "https://imgs.search.brave.com/rwE-hC6ESt3hBJZhImPkb-KvU26bLDKVe-OKv1y50-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzE0LzQz/LzU1LzE0NDM1NWQ3/YjM2YzVmNjQ2NDM1/NDIzNzk4MjgxY2U5/LmpwZw"
                     }
                     alt="Profile"
@@ -751,8 +765,8 @@ const MemberTable = ({
                           {isMainPackage
                             ? "Main Package"
                             : pack.vipPackage
-                            ? "VIP Package"
-                            : "Add-on Package"}
+                              ? "VIP Package"
+                              : "Add-on Package"}
                         </p>
 
                         <h1>
@@ -789,7 +803,7 @@ const MemberTable = ({
                             onClick={() => {
                               if (isAlreadyAllottedMain) {
                                 toast.error(
-                                  "Main Package already allotted. Cannot allot again."
+                                  "Main Package already allotted. Cannot allot again.",
                                 );
                                 return;
                               }
@@ -842,7 +856,7 @@ const MemberTable = ({
               <div className="w-full  h-1/2 md:w-1/2 md:h-1/2 bg-white rounded-md shadow-md flex flex-col gap-3 justify-center items-center">
                 <div className="w-[250px] h-[250px] bg-red-300 rounded-md">
                   <img
-                    src={`https://api.manomilan.com/upload/${
+                    src={`http://localhost:8000/upload/${
                       singleUser.profilePic || singleUser.userPhotoOne || ""
                     }`}
                     alt=""

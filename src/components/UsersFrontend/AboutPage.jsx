@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const About = () => {
   const navigate = useNavigate();
@@ -31,19 +31,7 @@ Manomilan.com
         </p>
       </div>
       <div className="border-t w-full fixed bottom-0 left-0 border-gray-800 py-8 text-center text-black">
-            <p>Powered By - Manisha Systems | Designed and Developed By - <a
-      href="https://portfolio-seven-blush-52kj7mitlt.vercel.app/"
-      target="_blank"
-      className="text-black no-underline cursor-pointer "
-    >
-      Shailendra Pandey
-    </a> & <a
-      href="https://uzaif-portfolio.vercel.app/"
-      target="_blank"
-      className="text-black no-underline cursor-pointer "
-    >
-      Uzaif Khan
-    </a></p>
+            <p>Powered By - Manisha Systems | Designed and Developed By - Alkesh Mahamune & Manas Kokate</p>
           </div>
     </div>
   );

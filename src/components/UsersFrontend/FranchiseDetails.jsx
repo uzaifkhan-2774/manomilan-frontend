@@ -29,9 +29,9 @@ const FranchiseDetails = ({ setEdit,userId }) => {
   const fetchOptions = async () => {
     try {
       const [complexionRes, bodyTypeRes, familyBgRes] = await Promise.all([
-        axios.get("https://api.manomilan.com/api/user/get-complexion"),
-        axios.get("https://api.manomilan.com/api/user/get-bodytype"),
-        axios.get("https://api.manomilan.com/api/user/get-familybg")
+        axios.get("http://localhost:8000/api/user/get-complexion"),
+        axios.get("http://localhost:8000/api/user/get-bodytype"),
+        axios.get("http://localhost:8000/api/user/get-familybg")
       ]);
 
       if (complexionRes.data.status) {
@@ -71,7 +71,7 @@ const FranchiseDetails = ({ setEdit,userId }) => {
     formData.append("userPhotoSix",data.photo2[0])
     console.log("Form Data:", data);
     try {
-      const response = await axios.put("https://api.manomilan.com/api/franchise/update-user-profile",formData)
+      const response = await axios.put("http://localhost:8000/api/franchise/update-user-profile",formData)
       console.log(response.data)
     } catch (error) {
       console.log(error)

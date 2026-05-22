@@ -39,7 +39,7 @@ const FamilyDetails = () => {
 
  const getcurrentuser = async () => {
     try {
-      const response = await axios.get('https://api.manomilan.com/api/user/getcurrentuser', {
+      const response = await axios.get('http://localhost:8000/api/user/getcurrentuser', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -99,7 +99,7 @@ const FamilyDetails = () => {
 
   const fetchCities = async () => {
     try {
-      const response = await axios.get('https://api.manomilan.com/api/user/get-all-cities');
+      const response = await axios.get('http://localhost:8000/api/user/get-all-cities');
       if (response.data.status === true) {
         const transformed = response.data.allLocations.map((item) => {
           const cityString = `${item.city}, ${item.stateCountry?.state || ''}, ${item.stateCountry?.country || ''}`.trim();
@@ -150,7 +150,7 @@ const FamilyDetails = () => {
       };
 
       const response = await axios.put(
-        "https://api.manomilan.com/api/user/editprofile",
+        "http://localhost:8000/api/user/editprofile",
         { newUpdates },
         {
           headers: {

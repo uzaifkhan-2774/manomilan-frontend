@@ -115,7 +115,7 @@ const PreferenceSelector = ({
       (pref) =>
         pref[api1Key] === newPreference[api1Key] &&
         pref[api2Key] === newPreference[api2Key] &&
-        pref[api3Key] === newPreference[api3Key]
+        pref[api3Key] === newPreference[api3Key],
     );
     if (isDuplicate) {
       setError("This preference combination already exists");
@@ -277,10 +277,10 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // optional: for login confirmation
   const [religionPreferences, setReligionPreferences] = useState([]);
   const [nativeLocationPreferences, setNativeLocationPreferences] = useState(
-    []
+    [],
   );
   const [workingLocationPreferences, setWorkingLocationPreferences] = useState(
-    []
+    [],
   );
   const [selectedCaste, setSelectedCaste] = useState("");
   const [selectedParentCity, setSelectedParentCity] = useState("");
@@ -305,7 +305,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
     const fetchStreams = async () => {
       try {
         const response = await axios.get(
-          "https://api.manomilan.com/api/user/get-all-stream"
+          "http://localhost:8000/api/user/get-all-stream",
         );
         if (response.data.status) {
           setStreams(response.data.data);
@@ -327,11 +327,11 @@ const MultiStepForm = ({ sendFranhchisee }) => {
     for (const stream of streams) {
       try {
         const response = await axios.post(
-          "https://api.manomilan.com/api/user/get-degree-by-stream",
+          "http://localhost:8000/api/user/get-degree-by-stream",
           null,
           {
             params: { stream: stream.stream },
-          }
+          },
         );
         if (response.data.status) {
           degreesData[stream.stream] = response.data.data;
@@ -346,7 +346,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const educationCategories = streams.map((stream) => ({
     name: stream.stream,
     degrees: (degreesByStream[stream.stream] || []).map(
-      (degree) => degree.degree
+      (degree) => degree.degree,
     ),
   }));
 
@@ -358,7 +358,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
     ...streams.map((stream) => ({
       name: stream.stream,
       degrees: (degreesByStream[stream.stream] || []).map(
-        (degree) => degree.degree
+        (degree) => degree.degree,
       ),
     })),
   ];
@@ -389,7 +389,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
         .filter((deg, index, self) => self.indexOf(deg) === index); // Remove duplicates
 
       const allSelected = allDegrees.every((deg) =>
-        partnerEducation.some((edu) => edu.degree === deg)
+        partnerEducation.some((edu) => edu.degree === deg),
       );
 
       if (allSelected) {
@@ -601,7 +601,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const fetchDegree = async (degree) => {
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/user/get-degree-by-stream"
+        "http://localhost:8000/api/user/get-degree-by-stream",
       );
       if (response.data.status === true) {
         // console.log(response.data);
@@ -615,7 +615,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const fetchStreams = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-all-stream"
+        "http://localhost:8000/api/user/get-all-stream",
       );
       if (response.data.status === true) {
         const dataToSave = await Promise.all(
@@ -624,7 +624,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
             const degree = await fetchDegree(stream); // ✅ Await here
             // console.log(stream, degree);
             // return { stream, degree };
-          })
+          }),
         );
       } else {
         console.log("error in fetching the data");
@@ -637,7 +637,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const fetchNationalities = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-all-countries"
+        "http://localhost:8000/api/user/get-all-countries",
       );
       if (response.data.status === true) {
         setNationalities(response.data.result || []);
@@ -652,7 +652,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const fetchCities = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-all-cities"
+        "http://localhost:8000/api/user/get-all-cities",
       );
       if (response.data.status === true) {
         const transformed = response.data.allLocations.map((item) => ({
@@ -675,7 +675,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const fetchCaste = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-all-subcaste"
+        "http://localhost:8000/api/user/get-all-subcaste",
       );
 
       if (response.data?.result?.length > 0) {
@@ -692,7 +692,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const fetchMotherTongue = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-mother-tongue"
+        "http://localhost:8000/api/admin/get-mother-tongue",
       );
       if (response.data.status === true) {
         setMotherTongue(response.data.result);
@@ -705,7 +705,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const getSect = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-sect"
+        "http://localhost:8000/api/user/get-sect",
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -723,7 +723,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const getManglik = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-manglik"
+        "http://localhost:8000/api/user/get-manglik",
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -741,7 +741,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const getFoodPref = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/food-choices"
+        "http://localhost:8000/api/user/food-choices",
       );
       if (response.data.status === false) {
         const fetched = response.data.result.map((item) => ({
@@ -793,8 +793,8 @@ const MultiStepForm = ({ sendFranhchisee }) => {
         };
 
         const response = await axios.post(
-          "https://api.manomilan.com/api/user/register",
-          payload
+          "http://localhost:8000/api/user/register",
+          payload,
         );
         if (response.data?.status === true) {
           toast.success("Registration successfull");
@@ -941,224 +941,273 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   };
 
   // api calling
-const onSubmit = async (formData) => {
-  try {
-    const token = localStorage.getItem("token");
-    const formDataToSend = new FormData();
+  const onSubmit = async (formData) => {
+    try {
+      const token = localStorage.getItem("token");
+      const formDataToSend = new FormData();
 
-    // Helper function to append nested objects/arrays
-    const appendNested = (key, value, parentKey = "") => {
-      if (Array.isArray(value)) {
-        if (value.length === 0) {
-          formDataToSend.append(`${parentKey}${key}`, "");
-        } else {
-          value.forEach((item, index) => {
-            if (typeof item === "object" && item !== null) {
-              Object.keys(item).forEach((subKey) => {
-                appendNested(`${key}[${index}][${subKey}]`, item[subKey], `${parentKey}${key}[${index}]`);
-              });
-            } else {
-              formDataToSend.append(`${parentKey}${key}[${index}]`, item || "");
-            }
+      // Helper function to append nested objects/arrays
+      const appendNested = (key, value, parentKey = "") => {
+        if (Array.isArray(value)) {
+          if (value.length === 0) {
+            formDataToSend.append(`${parentKey}${key}`, "");
+          } else {
+            value.forEach((item, index) => {
+              if (typeof item === "object" && item !== null) {
+                Object.keys(item).forEach((subKey) => {
+                  appendNested(
+                    `${key}[${index}][${subKey}]`,
+                    item[subKey],
+                    `${parentKey}${key}[${index}]`,
+                  );
+                });
+              } else {
+                formDataToSend.append(
+                  `${parentKey}${key}[${index}]`,
+                  item || "",
+                );
+              }
+            });
+          }
+        } else if (typeof value === "object" && value !== null) {
+          Object.keys(value).forEach((subKey) => {
+            appendNested(
+              `${key}[${subKey}]`,
+              value[subKey],
+              `${parentKey}${key}`,
+            );
           });
+        } else {
+          formDataToSend.append(
+            parentKey + key,
+            value === undefined || value === null ? "" : value,
+          );
         }
-      } else if (typeof value === "object" && value !== null) {
-        Object.keys(value).forEach((subKey) => {
-          appendNested(`${key}[${subKey}]`, value[subKey], `${parentKey}${key}`);
+      };
+
+      // Simple fields
+      formDataToSend.append("loginNumber", formData.loginNumber || "");
+      formDataToSend.append("loginEmail", formData.loginEmail || "");
+      formDataToSend.append(
+        "franchiseUnder",
+        sendFranhchisee?.franchiseName || "",
+      );
+      formDataToSend.append("password", formData.password || "");
+      formDataToSend.append("firstName", formData.firstName || "");
+      formDataToSend.append("midname", formData.midname || "");
+      formDataToSend.append("lastName", formData.lastName || "");
+      formDataToSend.append("gender", formData.gender?.toLowerCase() || "");
+      formDataToSend.append("dob", formData.dob || "");
+      formDataToSend.append("timeOfBirth", formData.timeOfBirth || "");
+      formDataToSend.append("placeOfBirth", formData.placeOfBirth || "");
+      formDataToSend.append("maritalStatus", formData.maritalStatus || "");
+      formDataToSend.append("height", formData.height?.toString() || "");
+      formDataToSend.append("occupation", formData.occupation || "");
+      formDataToSend.append(
+        "monthlyIncome",
+        formData.monthlyIncome?.toString() || "",
+      );
+      formDataToSend.append("motherTongue", formData.motherTongue || "");
+      formDataToSend.append("divyang", formData.divyang || "");
+      formDataToSend.append("nativeCity", formData.nativeCity || "");
+      formDataToSend.append("mothersName", formData.mothersName || "");
+      formDataToSend.append("fathersName", formData.fathersName || "");
+      formDataToSend.append("mamkul", formData.mamkul || "");
+      formDataToSend.append(
+        "parentsResidence",
+        formData.parentsResidence || "",
+      );
+      formDataToSend.append("parentsCity", formData.parentsCity || "");
+      formDataToSend.append("parentsContact", formData.parentsContact || "");
+      formDataToSend.append("whatsApp", formData.whatsApp || "");
+      formDataToSend.append("alternateNumber", formData.alternateNumber || "");
+      formDataToSend.append("brothersCount", formData.brothersCount || "");
+      formDataToSend.append("brothers", formData.brothers || "");
+      formDataToSend.append("sisters", formData.sisters || "");
+      formDataToSend.append(
+        "sistersExactCount",
+        formData.sistersExactCount || "",
+      );
+      formDataToSend.append("otherInfo", formData.otherInfo || "");
+      formDataToSend.append("nativeVillage", formData.nativeVillage || "");
+      formDataToSend.append("companyName", formData.companyName || "");
+      formDataToSend.append("designation", formData.designation || "");
+      formDataToSend.append("candidateNumber", formData.candidateNumber || "");
+      formDataToSend.append("candidateEmail", formData.candidateEmail || "");
+      formDataToSend.append("workLocation", formData.workLocation || "");
+      formDataToSend.append("isWorking", String(formData.isWorking ?? false));
+      formDataToSend.append("ageFrom", formData.ageFrom?.toString() || "");
+      formDataToSend.append("ageTo", formData.ageTo?.toString() || "");
+      formDataToSend.append(
+        "heightFrom",
+        formData.heightFrom?.toString() || "",
+      );
+      formDataToSend.append("heightTo", formData.heightTo?.toString() || "");
+      formDataToSend.append(
+        "expectedOccupation",
+        formData.expectedOccupation || "",
+      );
+      formDataToSend.append(
+        "expectedMonthlyIncome",
+        Number(formData.expectedIncome) || "",
+      );
+      formDataToSend.append("workAbroad", formData.workAbroad || "");
+      formDataToSend.append(
+        "expectedMaritalStatus",
+        formData.expectedMaritalStatus || "",
+      );
+      formDataToSend.append("divyangPrefer", formData.divyangPrefer || "");
+      formDataToSend.append("childAccepted", formData.childAccepted || "");
+      formDataToSend.append("sect", formData.sect || "");
+      formDataToSend.append("manglik", formData.manglik || "");
+      formDataToSend.append("foodPreference", formData.foodPreference || "");
+      formDataToSend.append("bloodGroup", formData.bloodGroup || "");
+      formDataToSend.append("specs", formData.specs || "");
+      formDataToSend.append("gotra", formData.gotra || "");
+      formDataToSend.append(
+        "caste",
+        formData.caste && typeof formData.caste === "object"
+          ? JSON.stringify(formData.caste)
+          : "",
+      );
+      // Education (array of strings)
+      if (Array.isArray(formData.education)) {
+        formData.education.forEach((edu, index) => {
+          formDataToSend.append(`education[${index}]`, edu.degree || "");
         });
       } else {
-        formDataToSend.append(parentKey + key, value === undefined || value === null ? "" : value);
+        formDataToSend.append("education", "");
       }
-    };
 
-    // Simple fields
-    formDataToSend.append("loginNumber", formData.loginNumber || "");
-    formDataToSend.append("loginEmail", formData.loginEmail || "");
-    formDataToSend.append("franchiseUnder", sendFranhchisee?.franchiseName || "");
-    formDataToSend.append("password", formData.password || "");
-    formDataToSend.append("firstName", formData.firstName || "");
-    formDataToSend.append("midname", formData.midname || "");
-    formDataToSend.append("lastName", formData.lastName || "");
-    formDataToSend.append("gender", formData.gender?.toLowerCase() || "");
-    formDataToSend.append("dob", formData.dob || "");
-    formDataToSend.append("timeOfBirth", formData.timeOfBirth || "");
-    formDataToSend.append("placeOfBirth", formData.placeOfBirth || "");
-    formDataToSend.append("maritalStatus", formData.maritalStatus || "");
-    formDataToSend.append("height", formData.height?.toString() || "");
-    formDataToSend.append("occupation", formData.occupation || "");
-    formDataToSend.append("monthlyIncome", formData.monthlyIncome?.toString() || "");
-    formDataToSend.append("motherTongue", formData.motherTongue || "");
-    formDataToSend.append("divyang", formData.divyang || "");
-    formDataToSend.append("nativeCity", formData.nativeCity || "");
-    formDataToSend.append("mothersName", formData.mothersName || "");
-    formDataToSend.append("fathersName", formData.fathersName || "");
-    formDataToSend.append("mamkul", formData.mamkul || "");
-    formDataToSend.append("parentsResidence", formData.parentsResidence || "");
-    formDataToSend.append("parentsCity", formData.parentsCity || "");
-    formDataToSend.append("parentsContact", formData.parentsContact || "");
-    formDataToSend.append("whatsApp", formData.whatsApp || "");
-    formDataToSend.append("alternateNumber", formData.alternateNumber || "");
-    formDataToSend.append("brothersCount", formData.brothersCount || "");
-    formDataToSend.append("brothers", formData.brothers || "");
-    formDataToSend.append("sisters", formData.sisters || "");
-    formDataToSend.append("sistersExactCount", formData.sistersExactCount || "");
-    formDataToSend.append("otherInfo", formData.otherInfo || "");
-    formDataToSend.append("nativeVillage", formData.nativeVillage || "");
-    formDataToSend.append("companyName", formData.companyName || "");
-    formDataToSend.append("designation", formData.designation || "");
-    formDataToSend.append("candidateNumber", formData.candidateNumber || "");
-    formDataToSend.append("candidateEmail", formData.candidateEmail || "");
-    formDataToSend.append("workLocation", formData.workLocation || "");
-    formDataToSend.append("isWorking", String(formData.isWorking ?? false));
-    formDataToSend.append("ageFrom", formData.ageFrom?.toString() || "");
-    formDataToSend.append("ageTo", formData.ageTo?.toString() || "");
-    formDataToSend.append("heightFrom", formData.heightFrom?.toString() || "");
-    formDataToSend.append("heightTo", formData.heightTo?.toString() || "");
-    formDataToSend.append("expectedOccupation", formData.expectedOccupation || "");
-    formDataToSend.append("expectedMonthlyIncome", Number(formData.expectedIncome)|| "");
-    formDataToSend.append("workAbroad", formData.workAbroad || "");
-    formDataToSend.append("expectedMaritalStatus", formData.expectedMaritalStatus || "");
-    formDataToSend.append("divyangPrefer", formData.divyangPrefer || "");
-    formDataToSend.append("childAccepted", formData.childAccepted || "");
-    formDataToSend.append("sect", formData.sect || "");
-    formDataToSend.append("manglik", formData.manglik || "");
-    formDataToSend.append("foodPreference", formData.foodPreference || "");
-    formDataToSend.append("bloodGroup", formData.bloodGroup || "");
-    formDataToSend.append("specs", formData.specs || "");
-    formDataToSend.append("gotra", formData.gotra || "");
-      formDataToSend.append(
-      "caste",
-      formData.caste && typeof formData.caste === "object"
-        ? JSON.stringify(formData.caste)
-        : ""
-    );
-    // Education (array of strings)
-    if (Array.isArray(formData.education)) {
-      formData.education.forEach((edu, index) => {
-        formDataToSend.append(`education[${index}]`, edu.degree || "");
-      });
-    } else {
-      formDataToSend.append("education", "");
-    }
-
-    // Expected Education (array of strings)
-    if (Array.isArray(formData.expectedEducation)) {
-      formData.expectedEducation.forEach((edu, index) => {
-        formDataToSend.append(`expectedEducation[${index}]`, edu.degree || "");
-      });
-    } else {
-      formDataToSend.append("expectedEducation", "");
-    }
-
-    // Nationality (array of strings)
-    if (Array.isArray(formData.nationality)) {
-      formData.nationality.forEach((nat, index) => {
-        formDataToSend.append(`nationality[${index}]`, nat || "");
-      });
-    } else {
-      formDataToSend.append("nationality", "");
-    }
-
-    // Expected Nationality (array of strings)
-    if (Array.isArray(formData.expectedNationality)) {
-      formData.expectedNationality.forEach((nat, index) => {
-        formDataToSend.append(`expectedNationality[${index}]`, nat || "");
-      });
-    } else {
-      formDataToSend.append("expectedNationality", "");
-    }
-
-    // Caste (object with religion, caste, subCaste)
-    
-
-    // Children (array of objects)
-    if (Array.isArray(formData.children)) {
-      formDataToSend.append("children", JSON.stringify(formData.children));
-    } else {
-      formDataToSend.append("children", "");
-    }
-
-    // Expected Religion (array of objects, JSON string)
-    formDataToSend.append(
-      "expectedReligion",
-      JSON.stringify(
-        religionPreferences?.length
-          ? religionPreferences.map((item) => ({
-              religion: item.religion || "ANY",
-              caste: item.caste || "ANY",
-              subCaste: item.subCaste || "ANY",
-            }))
-          : []
-      )
-    );
-
-    // Expected Native Location (array of objects, JSON string)
-    formDataToSend.append(
-      "expectedNativeLocation",
-      JSON.stringify(
-        nativeLocationPreferences?.length
-          ? nativeLocationPreferences.map((item) => ({
-              country: item.country || "ANY",
-              state: item.state || "ANY",
-              city: item.city || "ANY",
-            }))
-          : []
-      )
-    );
-
-    // Expected Working Location (array of objects, JSON string)
-    formDataToSend.append(
-      "expectedWorkingLocation",
-      JSON.stringify(
-        workingLocationPreferences?.length
-          ? workingLocationPreferences.map((item) => ({
-              country: item.country || "ANY",
-              state: item.state || "ANY",
-              city: item.city || "ANY",
-            }))
-          : []
-      )
-    );
-
-    // Files
-    const fileFields = ["profilePic", "userPhotoOne", "userPhotoTwo", "userPhotoThree", "userPhotoFour"];
-    fileFields.forEach((key) => {
-      if (formData[key] instanceof File) {
-        formDataToSend.append(key, formData[key]);
+      // Expected Education (array of strings)
+      if (Array.isArray(formData.expectedEducation)) {
+        formData.expectedEducation.forEach((edu, index) => {
+          formDataToSend.append(
+            `expectedEducation[${index}]`,
+            edu.degree || "",
+          );
+        });
       } else {
-        formDataToSend.append(key, "");
+        formDataToSend.append("expectedEducation", "");
       }
-    });
 
-    // Debugging FormData entries
-    console.log("FormData entries:");
-    for (let [key, value] of formDataToSend.entries()) {
-      console.log(`${key}: ${value}`);
+      // Nationality (array of strings)
+      if (Array.isArray(formData.nationality)) {
+        formData.nationality.forEach((nat, index) => {
+          formDataToSend.append(`nationality[${index}]`, nat || "");
+        });
+      } else {
+        formDataToSend.append("nationality", "");
+      }
+
+      // Expected Nationality (array of strings)
+      if (Array.isArray(formData.expectedNationality)) {
+        formData.expectedNationality.forEach((nat, index) => {
+          formDataToSend.append(`expectedNationality[${index}]`, nat || "");
+        });
+      } else {
+        formDataToSend.append("expectedNationality", "");
+      }
+
+      // Caste (object with religion, caste, subCaste)
+
+      // Children (array of objects)
+      if (Array.isArray(formData.children)) {
+        formDataToSend.append("children", JSON.stringify(formData.children));
+      } else {
+        formDataToSend.append("children", "");
+      }
+
+      // Expected Religion (array of objects, JSON string)
+      formDataToSend.append(
+        "expectedReligion",
+        JSON.stringify(
+          religionPreferences?.length
+            ? religionPreferences.map((item) => ({
+                religion: item.religion || "ANY",
+                caste: item.caste || "ANY",
+                subCaste: item.subCaste || "ANY",
+              }))
+            : [],
+        ),
+      );
+
+      // Expected Native Location (array of objects, JSON string)
+      formDataToSend.append(
+        "expectedNativeLocation",
+        JSON.stringify(
+          nativeLocationPreferences?.length
+            ? nativeLocationPreferences.map((item) => ({
+                country: item.country || "ANY",
+                state: item.state || "ANY",
+                city: item.city || "ANY",
+              }))
+            : [],
+        ),
+      );
+
+      // Expected Working Location (array of objects, JSON string)
+      formDataToSend.append(
+        "expectedWorkingLocation",
+        JSON.stringify(
+          workingLocationPreferences?.length
+            ? workingLocationPreferences.map((item) => ({
+                country: item.country || "ANY",
+                state: item.state || "ANY",
+                city: item.city || "ANY",
+              }))
+            : [],
+        ),
+      );
+
+      // Files
+      const fileFields = [
+        "profilePic",
+        "userPhotoOne",
+        "userPhotoTwo",
+        "userPhotoThree",
+        "userPhotoFour",
+      ];
+      fileFields.forEach((key) => {
+        if (formData[key] instanceof File) {
+          formDataToSend.append(key, formData[key]);
+        } else {
+          formDataToSend.append(key, "");
+        }
+      });
+
+      // Debugging FormData entries
+      console.log("FormData entries:");
+      for (let [key, value] of formDataToSend.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+
+      // Submit to backend
+      const response = await axios.post(
+        "http://localhost:8000/api/user/register",
+        formDataToSend,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+
+      // Handle success
+      if (response.data?.status || response.status === 200) {
+        toast.success(response.data.message || "User created successfully");
+        setIsSubmitted(true);
+        setBioDataDetails(response.data?.user);
+        setUser(response.data?.user);
+        setDisplay(true);
+        navigate(`/biodata/${response.data?.user._id}`);
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
-
-    // Submit to backend
-    const response = await axios.post("https://api.manomilan.com/api/user/register", formDataToSend, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    // Handle success
-    if (response.data?.status || response.status === 200) {
-      toast.success(response.data.message || "User created successfully");
-      setIsSubmitted(true);
-      setBioDataDetails(response.data?.user);
-      setUser(response.data?.user);
-      setDisplay(true);
-      navigate(`/biodata/${response.data?.user._id}`);
-    }
-  } catch (error) {
-    console.error("Form submission error:", error);
-    toast.error(error.response?.data?.message || "Something went wrong");
-  }
-};
-
+  };
 
   useEffect(() => {
     setValue("expectedEducation", partnerEducation);
@@ -1191,7 +1240,7 @@ const onSubmit = async (formData) => {
             <span className="font-medium text-gray-700">Date of Birth:</span>
             <span className="ml-2 text-gray-600">
               {formValues.dob
-                ? new Date(formValues.dob).toLocaleDateString()
+                ? new Date(formValues.dob).toLocaleDateString("en-GB")
                 : "Not selected"}
             </span>
           </div>
@@ -1230,7 +1279,7 @@ const onSubmit = async (formData) => {
     const limitedDate = new Date(
       today.getFullYear() - ageLimit,
       today.getMonth(),
-      today.getDate()
+      today.getDate(),
     );
     setMaxDate(limitedDate.toISOString().split("T")[0]);
   }, [gender]);
@@ -1452,21 +1501,21 @@ const onSubmit = async (formData) => {
                         isLoggedIn
                           ? "bg-green-100 text-green-700 cursor-not-allowed"
                           : isRegistered
-                          ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl"
-                          : "bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-xl"
+                            ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl"
+                            : "bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-xl"
                       }`}
                     >
                       {isLoggedIn
                         ? "✓ Logged In"
                         : isRegistered
-                        ? "Login"
-                        : "Submit"}
+                          ? "Login"
+                          : "Submit"}
                     </button>
                   </div>
                 </div>
 
                 <p className="text-sm text-red-600 font-medium mb-4">
-                  Use these credentials for login
+                  Use above credentials for login
                 </p>
                 <hr className="my-6" />
 
@@ -1785,7 +1834,7 @@ const onSubmit = async (formData) => {
 
                   <div>
                     <label className="block text-sm font-medium text-red-700 mb-2">
-                      Monthly Income *
+                      Monthly Income ( INR ) *
                     </label>
                     <Controller
                       name="monthlyIncome"
@@ -1802,7 +1851,7 @@ const onSubmit = async (formData) => {
                           {...field}
                           type="text"
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                          placeholder="Enter monthly income"
+                          placeholder="Enter Monthly Income"
                         />
                       )}
                     />
@@ -1853,7 +1902,7 @@ const onSubmit = async (formData) => {
                             casteOptions.find(
                               (opt) =>
                                 JSON.stringify(opt.value) ===
-                                JSON.stringify(field.value)
+                                JSON.stringify(field.value),
                             ) || null
                           }
                           onChange={(selectedOption) => {
@@ -2107,7 +2156,7 @@ const onSubmit = async (formData) => {
                           disabled={fieldsLocked}
                           options={cities}
                           value={casteOptions.find(
-                            (opt) => opt.value === field.value || null
+                            (opt) => opt.value === field.value || null,
                           )}
                           onChange={(selectedOption) => {
                             field.onChange(selectedOption.value);
@@ -2238,7 +2287,7 @@ const onSubmit = async (formData) => {
 
                   <div>
                     <label className="block text-sm font-medium text-red-700 mb-3">
-                      Number of Brothers *
+                      Number of Brother(s) *
                     </label>
                     <Controller
                       name="brothersCount"
@@ -2377,7 +2426,7 @@ const onSubmit = async (formData) => {
 
                   <div>
                     <label className="block text-sm font-medium text-red-700 mb-3">
-                      Number of Sister *
+                      Number of Sister(s) *
                     </label>
                     <Controller
                       name="sisters"
@@ -2551,7 +2600,7 @@ const onSubmit = async (formData) => {
                           {...field}
                           options={cities}
                           value={casteOptions.find(
-                            (opt) => opt.value === field.value || null
+                            (opt) => opt.value === field.value || null,
                           )}
                           onChange={(selectedOption) => {
                             field.onChange(selectedOption.value);
@@ -2636,7 +2685,7 @@ const onSubmit = async (formData) => {
                 <div>
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-xl font-bold text-gray-600">
-                      ( Maximum 5 fields )
+                      ( Maximum 5 )
                     </span>
                   </div>
 
@@ -2649,7 +2698,7 @@ const onSubmit = async (formData) => {
                               Category
                             </th>
                             <th className="px-4 py-3 text-left text-sm font-medium text-red-800">
-                              Degrees
+                              Degree
                             </th>
                           </tr>
                         </thead>
@@ -2665,7 +2714,7 @@ const onSubmit = async (formData) => {
                                     const isSelected = selectedEducation.some(
                                       (edu) =>
                                         edu.degree === degree &&
-                                        edu.category === category.name
+                                        edu.category === category.name,
                                     );
                                     const isDisabled =
                                       !isSelected &&
@@ -2678,7 +2727,7 @@ const onSubmit = async (formData) => {
                                         onClick={() =>
                                           handleDegreeToggle(
                                             degree,
-                                            category.name
+                                            category.name,
                                           )
                                         }
                                         disabled={isDisabled}
@@ -2686,8 +2735,8 @@ const onSubmit = async (formData) => {
                                           isSelected
                                             ? "bg-red-600 text-white hover:bg-red-700"
                                             : isDisabled
-                                            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                                            : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-300"
+                                              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                              : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-300"
                                         }`}
                                       >
                                         {degree}
@@ -2862,7 +2911,7 @@ const onSubmit = async (formData) => {
                           disabled={fieldsLocked}
                           options={cities}
                           value={cities.find(
-                            (opt) => opt.value === field.value || null
+                            (opt) => opt.value === field.value || null,
                           )}
                           onChange={(selectedOption) => {
                             field.onChange(selectedOption.value);
@@ -2945,12 +2994,12 @@ const onSubmit = async (formData) => {
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                         >
                           <option value="">From</option>
-                          {Array.from({ length: 21 }, (_, i) => i).map(
+                          {Array.from({ length: 31 }, (_, i) => i).map(
                             (age) => (
                               <option key={age} value={age}>
                                 {age}
                               </option>
-                            )
+                            ),
                           )}
                         </select>
                       )}
@@ -2974,7 +3023,7 @@ const onSubmit = async (formData) => {
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                         >
                           <option value="">To</option>
-                          {Array.from({ length: 21 }, (_, i) => i).map(
+                          {Array.from({ length: 31 }, (_, i) => i).map(
                             (age) => (
                               <option
                                 key={age}
@@ -2987,7 +3036,7 @@ const onSubmit = async (formData) => {
                               >
                                 {age}
                               </option>
-                            )
+                            ),
                           )}
                         </select>
                       )}
@@ -3269,48 +3318,115 @@ const onSubmit = async (formData) => {
                 {/* Marital Status */}
                 <div className="mt-6">
                   <label className="block text-sm font-medium text-red-700 mb-2">
-                    Marital Status
+                    Marital Status ( Multiple Choice )
                   </label>
                   <Controller
                     name="expectedMaritalStatus"
                     control={control}
-                    rules={{ required: "Marital status is required" }}
-                    render={({ field }) => (
-                      <div className="space-y-3 flex gap-4">
-                        {[
-                          { value: "Unmarried", label: "Unmarried" },
-                          { value: "divorced", label: "Divorced" },
-                          { value: "widowed", label: "Widowed" },
-                          {
-                            value: "divorce_in_progress",
-                            label: "Divorce in Progress",
-                          },
-                          { value: "any", label: "ANY" },
-                        ].map((option) => (
-                          <label
-                            key={option.value}
-                            className="flex items-center space-x-3 cursor-pointer"
-                          >
-                            <input
-                              type="radio"
-                              {...field}
-                              value={option.value}
-                              checked={field.value === option.value}
-                              onChange={(e) => {
-                                field.onChange(e);
-                                setShowChildAcceptance(
-                                  e.target.value !== "Unmarried"
-                                );
-                              }}
-                              className="w-4 h-4 accent-[#7d0a0a] text-red-500 border-gray-300 focus:ring-red-500 focus:ring-2"
-                            />
-                            <span className="text-gray-700">
-                              {option.label}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    )}
+                    defaultValue={[]}
+                    rules={{
+                      validate: (value) =>
+                        value.length > 0 || "Marital status is required",
+                    }}
+                    render={({ field }) => {
+                      const options = [
+                        { value: "Unmarried", label: "Unmarried" },
+                        { value: "divorced", label: "Divorced" },
+                        { value: "widowed", label: "Widowed" },
+                        {
+                          value: "divorce_in_progress",
+                          label: "Divorce in Progress",
+                        },
+                        { value: "any", label: "ANY" },
+                      ];
+
+                      const allOptionsExceptAny = options
+                        .filter((o) => o.value !== "any")
+                        .map((o) => o.value);
+
+                      return (
+                        <div className="space-y-3 flex gap-4 flex-wrap">
+                          {options.map((option) => {
+                            const isChecked = field.value?.includes(
+                              option.value,
+                            );
+
+                            return (
+                              <label
+                                key={option.value}
+                                className="flex items-center space-x-2 cursor-pointer"
+                              >
+                                <input
+                                  type="checkbox"
+                                  value={option.value}
+                                  checked={isChecked}
+                                  onChange={(e) => {
+                                    let updatedValues = [
+                                      ...(field.value || []),
+                                    ];
+
+                                    // ===== ANY CLICKED =====
+                                    if (option.value === "any") {
+                                      if (e.target.checked) {
+                                        updatedValues = [
+                                          "any",
+                                          ...allOptionsExceptAny,
+                                        ];
+                                      } else {
+                                        updatedValues = [];
+                                      }
+                                    } else {
+                                      // ===== NORMAL OPTIONS =====
+                                      if (e.target.checked) {
+                                        updatedValues.push(option.value);
+                                      } else {
+                                        updatedValues = updatedValues.filter(
+                                          (v) => v !== option.value,
+                                        );
+                                      }
+
+                                      // remove ANY if user manually changes selections
+                                      updatedValues = updatedValues.filter(
+                                        (v) => v !== "any",
+                                      );
+
+                                      // if all normal options selected -> auto check ANY
+                                      const selectedWithoutAny =
+                                        updatedValues.filter(
+                                          (v) => v !== "any",
+                                        );
+
+                                      const isAllSelected =
+                                        allOptionsExceptAny.every((v) =>
+                                          selectedWithoutAny.includes(v),
+                                        );
+
+                                      if (isAllSelected) {
+                                        updatedValues.push("any");
+                                      }
+                                    }
+
+                                    field.onChange(updatedValues);
+
+                                    // Child acceptance logic
+                                    const shouldShow = updatedValues.some(
+                                      (v) => v !== "Unmarried" && v !== "any",
+                                    );
+
+                                    setShowChildAcceptance(shouldShow);
+                                  }}
+                                  className="w-4 h-4 accent-[#7d0a0a] border-gray-300 focus:ring-red-500"
+                                />
+
+                                <span className="text-gray-700">
+                                  {option.label}
+                                </span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      );
+                    }}
                   />
                   {errors.expectedMaritalStatus && (
                     <p className="text-red-500 text-xs mt-1">
@@ -3377,7 +3493,7 @@ const onSubmit = async (formData) => {
                               Category
                             </th>
                             <th className="px-4 py-3 text-left text-sm font-medium text-red-800">
-                              Degrees
+                              Education
                             </th>
                           </tr>
                         </thead>
@@ -3387,7 +3503,7 @@ const onSubmit = async (formData) => {
                               key={category.name}
                               className={`hover:bg-red-25 ${
                                 category.name === "ANY" && isAnySelected
-                                  ? "bg-white border-l-4 border-purple-400 cursor-pointer"
+                                  ? "bg-white border-l-4 border-purple-400"
                                   : ""
                               }`}
                             >
@@ -3396,47 +3512,60 @@ const onSubmit = async (formData) => {
                                   category.name === "ANY" && isAnySelected
                                     ? "text-red-700 bg-white border-2 border-red-500"
                                     : category.name === "ANY"
-                                    ? "text-red-700 bg-white border border-red-200 hover:bg-red-50 cursor-pointer"
-                                    : "text-red-700 bg-red-25"
+                                      ? "text-red-700 border border-red-200 bg-gray-50"
+                                      : "text-red-700 bg-red-25"
                                 }`}
-                                onClick={() =>
-                                  partnerDegreeToggle(null, category.name)
-                                }
                               >
-                                {category.name === "ANY" && isAnySelected && (
-                                  <span className="mr-2">🌟</span>
-                                )}
-                                {category.name}
+                                {category.name === "ANY" ? " " : category.name}
                               </td>
                               <td className="px-4 py-3 align-top">
                                 <div className="flex flex-wrap gap-2">
-                                  {category.degrees.map((degree) => {
-                                    const isSelected = partnerEducation.some(
-                                      (edu) => edu.degree === degree
-                                    );
-                                    return (
-                                      <button
-                                        key={degree}
-                                        type="button"
-                                        onClick={() =>
-                                          partnerDegreeToggle(
-                                            degree,
-                                            category.name
-                                          )
-                                        }
-                                        className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
-                                          isSelected
-                                            ? "bg-red-600 text-white hover:bg-red-700"
-                                            : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-300"
-                                        }`}
-                                      >
-                                        {degree}
-                                        {isSelected && (
-                                          <span className="ml-1">✓</span>
-                                        )}
-                                      </button>
-                                    );
-                                  })}
+                                  {category.name === "ANY" ? (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        partnerDegreeToggle(null, category.name)
+                                      }
+                                      className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                                        isAnySelected
+                                          ? "bg-red-600 text-white hover:bg-red-700"
+                                          : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-300"
+                                      }`}
+                                    >
+                                      ANY
+                                      {isAnySelected && (
+                                        <span className="ml-1">✓</span>
+                                      )}
+                                    </button>
+                                  ) : (
+                                    category.degrees.map((degree) => {
+                                      const isSelected = partnerEducation.some(
+                                        (edu) => edu.degree === degree,
+                                      );
+                                      return (
+                                        <button
+                                          key={degree}
+                                          type="button"
+                                          onClick={() =>
+                                            partnerDegreeToggle(
+                                              degree,
+                                              category.name,
+                                            )
+                                          }
+                                          className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                                            isSelected
+                                              ? "bg-red-600 text-white hover:bg-red-700"
+                                              : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-300"
+                                          }`}
+                                        >
+                                          {degree}
+                                          {isSelected && (
+                                            <span className="ml-1">✓</span>
+                                          )}
+                                        </button>
+                                      );
+                                    })
+                                  )}
                                 </div>
                               </td>
                             </tr>
@@ -3457,9 +3586,9 @@ const onSubmit = async (formData) => {
                     dropdown1Label="Religion"
                     dropdown2Label="Caste"
                     dropdown3Label="Subcaste"
-                    api1Url="https://api.manomilan.com/api/user/get-religions"
-                    api2Url="https://api.manomilan.com/api/user/get-caste-by-religion"
-                    api3Url="https://api.manomilan.com/api/user/get-subcaste-by-caste"
+                    api1Url="http://localhost:8000/api/user/get-religions"
+                    api2Url="http://localhost:8000/api/user/get-caste-by-religion"
+                    api3Url="http://localhost:8000/api/user/get-subcaste-by-caste"
                     api1Key="religion"
                     api2Key="caste"
                     api3Key="subCaste"
@@ -3478,9 +3607,9 @@ const onSubmit = async (formData) => {
                     dropdown1Label="Country"
                     dropdown2Label="State"
                     dropdown3Label="City"
-                    api1Url="https://api.manomilan.com/api/user/get-all-countries"
-                    api2Url="https://api.manomilan.com/api/user/get-state-by-country"
-                    api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
+                    api1Url="http://localhost:8000/api/user/get-all-countries"
+                    api2Url="http://localhost:8000/api/user/get-state-by-country"
+                    api3Url="http://localhost:8000/api/user/get-cities-by-state"
                     api1Key="country"
                     api2Key="state"
                     api3Key="city"
@@ -3499,9 +3628,9 @@ const onSubmit = async (formData) => {
                     dropdown1Label="Country"
                     dropdown2Label="State"
                     dropdown3Label="City"
-                    api1Url="https://api.manomilan.com/api/user/get-all-countries"
-                    api2Url="https://api.manomilan.com/api/user/get-state-by-country"
-                    api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
+                    api1Url="http://localhost:8000/api/user/get-all-countries"
+                    api2Url="http://localhost:8000/api/user/get-state-by-country"
+                    api3Url="http://localhost:8000/api/user/get-cities-by-state"
                     api1Key="country"
                     api2Key="state"
                     api3Key="city"
@@ -3586,15 +3715,15 @@ const onSubmit = async (formData) => {
             <>
               <div className="space-y-6 p-4">
                 <h3 className="text-lg font-semibold text-[#7d0a0a] mb-4 flex items-center">
-                  Additional Information (Extra Photo Upload for Filling Below
-                  Info Correctly)
+                  Additional Information ( FREE Extra Photo Upload for Filling
+                  Below Info Correctly )
                 </h3>
 
                 <div className="space-y-8">
                   {/* Sect Section */}
                   <div>
                     <label className="block text-sm font-medium text-red-700 mb-3">
-                      Sect
+                      Sect ( Panth )
                     </label>
                     <Controller
                       name="sect"
@@ -3663,7 +3792,7 @@ const onSubmit = async (formData) => {
                   {/* Food Choices Section */}
                   <div>
                     <label className="block text-sm font-medium text-red-700 mb-3">
-                      Food Choices
+                      Food Preference
                     </label>
                     <Controller
                       name="foodPreference"
@@ -3723,17 +3852,18 @@ const onSubmit = async (formData) => {
 
                   <div className="w-1/3">
                     <label className="block text-sm font-medium text-red-700 mb-2">
-                      Other Information
+                      Other Information ( MAX 300 Characters )
                     </label>
                     <Controller
                       name="otherInfo"
                       control={control}
                       render={({ field }) => (
-                        <input
+                        <textarea
                           {...field}
                           type="text"
+                          maxLength={300}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                          placeholder="Enter Hobbies, Achivements"
+                          placeholder="Enter Hobbies, Achivements, etc. "
                         />
                       )}
                     />
@@ -3769,20 +3899,20 @@ const onSubmit = async (formData) => {
                               Photo selected: {value.name}
                             </p>
                           )}
-                          {!isStep4Complete() && (
+                          {/* {!isStep4Complete() && (
                             <p className="text-yellow-600 text-xs mt-1">
                               Please fill all above details before uploading
                               your photo.
                             </p>
-                          )}
+                          )} */}
                         </div>
                       )}
                     />
-                    <p>Photo shall be updated after franchise approval.</p>
+                    <p>Photo shall be updated after franchisee approval.</p>
                   </div>
 
                   <p className="border-2 border-red-500 w-1/2 p-4 font-bold">
-                    You Can Upload These Photos After Payment
+                    Upload Additional Photos After Paying Registration FEES
                   </p>
                   <div className="flex">
                     <div className="md:col-span-4">
@@ -3845,9 +3975,7 @@ const onSubmit = async (formData) => {
                             >
                               Upload Photo
                             </label>
-                            <p className="text-red-500 text-sm">
-                              Upload a clear, recent photo.
-                            </p>
+
                             {value && (
                               <>
                                 <p className="text-green-600 text-sm">
@@ -4161,7 +4289,7 @@ const onSubmit = async (formData) => {
                               const currentChildren =
                                 getValues("children") || [];
                               const newChildren = currentChildren.filter(
-                                (_, i) => i !== index
+                                (_, i) => i !== index,
                               );
 
                               // Add empty objects if needed to maintain the count
