@@ -609,7 +609,7 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
             brothers: u.brothers || "",
             sisters: u.sisters ? String(u.sisters) : "",
             sistersExactCount: u.sistersExactCount || "",
-            otherInfo: u.otherInfo || u.otherInformation || "",
+           
             nativeVillage: u.nativeVillage || "",
             nativeCity: u.nativeCity || "",
 

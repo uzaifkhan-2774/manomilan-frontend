@@ -53,9 +53,9 @@ const MatrimonialHomepage = () => {
         threshold: 0.5,      // 50% of the div should be visible
   });
 
-  const navigate=useNavigate()
+  const navigate = useNavigate()
 
-  const gotoMatch=()=>{
+  const gotoMatch =()=>{
     navigate('/match')
   }
   

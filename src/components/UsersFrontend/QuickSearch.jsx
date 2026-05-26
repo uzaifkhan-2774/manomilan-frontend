@@ -172,14 +172,55 @@ const QuickSearchCards = () => {
     setFormData((prev) => ({ ...prev, age: String(ageNum) }));
   };
 
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const isEmpty = Object.values(formData).some((v) => v === "");
     if (isEmpty) {
       toast.warn("All fields are mandatory!");
       return;
     }
-    navigate("/register-user");
+
+    try {
+      setLoading(true);
+      const res = await axios.post(
+        "http://localhost:8000/api/user/quick-search",
+        {
+          gender: formData.gender,
+          caste: formData.caste,
+          income: parseInt(formData.income),
+          age: parseInt(formData.age),
+          height: parseInt(formData.height),
+          Occupation: formData.Occupation,
+          education: partnerEducation, // [{ degree, category }] from education table
+        }
+      );
+
+      if (res.data.status) {
+        // Map API response fields to the shape the cards expect
+        const mapped = res.data.result.map((c) => ({
+          id: c._id,
+          name: c.name,
+          age: c.age,
+          religion: c.caste?.religion || "",
+          image: c.profilePic
+            ? `http://localhost:8000/upload/${c.profilePic}`
+            : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
+        }));
+        setFilteredCandidates(mapped);
+        if (mapped.length === 0) {
+          toast.info("No matches found. Try different filters.");
+        }
+      } else {
+        toast.error(res.data.message || "Search failed.");
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+      console.error("Quick search error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // education table (partner-style with ANY option)
@@ -601,9 +642,10 @@ const QuickSearchCards = () => {
           <div className="text-center mt-6">
             <button
               type="submit"
-              className="bg-red-900 text-white px-8 py-3 rounded-full font-semibold text-lg hover:bg-red-800 transition-all"
+              disabled={loading}
+              className="bg-red-900 text-white px-8 py-3 rounded-full font-semibold text-lg hover:bg-red-800 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Search
+              {loading ? "Searching..." : "Search"}
             </button>
           </div>
         </form>
