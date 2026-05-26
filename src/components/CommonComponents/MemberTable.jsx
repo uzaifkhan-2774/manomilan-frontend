@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 import EditMemberTable from "../AdminFrontend/EditMemberTable";
 
 const MemberTable = ({
-  data,
+  data = [],
   token,
   currFranchiseId,
   currentPage,
@@ -36,7 +36,8 @@ const MemberTable = ({
   const [singleUser, setSingleUser] = useState({});
   const [biodata, setBiodata] = useState(false);
   const [detailProfile, setDetailProfile] = useState(false);
-  const itemsPerPage = 5;
+  const effectivePageSize = pageSize || 5;
+  const effectiveCurrentPage = typeof currentPage === "number" ? currentPage : 0;
   const [updateProfile, setUpdateProfile] = useState(false);
   const [edit, setEdit] = useState(false);
   // Filter distributors based on search and status
@@ -142,11 +143,11 @@ const MemberTable = ({
   });
 
   // Pagination
-  const totalPages = Math.ceil(filteredDistributors.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
+  const totalPages = Math.ceil(filteredDistributors.length / effectivePageSize);
+  const startIndex = effectiveCurrentPage * effectivePageSize;
   const paginatedDistributors = filteredDistributors.slice(
     startIndex,
-    startIndex + itemsPerPage,
+    startIndex + effectivePageSize,
   );
   const [userId, setUserId] = useState(null);
 
@@ -172,9 +173,9 @@ const MemberTable = ({
     // Fetch single user details
     let endpoint;
     if (pathname.includes("/admin")) {
-      endpoint = `http://localhost:8000/api/admin/get-single-user/${id}`;
+      endpoint = `https://api.manomilan.com/api/admin/get-single-user/${id}`;
     } else {
-      endpoint = `http://localhost:8000/api/franchise/get-single-user/${id}`;
+      endpoint = `https://api.manomilan.com/api/franchise/get-single-user/${id}`;
     }
     try {
       const response = await axios.get(endpoint, {
@@ -194,7 +195,7 @@ const MemberTable = ({
   const updateProfilePic = async () => {
     try {
       const response = await axios.put(
-        "http://localhost:8000/api/admin/update-userpfp",
+        "https://api.manomilan.com/api/admin/update-userpfp",
         {
           userId: singleUser._id,
           userStatus: "Approved",
@@ -230,7 +231,7 @@ const MemberTable = ({
   const rejectProfilePic = async () => {
     try {
       const response = await axios.put(
-        "http://localhost:8000/api/admin/update-userpfp",
+        "https://api.manomilan.com/api/admin/update-userpfp",
         {
           userId: singleUser._id,
           userStatus: "Rejected",
@@ -255,7 +256,7 @@ const MemberTable = ({
     if (result) {
       try {
         const response = await axios.post(
-          "http://localhost:8000/api/franchise/inactivate-user",
+          "https://api.manomilan.com/api/franchise/inactivate-user",
           {
             userId: singleUser._id,
           },
@@ -310,7 +311,7 @@ const MemberTable = ({
     console.log(currFranchiseId);
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/franchise/get-packages/${currFranchiseId}`,
+        `https://api.manomilan.com/api/franchise/get-packages/${currFranchiseId}`,
       );
       console.log(response.data);
       if (response.data.status) {
@@ -324,9 +325,9 @@ const MemberTable = ({
   const allotPackageToUser = async (data) => {
     let endpoint;
     if (data.vipPackage === undefined) {
-      endpoint = "http://localhost:8000/api/franchise/allot-main-addOnpackage";
+      endpoint = "https://api.manomilan.com/api/franchise/allot-main-addOnpackage";
     } else {
-      endpoint = "http://localhost:8000/api/franchise/allot-vip-package";
+      endpoint = "https://api.manomilan.com/api/franchise/allot-vip-package";
     }
 
     const payload = {
@@ -361,7 +362,7 @@ const MemberTable = ({
   const getAllotedPackages = async (data) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/user/get-packages/${data}`,
+        `https://api.manomilan.com/api/user/get-packages/${data}`,
       );
       console.log(response.data);
       if (response.data?.status && response.data?.userPackages) {
@@ -621,9 +622,9 @@ const MemberTable = ({
               <div className="bg-white px-6 py-4 border-t border-gray-200">
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-gray-700">
-                    Showing {startIndex + 1} to{" "}
+                    Showing {filteredDistributors.length === 0 ? 0 : startIndex + 1} to{" "}
                     {Math.min(
-                      startIndex + itemsPerPage,
+                      startIndex + effectivePageSize,
                       filteredDistributors.length,
                     )}{" "}
                     of {filteredDistributors.length} results
@@ -631,18 +632,18 @@ const MemberTable = ({
                   {/* Pagination Controls */}
                   <div className="mt-4 flex justify-center gap-2">
                     <button
-                      disabled={currentPage === 0}
-                      onClick={() => onPageChange(currentPage - 1)}
+                      disabled={effectiveCurrentPage === 0}
+                      onClick={() => onPageChange?.(effectiveCurrentPage - 1)}
                       className="px-3 py-1 border rounded disabled:opacity-50"
                     >
                       Prev
                     </button>
                     <span className="px-3 py-1">
-                      {currentPage + 1} / {totalPages}
+                      {effectiveCurrentPage + 1} / {totalPages || 1}
                     </span>
                     <button
-                      disabled={currentPage >= totalPages - 1}
-                      onClick={() => onPageChange(currentPage + 1)}
+                      disabled={effectiveCurrentPage >= totalPages - 1}
+                      onClick={() => onPageChange?.(effectiveCurrentPage + 1)}
                       className="px-3 py-1 border rounded disabled:opacity-50"
                     >
                       Next
@@ -691,7 +692,7 @@ const MemberTable = ({
                   <img
                     src={
                       singleUser.userPhotoStatus === "Approved"
-                        ? `http://localhost:8000/upload/${singleUser.profilePic}${updatePic ? `?t=${updatePic}` : ""}`
+                        ? `https://api.manomilan.com/upload/${singleUser.profilePic}${updatePic ? `?t=${updatePic}` : ""}`
                         : "https://imgs.search.brave.com/rwE-hC6ESt3hBJZhImPkb-KvU26bLDKVe-OKv1y50-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzE0LzQz/LzU1LzE0NDM1NWQ3/YjM2YzVmNjQ2NDM1/NDIzNzk4MjgxY2U5/LmpwZw"
                     }
                     alt="Profile"
@@ -856,7 +857,7 @@ const MemberTable = ({
               <div className="w-full  h-1/2 md:w-1/2 md:h-1/2 bg-white rounded-md shadow-md flex flex-col gap-3 justify-center items-center">
                 <div className="w-[250px] h-[250px] bg-red-300 rounded-md">
                   <img
-                    src={`http://localhost:8000/upload/${
+                    src={`https://api.manomilan.com/upload/${
                       singleUser.profilePic || singleUser.userPhotoOne || ""
                     }`}
                     alt=""

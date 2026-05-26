@@ -28,7 +28,7 @@ const ReligionManagementPanel = () => {
   const viewReligion = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-religion"
+        "https://api.manomilan.com/api/admin/get-religion"
       );
       setReligionView(response.data.result || []);
     } catch (error) {
@@ -39,7 +39,7 @@ const ReligionManagementPanel = () => {
   const viewCaste = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-all-castes"
+        "https://api.manomilan.com/api/admin/get-all-castes"
       );
       setCasteView(response.data.result || []);
     } catch (error) {
@@ -50,7 +50,7 @@ const ReligionManagementPanel = () => {
   const viewSubcaste = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-all-subcastes"
+        "https://api.manomilan.com/api/admin/get-all-subcastes"
       );
       console.log(response.data.result);
       setSubcasteView(response.data.result || []);
@@ -75,7 +75,7 @@ const ReligionManagementPanel = () => {
 
       try {
         const response = await axios.post(
-          "http://localhost:8000/api/admin/add-religion",
+          "https://api.manomilan.com/api/admin/add-religion",
           mappedData
         );
         if (response.data.status) {
@@ -94,7 +94,7 @@ const ReligionManagementPanel = () => {
   const deleteReligion = async (religion) => {
     try {
       const response = await axios.delete(
-        "http://localhost:8000/api/admin/delete-religion",
+        "https://api.manomilan.com/api/admin/delete-religion",
         { data: { religion } }
       );
       alert(response.data.message);
@@ -118,7 +118,7 @@ const ReligionManagementPanel = () => {
 
       try {
         const response = await axios.post(
-          "http://localhost:8000/api/admin/add-caste",
+          "https://api.manomilan.com/api/admin/add-caste",
           mappedData
         );
         if (response.status === 200) {
@@ -140,7 +140,7 @@ const ReligionManagementPanel = () => {
     try {
       // Add your delete API call here
       const response = await axios.delete(
-        "http://localhost:8000/api/admin/delete-caste",
+        "https://api.manomilan.com/api/admin/delete-caste",
         { data: { religion, caste } }
       );
       alert(response.data.message);
@@ -171,7 +171,7 @@ const ReligionManagementPanel = () => {
       console.log(mappedData);
       try {
         const response = await axios.post(
-          "http://localhost:8000/api/admin/add-subcaste",
+          "https://api.manomilan.com/api/admin/add-subcaste",
           mappedData
         );
         console.log(response.data);
@@ -191,7 +191,7 @@ const ReligionManagementPanel = () => {
     try {
       // Add your delete API call here
       const response = await axios.delete(
-        "http://localhost:8000/api/admin/delete-subcaste",
+        "https://api.manomilan.com/api/admin/delete-subcaste",
         { data: { religion, subcaste, caste } }
       );
       alert(response.data.message);
@@ -276,7 +276,7 @@ const ReligionManagementPanel = () => {
             <div className="border border-gray-200 rounded-lg p-6">
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-xl font-semibold text-gray-800">
-                  Religions
+                  Religion
                 </h2>
               </div>
 
@@ -313,7 +313,7 @@ const ReligionManagementPanel = () => {
               {showReligionView && (
                 <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                   <h3 className="font-medium text-gray-800 mb-3">
-                    Religions List ({religionView.length})
+                    Religion List ({religionView.length})
                   </h3>
                   {religionView.length === 0 ? (
                     <p className="text-gray-500 italic">
@@ -350,7 +350,7 @@ const ReligionManagementPanel = () => {
             {/* Castes Section */}
             <div className="border border-gray-200 rounded-lg p-6">
               <div className="flex items-center gap-3 mb-4">
-                <h2 className="text-xl font-semibold text-gray-800">Castes</h2>
+                <h2 className="text-xl font-semibold text-gray-800">Caste</h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -409,7 +409,7 @@ const ReligionManagementPanel = () => {
               {showCasteView && (
                 <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                   <h3 className="font-medium text-gray-800 mb-3">
-                    Castes List ({casteView.length})
+                    Caste List ({casteView.length})
                   </h3>
                   {casteView.length === 0 ? (
                     <p className="text-gray-500 italic">No castes added yet</p>
@@ -447,7 +447,7 @@ const ReligionManagementPanel = () => {
             <div className="border border-gray-200 rounded-lg p-6">
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-xl font-semibold text-gray-800">
-                  Subcastes
+                  Subcaste
                 </h2>
               </div>
 
@@ -534,11 +534,11 @@ const ReligionManagementPanel = () => {
               {showSubcasteView && (
                 <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                   <h3 className="font-medium text-gray-800 mb-3">
-                    Subcastes List ({subcasteView.length})
+                    Subcaste List ({subcasteView.length})
                   </h3>
                   {subcasteView.length === 0 ? (
                     <p className="text-gray-500 italic">
-                      No subcastes added yet
+                      No subcaste added yet
                     </p>
                   ) : (
                     <div className="space-y-2">

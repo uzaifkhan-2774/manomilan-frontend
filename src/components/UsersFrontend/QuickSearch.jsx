@@ -116,7 +116,7 @@ const QuickSearchCards = () => {
   const findCaste = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:8000/api/user/get-all-subcaste"
+        "https://api.manomilan.com/api/user/get-all-subcaste"
       );
       console.log(res.data.result);
       setCaste(res?.data?.result);
@@ -175,49 +175,85 @@ const QuickSearchCards = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const isEmpty = Object.values(formData).some((v) => v === "");
-    if (isEmpty) {
-      toast.warn("All fields are mandatory!");
-      return;
+    const payload={
+     gender: formData.gender,
+        caste: formData.caste,
+        income: parseInt(formData.income, 10),
+        age: parseInt(formData.age, 10),
+        height: parseInt(formData.height, 10),
+        Occupation: formData.Occupation,
+        education: partnerEducation, 
     }
+    console.log(payload)
+    e.preventDefault();
+    // const isEmpty = Object.values(formData).some((v) => v === "");
+    // console.log(isEmpty)
+    // if (isEmpty) {
+    //   toast.warn("All fields are mandatory!");
+    //   return;
+    // }
 
+    setLoading(true);
     try {
-      setLoading(true);
-      const res = await axios.post(
-        "http://localhost:8000/api/user/quick-search",
-        {
-          gender: formData.gender,
-          caste: formData.caste,
-          income: parseInt(formData.income),
-          age: parseInt(formData.age),
-          height: parseInt(formData.height),
-          Occupation: formData.Occupation,
-          education: partnerEducation, // [{ degree, category }] from education table
-        }
-      );
+      const res = await axios.post("https://api.manomilan.com/api/user/quick-search", {
+        gender: formData.gender,
+        caste: formData.caste,
+        income: parseInt(formData.income, 10),
+        age: parseInt(formData.age, 10),
+        height: parseInt(formData.height, 10),
+        Occupation: formData.Occupation,
+        education: partnerEducation,
+      });
 
-      if (res.data.status) {
-        // Map API response fields to the shape the cards expect
-        const mapped = res.data.result.map((c) => ({
+      if (res.data?.status) {
+        const mapped = (res.data.result || []).map((c) => ({
           id: c._id,
-          name: c.name,
-          age: c.age,
-          religion: c.caste?.religion || "",
+          name:
+            c.name ||
+            [c.firstName, c.midname, c.lastName].filter(Boolean).join(" ") ||
+            "Unknown",
+          age:
+            c.age ||
+            (c.dob ? new Date().getFullYear() - new Date(c.dob).getFullYear() : "N/A"),
+          religion: c.caste?.religion || c.caste?.caste || "",
           image: c.profilePic
-            ? `http://localhost:8000/upload/${c.profilePic}`
+            ? `https://api.manomilan.com/upload/${c.profilePic}`
             : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
+          occupation: c.occupation || "Not listed",
+          city: c.city || c.nativeCity?.city || "",
+          state: c.state || c.nativeCity?.state || "",
+          monthlyIncome:
+            typeof c.monthlyIncome === "number"
+              ? c.monthlyIncome
+              : c.monthlyIncome
+              ? parseInt(c.monthlyIncome, 10)
+              : null,
+          education: Array.isArray(c.education)
+            ? c.education
+                .map((edu) => (typeof edu === "string" ? edu : edu?.degree))
+                .filter(Boolean)
+                .join(", ")
+            : c.education || "",
+          caste:
+            c.caste && typeof c.caste === "object"
+              ? [c.caste.subCaste, c.caste.caste, c.caste.religion]
+                  .filter(Boolean)
+                  .join(", ")
+              : typeof c.caste === "string"
+              ? c.caste
+              : "",
         }));
+
         setFilteredCandidates(mapped);
         if (mapped.length === 0) {
           toast.info("No matches found. Try different filters.");
         }
       } else {
-        toast.error(res.data.message || "Search failed.");
+        toast.error(res.data?.message || "Search failed.");
       }
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
       console.error("Quick search error:", error);
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -292,7 +328,7 @@ const QuickSearchCards = () => {
   const fetchStreams = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-streams"
+        "https://api.manomilan.com/api/admin/get-streams"
       );
       if (response.data.status) {
         setStreams(response.data.data);
@@ -310,7 +346,7 @@ const QuickSearchCards = () => {
     for (const stream of streamsArr) {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/admin/get-degrees-by-stream",
+          "https://api.manomilan.com/api/admin/get-degrees-by-stream",
           { params: { stream: stream.stream } }
         );
         if (response.data.status) {
@@ -686,8 +722,34 @@ const QuickSearchCards = () => {
                     <Calendar className="w-3 h-3 text-red-600 mr-2" />
                     <span>{candidate.age} years</span>
                   </div>
-                  
-                  
+                  <div className="flex items-center text-gray-600">
+                    <Briefcase className="w-3 h-3 text-red-600 mr-2" />
+                    <span>{candidate.occupation}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <MapPin className="w-3 h-3 text-red-600 mr-2" />
+                    <span>
+                      {candidate.city || candidate.state
+                        ? `${candidate.city || ""}${
+                            candidate.city && candidate.state ? ", " : ""
+                          }${candidate.state || ""}`
+                        : "Location not listed"}
+                    </span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <GraduationCap className="w-3 h-3 text-red-600 mr-2" />
+                    <span>
+                      {candidate.education || "Education not listed"}
+                    </span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <span className="font-semibold">Income:</span>
+                    <span className="ml-1">
+                      {candidate.monthlyIncome
+                        ? `₹ ${candidate.monthlyIncome.toLocaleString()}`
+                        : "Not listed"}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex space-x-2 mt-4">

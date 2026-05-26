@@ -27,7 +27,6 @@ import ForgotPassword from "./components/UsersFrontend/ForgotPassword";
 import ForgotAdminPass from "./components/AdminFrontend/ForgotAdminPass";
 import ForgotDistPass from "./components/DistributorFrontend/ForgotDistPass";
 import ForgotFranchisePass from "./components/FranchiseFrontend/ForgotFranchisePass";
-import PageNotFound from "./components/CommonPages/PageNotFound";
 
 const sampleBioData = {
   firstName: "Alkesh",
@@ -98,7 +97,6 @@ const App = () => {
     <Router>
       <Routes>
         {/* user pages */}
-        {/* <Route path="/" element ={<PageNotFound/>}></Route> */}
         <Route path="/" element={<ManomilanLogin />}></Route>
         <Route path="/franchise-finder" element={<FranchiseFinder />}></Route>
         <Route path="/quick-search" element={<QuickSearchCards />}></Route>
@@ -106,7 +104,6 @@ const App = () => {
         <Route path="/franchise/login" element={<ManomilanLogin />}></Route>
         <Route path="/distributor/login" element={<ManomilanLogin />}></Route>
         <Route path="/admin/login" element={<ManomilanLogin />}></Route>
-
         {/* protected routes */}
         <Route
           path="/profile"

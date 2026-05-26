@@ -305,7 +305,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
     const fetchStreams = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/user/get-all-stream",
+          "https://api.manomilan.com/api/user/get-all-stream",
         );
         if (response.data.status) {
           setStreams(response.data.data);
@@ -327,7 +327,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
     for (const stream of streams) {
       try {
         const response = await axios.post(
-          "http://localhost:8000/api/user/get-degree-by-stream",
+          "https://api.manomilan.com/api/user/get-degree-by-stream",
           null,
           {
             params: { stream: stream.stream },
@@ -601,7 +601,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const fetchDegree = async (degree) => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/user/get-degree-by-stream",
+        "https://api.manomilan.com/api/user/get-degree-by-stream",
       );
       if (response.data.status === true) {
         // console.log(response.data);
@@ -615,7 +615,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const fetchStreams = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/get-all-stream",
+        "https://api.manomilan.com/api/user/get-all-stream",
       );
       if (response.data.status === true) {
         const dataToSave = await Promise.all(
@@ -637,7 +637,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const fetchNationalities = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/get-all-countries",
+        "https://api.manomilan.com/api/user/get-all-countries",
       );
       if (response.data.status === true) {
         setNationalities(response.data.result || []);
@@ -652,7 +652,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const fetchCities = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/get-all-cities",
+        "https://api.manomilan.com/api/user/get-all-cities",
       );
       if (response.data.status === true) {
         const transformed = response.data.allLocations.map((item) => ({
@@ -675,7 +675,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const fetchCaste = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/get-all-subcaste",
+        "https://api.manomilan.com/api/user/get-all-subcaste",
       );
 
       if (response.data?.result?.length > 0) {
@@ -692,7 +692,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const fetchMotherTongue = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-mother-tongue",
+        "https://api.manomilan.com/api/admin/get-mother-tongue",
       );
       if (response.data.status === true) {
         setMotherTongue(response.data.result);
@@ -705,7 +705,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const getSect = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/get-sect",
+        "https://api.manomilan.com/api/user/get-sect",
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -723,7 +723,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const getManglik = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/get-manglik",
+        "https://api.manomilan.com/api/user/get-manglik",
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -741,7 +741,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
   const getFoodPref = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/food-choices",
+        "https://api.manomilan.com/api/user/food-choices",
       );
       if (response.data.status === false) {
         const fetched = response.data.result.map((item) => ({
@@ -793,7 +793,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
         };
 
         const response = await axios.post(
-          "http://localhost:8000/api/user/register",
+          "https://api.manomilan.com/api/user/register",
           payload,
         );
         if (response.data?.status === true) {
@@ -1184,7 +1184,7 @@ const MultiStepForm = ({ sendFranhchisee }) => {
 
       // Submit to backend
       const response = await axios.post(
-        "http://localhost:8000/api/user/register",
+        "https://api.manomilan.com/api/user/register",
         formDataToSend,
         {
           headers: {
@@ -3586,9 +3586,9 @@ const MultiStepForm = ({ sendFranhchisee }) => {
                     dropdown1Label="Religion"
                     dropdown2Label="Caste"
                     dropdown3Label="Subcaste"
-                    api1Url="http://localhost:8000/api/user/get-religions"
-                    api2Url="http://localhost:8000/api/user/get-caste-by-religion"
-                    api3Url="http://localhost:8000/api/user/get-subcaste-by-caste"
+                    api1Url="https://api.manomilan.com/api/user/get-religions"
+                    api2Url="https://api.manomilan.com/api/user/get-caste-by-religion"
+                    api3Url="https://api.manomilan.com/api/user/get-subcaste-by-caste"
                     api1Key="religion"
                     api2Key="caste"
                     api3Key="subCaste"
@@ -3607,9 +3607,9 @@ const MultiStepForm = ({ sendFranhchisee }) => {
                     dropdown1Label="Country"
                     dropdown2Label="State"
                     dropdown3Label="City"
-                    api1Url="http://localhost:8000/api/user/get-all-countries"
-                    api2Url="http://localhost:8000/api/user/get-state-by-country"
-                    api3Url="http://localhost:8000/api/user/get-cities-by-state"
+                    api1Url="https://api.manomilan.com/api/user/get-all-countries"
+                    api2Url="https://api.manomilan.com/api/user/get-state-by-country"
+                    api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
                     api1Key="country"
                     api2Key="state"
                     api3Key="city"
@@ -3628,9 +3628,9 @@ const MultiStepForm = ({ sendFranhchisee }) => {
                     dropdown1Label="Country"
                     dropdown2Label="State"
                     dropdown3Label="City"
-                    api1Url="http://localhost:8000/api/user/get-all-countries"
-                    api2Url="http://localhost:8000/api/user/get-state-by-country"
-                    api3Url="http://localhost:8000/api/user/get-cities-by-state"
+                    api1Url="https://api.manomilan.com/api/user/get-all-countries"
+                    api2Url="https://api.manomilan.com/api/user/get-state-by-country"
+                    api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
                     api1Key="country"
                     api2Key="state"
                     api3Key="city"

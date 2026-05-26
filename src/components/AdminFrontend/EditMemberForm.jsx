@@ -33,14 +33,14 @@ const EditMemberForm = ({ userId, token }) => {
           manglikRes,
           foodRes
         ] = await Promise.all([
-          axios.get(`http://localhost:8000/api/admin/get-single-user/${userId}`, {
+          axios.get(`https://api.manomilan.com/api/admin/get-single-user/${userId}`, {
             headers: { Authorization: `Bearer ${token}` }
           }),
-          axios.get("http://localhost:8000/api/user/get-all-stream"),
-          axios.get("http://localhost:8000/api/admin/get-mother-tongue"),
-          axios.get("http://localhost:8000/api/user/get-sect"),
-          axios.get("http://localhost:8000/api/user/get-manglik"),
-          axios.get("http://localhost:8000/api/user/food-choices")
+          axios.get("https://api.manomilan.com/api/user/get-all-stream"),
+          axios.get("https://api.manomilan.com/api/admin/get-mother-tongue"),
+          axios.get("https://api.manomilan.com/api/user/get-sect"),
+          axios.get("https://api.manomilan.com/api/user/get-manglik"),
+          axios.get("https://api.manomilan.com/api/user/food-choices")
         ]);
 
         // Set user data to form
@@ -94,7 +94,7 @@ const EditMemberForm = ({ userId, token }) => {
   const onSubmit = async (data) => {
     try {
       const response = await axios.put(
-        `http://localhost:8000/api/admin/update-user/${userId}`,
+        `https://api.manomilan.com/api/admin/update-user/${userId}`,
         data,
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -167,9 +167,9 @@ const EditMemberForm = ({ userId, token }) => {
           dropdown1Label="Religion"
           dropdown2Label="Caste"
           dropdown3Label="Subcaste"
-          api1Url="http://localhost:8000/api/user/get-religions"
-          api2Url="http://localhost:8000/api/user/get-caste-by-religion"
-          api3Url="http://localhost:8000/api/user/get-subcaste-by-caste"
+          api1Url="https://api.manomilan.com/api/user/get-religions"
+          api2Url="https://api.manomilan.com/api/user/get-caste-by-religion"
+          api3Url="https://api.manomilan.com/api/user/get-subcaste-by-caste"
           initialPreferences={religionPreferences}
           onPreferencesChange={(prefs) => setValue("religionFields", prefs)}
         />

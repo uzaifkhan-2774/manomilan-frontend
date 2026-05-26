@@ -14,6 +14,7 @@ const FranchiseDetails = ({ setEdit,userId }) => {
       vipReg:'',
       reference:"",
       ReferenceMobile:"",
+      familyDetails:"",
       photo1:null,
       photo2:null
     }
@@ -29,9 +30,9 @@ const FranchiseDetails = ({ setEdit,userId }) => {
   const fetchOptions = async () => {
     try {
       const [complexionRes, bodyTypeRes, familyBgRes] = await Promise.all([
-        axios.get("http://localhost:8000/api/user/get-complexion"),
-        axios.get("http://localhost:8000/api/user/get-bodytype"),
-        axios.get("http://localhost:8000/api/user/get-familybg")
+        axios.get("https://api.manomilan.com/api/user/get-complexion"),
+        axios.get("https://api.manomilan.com/api/user/get-bodytype"),
+        axios.get("https://api.manomilan.com/api/user/get-familybg")
       ]);
 
       if (complexionRes.data.status) {
@@ -69,9 +70,10 @@ const FranchiseDetails = ({ setEdit,userId }) => {
     formData.append("ReferenceMobile",data.ReferenceMobile)
     formData.append("userPhotoFive",data.photo1[0])
     formData.append("userPhotoSix",data.photo2[0])
+    formData.append("familyData",data.familyData)
     console.log("Form Data:", data);
     try {
-      const response = await axios.put("http://localhost:8000/api/franchise/update-user-profile",formData)
+      const response = await axios.put("https://api.manomilan.com/api/franchise/update-user-profile",formData)
       console.log(response.data)
     } catch (error) {
       console.log(error)
@@ -138,11 +140,20 @@ const FranchiseDetails = ({ setEdit,userId }) => {
             className="border border-gray-300 focus:border-red-500 focus:ring-red-500 p-3 rounded-xl w-full md:w-1/3 shadow-sm"
           />
         </div>
+        <div className="mb-6">
+          <label className="block text-gray-700 font-medium mb-2">Family Details</label>
+          <input
+            type="text"
+            {...register("familyData")}
+            placeholder="Family Details"
+            className="border border-gray-300 focus:border-red-500 focus:ring-red-500 p-3 rounded-xl w-full md:w-1/3 shadow-sm"
+          />
+        </div>
 
         <label className="block text-gray-700 font-medium mb-2">Upload Photo</label>
         <div className="mb-6 w-1/2 flex gap-4">
-          <input type="file" {...register("photo1")} accept="image/*" className="file-input" />
-          <input type="file" {...register("photo2")} accept="image/*" className="file-input" />
+          <input type="file" {...register("photo1")} accept="image/*" className="file-input border p-2 box-border rounded-xl" />
+          <input type="file" {...register("photo2")} accept="image/*" className="file-input border p-2 box-border rounded-xl" />
         </div>
 
         <div className="flex justify-end pt-8">

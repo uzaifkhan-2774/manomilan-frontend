@@ -28,7 +28,7 @@ const CountrySettings = () => {
     // Fetch functions
     const viewCountries = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/admin/get-country')
+            const response = await axios.get('https://api.manomilan.com/api/admin/get-country')
             setCountriesView(response.data.result || [])
         } catch (error) {
             console.error('Error fetching countries:', error)
@@ -37,7 +37,7 @@ const CountrySettings = () => {
 
     const viewStates = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/admin/get-all-states')
+            const response = await axios.get('https://api.manomilan.com/api/admin/get-all-states')
             setstatesView(response.data.allStates || [])
         } catch (error) {
             console.error('Error fetching states:', error)
@@ -46,7 +46,7 @@ const CountrySettings = () => {
 
     const viewCity = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/admin/get-all-cities')
+            const response = await axios.get('https://api.manomilan.com/api/admin/get-all-cities')
             setCityView(response.data.allLocations || [])
         } catch (error) {
             console.error('Error fetching cities:', error)
@@ -67,7 +67,7 @@ const CountrySettings = () => {
                     country: newCountry.name
                 }
                 console.log(mappedData)
-                const response = await axios.post('http://localhost:8000/api/admin/add-country', mappedData)
+                const response = await axios.post('https://api.manomilan.com/api/admin/add-country', mappedData)
                 if (response.status === 200) {
                     setCountryInput('');
                     toast.success("Country added successfully!")
@@ -84,7 +84,7 @@ const CountrySettings = () => {
 
     const DeleteCountry = async (country) => {
         try {
-            const response = await axios.delete('http://localhost:8000/api/admin/delete-country', { data: { country } })
+            const response = await axios.delete('https://api.manomilan.com/api/admin/delete-country', { data: { country } })
             // Refresh the view immediately after successful deletion
             await viewCountries()
         } catch (error) {
@@ -109,7 +109,7 @@ const CountrySettings = () => {
                     state: newState.name,
                     country: selectedCountryForState
                 }
-                const response = await axios.post('http://localhost:8000/api/admin/add-state-country', mappedData)
+                const response = await axios.post('https://api.manomilan.com/api/admin/add-state-country', mappedData)
                 if (response.data.status === true) {
                     setStateInput('');
                     toast.success("State added successfully")
@@ -127,7 +127,7 @@ const CountrySettings = () => {
 
     const handleDelete = async (state, country) => {
         try {
-            const response = await axios.delete('http://localhost:8000/api/admin/delete-state-country', { data: { state, country } })
+            const response = await axios.delete('https://api.manomilan.com/api/admin/delete-state-country', { data: { state, country } })
             if (response.status === 200) {
                 alert(response.data.message)
                 // Refresh both states and countries view after deletion
@@ -161,7 +161,7 @@ const CountrySettings = () => {
             }
             
             try {
-                const response = await axios.post('http://localhost:8000/api/admin/add-state-city', mappedData)
+                const response = await axios.post('https://api.manomilan.com/api/admin/add-state-city', mappedData)
                 if (response.data.status) {
                     setSelectedStateForCity('');
                     toast.success("New city added")
@@ -178,7 +178,7 @@ const CountrySettings = () => {
 
     const deleteCity= async (city,state,country)=>{
         try {
-            const response = await axios.delete('http://localhost:8000/api/admin/delete-city', { data: { state, country,city } })
+            const response = await axios.delete('https://api.manomilan.com/api/admin/delete-city', { data: { state, country,city } })
             alert(response.data.message)
             await viewCountries()
             await viewStates()

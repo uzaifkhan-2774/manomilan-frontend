@@ -460,14 +460,14 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
           manglikRes,
           foodRes,
         ] = await Promise.all([
-          axios.get("http://localhost:8000/api/user/get-all-stream"),
-          axios.get("http://localhost:8000/api/user/get-all-countries"),
-          axios.get("http://localhost:8000/api/user/get-all-cities"),
-          axios.get("http://localhost:8000/api/user/get-all-subcaste"),
-          axios.get("http://localhost:8000/api/admin/get-mother-tongue"),
-          axios.get("http://localhost:8000/api/user/get-sect"),
-          axios.get("http://localhost:8000/api/user/get-manglik"),
-          axios.get("http://localhost:8000/api/user/food-choices"),
+          axios.get("https://api.manomilan.com/api/user/get-all-stream"),
+          axios.get("https://api.manomilan.com/api/user/get-all-countries"),
+          axios.get("https://api.manomilan.com/api/user/get-all-cities"),
+          axios.get("https://api.manomilan.com/api/user/get-all-subcaste"),
+          axios.get("https://api.manomilan.com/api/admin/get-mother-tongue"),
+          axios.get("https://api.manomilan.com/api/user/get-sect"),
+          axios.get("https://api.manomilan.com/api/user/get-manglik"),
+          axios.get("https://api.manomilan.com/api/user/food-choices"),
         ]);
 
         if (streamsRes?.data?.status) {
@@ -480,7 +480,7 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
           for (const stream of fetchedStreams) {
             try {
               const response = await axios.post(
-                "http://localhost:8000/api/user/get-degree-by-stream",
+                "https://api.manomilan.com/api/user/get-degree-by-stream",
                 null,
                 {
                   params: { stream: stream.stream },
@@ -561,7 +561,7 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
     const fetchUser = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/api/admin/get-single-user/${uid}`,
+          `https://api.manomilan.com/api/admin/get-single-user/${uid}`,
           {
             headers: token ? { Authorization: `Bearer ${token}` } : undefined,
           },
@@ -742,7 +742,7 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
       if (payload.expectedIncome)
         payload.expectedIncome = Number(payload.expectedIncome);
 
-            const  result =  await fetch(`http://localhost:8000/api/admin/update-user/${uid}`, {method :"PUT",
+            const  result =  await fetch(`https://api.manomilan.com/api/admin/update-user/${uid}`, {method :"PUT",
         headers:{
           "Content-Type" : "application/json",
           "Authorization" : `Bearer ${token}`
@@ -913,6 +913,22 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
             </label>
             <Controller
               name="midname"
+              control={control}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              )}
+            />
+          </div>
+
+            <div>
+            <label className="block text-sm font-medium text-red-700 mb-2">
+              Last Name
+            </label>
+            <Controller
+              name="lastName"
               control={control}
               render={({ field }) => (
                 <input
@@ -2709,9 +2725,9 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
               dropdown1Label="Religion"
               dropdown2Label="Caste"
               dropdown3Label="Subcaste"
-              api1Url="http://localhost:8000/api/user/get-religions"
-              api2Url="http://localhost:8000/api/user/get-caste-by-religion"
-              api3Url="http://localhost:8000/api/user/get-subcaste-by-caste"
+              api1Url="https://api.manomilan.com/api/user/get-religions"
+              api2Url="https://api.manomilan.com/api/user/get-caste-by-religion"
+              api3Url="https://api.manomilan.com/api/user/get-subcaste-by-caste"
               api1Key="religion"
               api2Key="caste"
               api3Key="subCaste"
@@ -2733,9 +2749,9 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
               dropdown1Label="Country"
               dropdown2Label="State"
               dropdown3Label="City"
-              api1Url="http://localhost:8000/api/user/get-all-countries"
-              api2Url="http://localhost:8000/api/user/get-state-by-country"
-              api3Url="http://localhost:8000/api/user/get-cities-by-state"
+              api1Url="https://api.manomilan.com/api/user/get-all-countries"
+              api2Url="https://api.manomilan.com/api/user/get-state-by-country"
+              api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
               api1Key="country"
               api2Key="state"
               api3Key="city"
@@ -2757,9 +2773,9 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
               dropdown1Label="Country"
               dropdown2Label="State"
               dropdown3Label="City"
-              api1Url="http://localhost:8000/api/user/get-all-countries"
-              api2Url="http://localhost:8000/api/user/get-state-by-country"
-              api3Url="http://localhost:8000/api/user/get-cities-by-state"
+              api1Url="https://api.manomilan.com/api/user/get-all-countries"
+              api2Url="https://api.manomilan.com/api/user/get-state-by-country"
+              api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
               api1Key="country"
               api2Key="state"
               api3Key="city"

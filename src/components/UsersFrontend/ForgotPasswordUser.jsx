@@ -40,7 +40,7 @@ const ForgotFranchisePass = () => {
   const sendOtp = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/user/get-otp",
+        "https://api.manomilan.com/api/user/get-otp",
         {
           email: email,
         }
@@ -63,7 +63,7 @@ const ForgotFranchisePass = () => {
       newPassword:Number(pin.join(""))
     }
     try {
-      const response = await axios.post('http://localhost:8000/api/user/verify-otp-reset-password',payload)
+      const response = await axios.post('https://api.manomilan.com/api/user/verify-otp-reset-password',payload)
       if(response.data.status){
         toast.success(response.data.message)
         setEmail(null)
@@ -89,7 +89,7 @@ const ForgotFranchisePass = () => {
         </div>
 
         {/* Email */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <label className="block text-gray-700 font-medium mb-2">
             Enter Your Email
           </label>
@@ -108,10 +108,10 @@ const ForgotFranchisePass = () => {
               Send OTP
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* OTP */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <label className="block text-gray-700 font-medium mb-2">
             Enter OTP
           </label>
@@ -131,12 +131,12 @@ const ForgotFranchisePass = () => {
               />
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* PIN */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
-            <label className="text-gray-700 font-medium">Enter Pin</label>
+            <label className="text-gray-700 font-medium">Enter New Pin</label>
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}

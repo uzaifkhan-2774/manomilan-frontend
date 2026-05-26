@@ -131,7 +131,7 @@ const MemberTable = ({ data }) => {
     // call ur api here for single user
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/distributor/getCurrentUser/${id}`,
+        `https://api.manomilan.com/api/distributor/getCurrentUser/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -474,8 +474,8 @@ const MemberTable = ({ data }) => {
                     src={
                       singleUser.userPhotoStatus === "Approved"
                         ? singleUser.profilePic
-                          ? `http://localhost:8000/upload/${singleUser.profilePic}`
-                          : `http://localhost:8000/upload/${singleUser.userPhotoOne}`
+                          ? `https://api.manomilan.com/upload/${singleUser.profilePic}`
+                          : `https://api.manomilan.com/upload/${singleUser.userPhotoOne}`
                         : "https://imgs.search.brave.com/rwE-hC6ESt3hBJZhImPkb-KvU26bLDKVe-OKv1y50-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzE0LzQz/LzU1LzE0NDM1NWQ3/YjM2YzVmNjQ2NDM1/NDIzNzk4MjgxY2U5/LmpwZw"
                     }
                     alt="Profile"

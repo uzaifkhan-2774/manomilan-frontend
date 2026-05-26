@@ -34,7 +34,7 @@ const DistributorRegistrationForm = () => {
   const fetchCities = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/get-all-cities"
+        "https://api.manomilan.com/api/user/get-all-cities"
       );
       if (response.data.status === true) {
         const transformed = response.data.allLocations.map((item) => ({
@@ -94,7 +94,7 @@ const DistributorRegistrationForm = () => {
   }
   try {
     const response = await axios.post(
-      "http://localhost:8000/api/distributor/register",
+      "https://api.manomilan.com/api/distributor/register",
       formData,
       {
         headers: {

@@ -130,9 +130,9 @@ const EditMemberTable = ({
     // Fetch single user details
     let endpoint;
     if (pathname.includes("/admin")) {
-      endpoint = `http://localhost:8000/api/admin/get-single-user/${id}`;
+      endpoint = `https://api.manomilan.com/api/admin/get-single-user/${id}`;
     } else {
-      endpoint = `http://localhost:8000/api/franchise/get-single-user/${id}`;
+      endpoint = `https://api.manomilan.com/api/franchise/get-single-user/${id}`;
     }
     try {
       const response = await axios.get(endpoint, {
@@ -151,7 +151,7 @@ const EditMemberTable = ({
   const updateProfilePic = async () => {
     try {
       const response = await axios.put(
-        "http://localhost:8000/api/admin/update-userpfp",
+        "https://api.manomilan.com/api/admin/update-userpfp",
         {
           userId: singleUser._id,
           userStatus: "Approved",
@@ -187,7 +187,7 @@ const EditMemberTable = ({
   const rejectProfilePic = async () => {
     try {
       const response = await axios.put(
-        "http://localhost:8000/api/admin/update-userpfp",
+        "https://api.manomilan.com/api/admin/update-userpfp",
         {
           userId: singleUser._id,
           userStatus: "Rejected",
@@ -210,7 +210,7 @@ const EditMemberTable = ({
   const inactiveUser = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/franchise/inactivate-user",
+        "https://api.manomilan.com/api/franchise/inactivate-user",
         {
           userId: singleUser._id,
         },
@@ -264,7 +264,7 @@ const EditMemberTable = ({
     console.log(currFranchiseId);
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/franchise/get-packages/${currFranchiseId}`
+        `https://api.manomilan.com/api/franchise/get-packages/${currFranchiseId}`
       );
       console.log(response.data);
       if (response.data.status) {
@@ -278,9 +278,9 @@ const EditMemberTable = ({
   const allotPackageToUser = async (data) => {
     let endpoint;
     if (data.vipPackage === undefined) {
-      endpoint = "http://localhost:8000/api/franchise/allot-main-addOnpackage";
+      endpoint = "https://api.manomilan.com/api/franchise/allot-main-addOnpackage";
     } else {
-      endpoint = "http://localhost:8000/api/franchise/allot-vip-package";
+      endpoint = "https://api.manomilan.com/api/franchise/allot-vip-package";
     }
 
     const payload = {
@@ -315,7 +315,7 @@ const EditMemberTable = ({
   const getAllotedPackages = async (data) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/user/get-packages/${data}`
+        `https://api.manomilan.com/api/user/get-packages/${data}`
       );
       console.log(response.data);
       if (response.data?.status && response.data?.userPackages) {
@@ -622,7 +622,7 @@ const EditMemberTable = ({
                       <img
   src={
     singleUser.userPhotoOne
-      ? `http://localhost:8000/upload/${singleUser.userPhotoOne}${
+      ? `https://api.manomilan.com/upload/${singleUser.userPhotoOne}${
           updatePic ? `?t=${updatePic}` : ""
         }`
       : "https://imgs.search.brave.com/rwE-hC6ESt3hBJZhImPkb-KvU26bLDKVe-OKv1y50-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzE0LzQz/LzU1LzE0NDM1NWQ3/YjM2YzVmNjQ2NDM1/NDIzNzk4MjgxY2U5LmpwZw"
@@ -929,7 +929,7 @@ const EditMemberTable = ({
                   <img
                     src={
                       singleUser.userPhotoStatus === "Approved"
-                        ? `http://localhost:8000/upload/${singleUser.userPhotoOne}${updatePic ? `?t=${updatePic}` : ""}`
+                        ? `https://api.manomilan.com/upload/${singleUser.userPhotoOne}${updatePic ? `?t=${updatePic}` : ""}`
                         : "https://imgs.search.brave.com/rwE-hC6ESt3hBJZhImPkb-KvU26bLDKVe-OKv1y50-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzE0LzQz/LzU1LzE0NDM1NWQ3/YjM2YzVmNjQ2NDM1/NDIzNzk4MjgxY2U5/LmpwZw"
                     }
                     alt="Profile"
