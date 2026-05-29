@@ -116,7 +116,7 @@ const QuickSearchCards = () => {
   const findCaste = async () => {
     try {
       const res = await axios.get(
-        "https://api.manomilan.com/api/user/get-all-subcaste"
+        "http://localhost:8000/api/user/get-all-subcaste"
       );
       console.log(res.data.result);
       setCaste(res?.data?.result);
@@ -195,7 +195,7 @@ const QuickSearchCards = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post("https://api.manomilan.com/api/user/quick-search", {
+      const res = await axios.post("http://localhost:8000/api/user/quick-search", {
         gender: formData.gender,
         caste: formData.caste,
         income: parseInt(formData.income, 10),
@@ -217,7 +217,7 @@ const QuickSearchCards = () => {
             (c.dob ? new Date().getFullYear() - new Date(c.dob).getFullYear() : "N/A"),
           religion: c.caste?.religion || c.caste?.caste || "",
           image: c.profilePic
-            ? `https://api.manomilan.com/upload/${c.profilePic}`
+            ? `http://localhost:8000/upload/${c.profilePic}`
             : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
           occupation: c.occupation || "Not listed",
           city: c.city || c.nativeCity?.city || "",
@@ -328,7 +328,7 @@ const QuickSearchCards = () => {
   const fetchStreams = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-streams"
+        "http://localhost:8000/api/admin/get-streams"
       );
       if (response.data.status) {
         setStreams(response.data.data);
@@ -346,7 +346,7 @@ const QuickSearchCards = () => {
     for (const stream of streamsArr) {
       try {
         const response = await axios.get(
-          "https://api.manomilan.com/api/admin/get-degrees-by-stream",
+          "http://localhost:8000/api/admin/get-degrees-by-stream",
           { params: { stream: stream.stream } }
         );
         if (response.data.status) {

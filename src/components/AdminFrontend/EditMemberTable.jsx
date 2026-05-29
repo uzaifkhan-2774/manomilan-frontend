@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Eye,
@@ -22,15 +22,45 @@ const EditMemberTable = ({
   pageSize = 5,
   totalUsers,
   onPageChange,
+  onClose: parentOnClose,
 }) => {
-  // If parent passed a userId, render only the edit form (no nested table)
-  if (propUserId) {
-    return <EditMemberForm userId={propUserId} token={token} onClose={() => {/* toggle parent state to show table */}} />;
-  }
-
   const navigate = useNavigate();
   const location = useLocation();
   const pathname = location.pathname;
+
+  // If parent passed a userId, render only the edit form (no nested table)
+  if (propUserId) {
+    return (
+      <EditMemberForm
+        userId={propUserId}
+        token={token}
+        onClose={() => {
+          // prefer parent-provided onClose (e.g., MemberTable -> setDetailProfile(false))
+          if (typeof parentOnClose === "function") {
+            parentOnClose();
+            return;
+          }
+
+          // otherwise navigate to a reasonable parent route instead of history.back
+          if (pathname.includes("/admin")) {
+            navigate("/admin");
+            return;
+          }
+          if (pathname.includes("/franchise")) {
+            navigate("/franchise");
+            return;
+          }
+
+          // fallback to history back
+          try {
+            navigate(-1);
+          } catch (e) {
+            /* ignore */
+          }
+        }}
+      />
+    );
+  }
 
   // safe copy of data (ensure array)
   const safeData = Array.isArray(data) ? data : [];
@@ -46,73 +76,84 @@ const EditMemberTable = ({
   const [edit, setEdit] = useState(false);
   // Filter distributors based on search and status
   // Update the filteredDistributors logic
-  const filteredDistributors = safeData.filter((distributor) => {
-    // Format distributor's DOB to dd/mm/yyyy for display and comparison
-    const formattedDob = distributor?.dob
-      ? new Date(distributor.dob).toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })
-      : "";
-
-    const formattedReg = distributor?.createdAt
-      ? new Date(distributor.createdAt).toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })
-      : "";
-    // Helper function to validate and parse dates
-    const isValidDate = (dateStr) => {
-      // Check for dd/mm/yyyy format
-      if (!dateStr) return false;
-      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
-        const [day, month, year] = dateStr.split("/");
-        const date = new Date(year, month - 1, day);
-        return date && date.getMonth() === month - 1; // Valid date check
-      }
-      return false;
-    };
-
-    // Search conditions
+  const filteredDistributors = useMemo(() => {
     const q = (searchTerm || "").trim().toLowerCase();
-    if (!q) return true; // when no search, include all
+    if (!q) return safeData;
 
-    const matchesSearch =
-      distributor?.loginEmail?.toLowerCase().includes(q) ||
-      distributor?.firstName?.toLowerCase().includes(q) ||
-      distributor?.UserId?.toString().includes(q) ||
-      distributor?.loginNumber?.toString().includes(q) ||
-      distributor?.mamkul?.toString().includes(q) ||
-      distributor?.monthlyIncome?.toString().includes(q) ||
-      distributor?.mothersName?.toString().includes(q) ||
-      distributor?.nativeVillage?.toString().includes(q) ||
-      distributor?.parentsCity?.toString().toLowerCase().includes(q) ||
-      distributor?.parentsContact?.toString().includes(q) ||
-      distributor?.parentsResidence?.toString().includes(q) ||
-      distributor?.placeOfBirth?.toString().includes(q) ||
-      distributor?.workLocation?.toString().includes(q) ||
-      distributor
-        ?.motherTongue?.toString()
-        .toLowerCase()
-        .includes(q) ||
-      (isValidDate(searchTerm) && formattedDob === searchTerm) ||
-      (searchTerm.length >= 2 && formattedDob.includes(searchTerm)) ||
-      (isValidDate(searchTerm) && formattedReg === searchTerm) ||
-      (searchTerm.length >= 2 && formattedReg.includes(searchTerm)) ||
-      distributor?.franchiseUnder?.toLowerCase().includes(q);
+    return safeData.filter((distributor) => {
+      // Format distributor's DOB to dd/mm/yyyy for display and comparison
+      const formattedDob = distributor?.dob
+        ? new Date(distributor.dob).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        : "";
 
-    return matchesSearch;
-  });
+      const formattedReg = distributor?.createdAt
+        ? new Date(distributor.createdAt).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        : "";
+
+      // Helper function to validate and parse dates
+      const isValidDate = (dateStr) => {
+        if (!dateStr) return false;
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+          const [day, month, year] = dateStr.split("/");
+          const date = new Date(year, month - 1, day);
+          return date && date.getMonth() === month - 1;
+        }
+        return false;
+      };
+
+      const matchesSearch =
+        distributor?.loginEmail?.toLowerCase().includes(q) ||
+        distributor?.firstName?.toLowerCase().includes(q) ||
+        distributor?.UserId?.toString().toLowerCase().includes(q) ||
+        distributor?.loginNumber?.toString().toLowerCase().includes(q) ||
+        distributor?.mamkul?.toString().toLowerCase().includes(q) ||
+        distributor?.monthlyIncome?.toString().toLowerCase().includes(q) ||
+        distributor?.mothersName?.toString().toLowerCase().includes(q) ||
+        distributor?.nativeVillage?.toString().toLowerCase().includes(q) ||
+        distributor?.parentsCity
+          ?.toString()
+          .toLowerCase()
+          .includes(q) ||
+        distributor?.parentsContact?.toString().toLowerCase().includes(q) ||
+        distributor?.parentsResidence
+          ?.toString()
+          .toLowerCase()
+          .includes(q) ||
+        distributor?.placeOfBirth
+          ?.toString()
+          .toLowerCase()
+          .includes(q) ||
+        distributor?.workLocation?.toString().toLowerCase().includes(q) ||
+        distributor
+          ?.motherTongue?.toString()
+          .toLowerCase()
+          .includes(q) ||
+        distributor?.franchiseUnder?.toLowerCase().includes(q) ||
+        (isValidDate(searchTerm) && formattedDob === searchTerm) ||
+        (searchTerm.length >= 2 && formattedDob.includes(searchTerm)) ||
+        (isValidDate(searchTerm) && formattedReg === searchTerm) ||
+        (searchTerm.length >= 2 && formattedReg.includes(searchTerm));
+
+      return matchesSearch;
+    });
+  }, [safeData, searchTerm]);
 
   // Pagination - use safe currentPage
   const safeCurrentPage = Number.isInteger(currentPage) ? currentPage : 0;
   const totalPages = Math.ceil(filteredDistributors.length / itemsPerPage) || 1;
   const startIndex = safeCurrentPage * itemsPerPage;
-  const paginatedDistributors = filteredDistributors.slice(
-    startIndex,
-    startIndex + itemsPerPage
+  const paginatedDistributors = useMemo(
+    () =>
+      filteredDistributors.slice(startIndex, startIndex + itemsPerPage),
+    [filteredDistributors, startIndex, itemsPerPage]
   );
   const [userId, setUserId] = useState(null);
 
@@ -130,9 +171,9 @@ const EditMemberTable = ({
     // Fetch single user details
     let endpoint;
     if (pathname.includes("/admin")) {
-      endpoint = `https://api.manomilan.com/api/admin/get-single-user/${id}`;
+      endpoint = `http://localhost:8000/api/admin/get-single-user/${id}`;
     } else {
-      endpoint = `https://api.manomilan.com/api/franchise/get-single-user/${id}`;
+      endpoint = `http://localhost:8000/api/franchise/get-single-user/${id}`;
     }
     try {
       const response = await axios.get(endpoint, {
@@ -151,7 +192,7 @@ const EditMemberTable = ({
   const updateProfilePic = async () => {
     try {
       const response = await axios.put(
-        "https://api.manomilan.com/api/admin/update-userpfp",
+        "http://localhost:8000/api/admin/update-userpfp",
         {
           userId: singleUser._id,
           userStatus: "Approved",
@@ -187,7 +228,7 @@ const EditMemberTable = ({
   const rejectProfilePic = async () => {
     try {
       const response = await axios.put(
-        "https://api.manomilan.com/api/admin/update-userpfp",
+        "http://localhost:8000/api/admin/update-userpfp",
         {
           userId: singleUser._id,
           userStatus: "Rejected",
@@ -210,7 +251,7 @@ const EditMemberTable = ({
   const inactiveUser = async () => {
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/franchise/inactivate-user",
+        "http://localhost:8000/api/franchise/inactivate-user",
         {
           userId: singleUser._id,
         },
@@ -229,8 +270,8 @@ const EditMemberTable = ({
     }
   };
   const handleEditFrDetails = (distributor) => {
-    setEdit(!edit);
     setUserId(distributor);
+    setEdit(true);
     // alert(`Editing Us ${distributor._id}`);
   };
 
@@ -264,7 +305,7 @@ const EditMemberTable = ({
     console.log(currFranchiseId);
     try {
       const response = await axios.get(
-        `https://api.manomilan.com/api/franchise/get-packages/${currFranchiseId}`
+        `http://localhost:8000/api/franchise/get-packages/${currFranchiseId}`
       );
       console.log(response.data);
       if (response.data.status) {
@@ -278,9 +319,9 @@ const EditMemberTable = ({
   const allotPackageToUser = async (data) => {
     let endpoint;
     if (data.vipPackage === undefined) {
-      endpoint = "https://api.manomilan.com/api/franchise/allot-main-addOnpackage";
+      endpoint = "http://localhost:8000/api/franchise/allot-main-addOnpackage";
     } else {
-      endpoint = "https://api.manomilan.com/api/franchise/allot-vip-package";
+      endpoint = "http://localhost:8000/api/franchise/allot-vip-package";
     }
 
     const payload = {
@@ -315,7 +356,7 @@ const EditMemberTable = ({
   const getAllotedPackages = async (data) => {
     try {
       const response = await axios.get(
-        `https://api.manomilan.com/api/user/get-packages/${data}`
+        `http://localhost:8000/api/user/get-packages/${data}`
       );
       console.log(response.data);
       if (response.data?.status && response.data?.userPackages) {
@@ -376,7 +417,7 @@ const EditMemberTable = ({
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
                     >
-                      <option value="All">All Status</option>
+                      <option value="All">ALL</option>
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
                       <option value="Pending">Incomplete</option>
@@ -435,7 +476,7 @@ const EditMemberTable = ({
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredDistributors.map((distributor, index) => (
+                    {paginatedDistributors.map((distributor, index) => (
                       <tr
                         key={distributor.UserId}
                         className={`${
@@ -586,7 +627,11 @@ const EditMemberTable = ({
         </div>
       </div>
     ) : (
-      <EditMemberForm userId={userId._id} token={token} />
+      <EditMemberForm
+        userId={userId._id}
+        token={token}
+        onClose={() => setEdit(false)}
+      />
     );
   } else {
     if (detailProfile) {
@@ -622,7 +667,7 @@ const EditMemberTable = ({
                       <img
   src={
     singleUser.userPhotoOne
-      ? `https://api.manomilan.com/upload/${singleUser.userPhotoOne}${
+      ? `http://localhost:8000/upload/${singleUser.userPhotoOne}${
           updatePic ? `?t=${updatePic}` : ""
         }`
       : "https://imgs.search.brave.com/rwE-hC6ESt3hBJZhImPkb-KvU26bLDKVe-OKv1y50-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzE0LzQz/LzU1LzE0NDM1NWQ3/YjM2YzVmNjQ2NDM1/NDIzNzk4MjgxY2U5LmpwZw"
@@ -929,7 +974,7 @@ const EditMemberTable = ({
                   <img
                     src={
                       singleUser.userPhotoStatus === "Approved"
-                        ? `https://api.manomilan.com/upload/${singleUser.userPhotoOne}${updatePic ? `?t=${updatePic}` : ""}`
+                        ? `http://localhost:8000/upload/${singleUser.userPhotoOne}${updatePic ? `?t=${updatePic}` : ""}`
                         : "https://imgs.search.brave.com/rwE-hC6ESt3hBJZhImPkb-KvU26bLDKVe-OKv1y50-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzE0LzQz/LzU1LzE0NDM1NWQ3/YjM2YzVmNjQ2NDM1/NDIzNzk4MjgxY2U5/LmpwZw"
                     }
                     alt="Profile"

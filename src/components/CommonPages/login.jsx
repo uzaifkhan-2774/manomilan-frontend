@@ -41,13 +41,13 @@ export default function ManomilanLogin() {
 
   let loginEndPt = "";
   if (pathname.includes("franchise")) {
-    loginEndPt = "https://api.manomilan.com/api/franchise/login";
+    loginEndPt = "http://localhost:8000/api/franchise/login";
   } else if (pathname.includes("distributor")) {
-    loginEndPt = "https://api.manomilan.com/api/distributor/login";
+    loginEndPt = "http://localhost:8000/api/distributor/login";
   } else if (pathname.includes("admin")) {
-    loginEndPt = "https://api.manomilan.com/api/admin/login";
+    loginEndPt = "http://localhost:8000/api/admin/login";
   } else {
-    loginEndPt = "https://api.manomilan.com/api/user/login";
+    loginEndPt = "http://localhost:8000/api/user/login";
   }
 
   const handleLogin = async () => {
@@ -67,7 +67,7 @@ export default function ManomilanLogin() {
       const response = await axios.post(loginEndPt, mappedData);
       console.log(response.data)
       if (response.data.status === true) {
-        toast.success(response.data.message);
+        // toast.success(response.data.message);
         const token = response.data.token;
         if (pathname.includes("/franchise")) {
           localStorage.setItem("franchiseToken", token);

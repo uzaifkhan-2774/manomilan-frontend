@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Plus,
-  Eye,
   Utensils,
   Users,
   Heart,
@@ -10,13 +9,15 @@ import {
   Home,
   Briefcase,
   Languages,
+  X,
+  ChevronDown,
 } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const UserPreferencesManager = () => {
   // State for all categories
-  const [viewCategory, setViewCategory] = useState(null);
+  const [expandedCategory, setExpandedCategory] = useState(null);
   const [foodPreferences, setFoodPreferences] = useState([]);
   const [sects, setSects] = useState([]);
   const [manglikStatus, setManglikStatus] = useState([]);
@@ -36,16 +37,15 @@ const UserPreferencesManager = () => {
   const [positionInput, setPositionInput] = useState("");
   const [motherTongueInput, setMotherTongueInput] = useState("");
 
-  //   getting the values
+  // Getting the values
   const getMotherTongues = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-mother-tongue"
+        "http://localhost:8000/api/admin/get-mother-tongue"
       );
       if (response.data.status === true) {
-        // Assuming your API returns an array like [{ id: 1, name: 'Hindi' }, ...]
         const fetched = response.data.result.map((item) => ({
-          id: item._id || Date.now(), // fallback if _id missing
+          id: item._id || Date.now(),
           name: item.motherTongue,
           type: "Mother Tongue",
         }));
@@ -59,7 +59,7 @@ const UserPreferencesManager = () => {
   const getFoodPref = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-foodPref"
+        "http://localhost:8000/api/admin/get-foodPref"
       );
       const fetched = response.data.result.map((item) => ({
         id: Date.now(),
@@ -75,13 +75,13 @@ const UserPreferencesManager = () => {
   const getSect = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-sect"
+        "http://localhost:8000/api/admin/get-sect"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
           id: Date.now(),
           name: item.sect,
-          type: "Manglik",
+          type: "Sect",
         }));
         setSects(fetched);
       }
@@ -93,7 +93,7 @@ const UserPreferencesManager = () => {
   const getManglik = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-manglik"
+        "http://localhost:8000/api/admin/get-manglik"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -111,7 +111,7 @@ const UserPreferencesManager = () => {
   const getComplexion = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-complexion"
+        "http://localhost:8000/api/admin/get-complexion"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -129,7 +129,7 @@ const UserPreferencesManager = () => {
   const getBodyType = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-bodytype"
+        "http://localhost:8000/api/admin/get-bodytype"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -147,7 +147,7 @@ const UserPreferencesManager = () => {
   const getPosition = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-position"
+        "http://localhost:8000/api/admin/get-position"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -155,7 +155,6 @@ const UserPreferencesManager = () => {
           name: item.position,
           type: "Position",
         }));
-        console.log(response.data)
         setPositions(fetched);
       }
     } catch (error) {
@@ -166,7 +165,7 @@ const UserPreferencesManager = () => {
   const getFamBg = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-familybg"
+        "http://localhost:8000/api/admin/get-familybg"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -186,141 +185,152 @@ const UserPreferencesManager = () => {
     getFoodPref();
     getSect();
     getManglik();
-    getComplexion()
-    getBodyType()
-    getFamBg()
-    getPosition()
-    // const interval = setInterval(() => {
-    //   getMotherTongues();
-    //   getFoodPref();
-    //   getSect();
-    //   getManglik();
-    //   getComplexion()
-    //   getBodyType()
-    //   getFamBg()
-    //   getPosition()
-    // }, 5000);
-
-    // return () => clearInterval(interval);
+    getComplexion();
+    getBodyType();
+    getFamBg();
+    getPosition();
   }, []);
 
   // Add functions for each category
   const addFoodPreference = async () => {
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/add-foodPref",
+        "http://localhost:8000/api/admin/add-foodPref",
         { foodPreference: foodPreferenceInput }
       );
       if (response.data.status === true) {
         toast.success(response.data.message);
         setFoodPreferenceInput("");
-        return
+        getFoodPref();
+        return;
       }
-      toast.error(response.data.message)
+      toast.error(response.data.message);
     } catch (error) {
       console.log("something went wrong");
     }
   };
+
   const addSect = async () => {
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/add-sect",
+        "http://localhost:8000/api/admin/add-sect",
         { sect: sectInput }
       );
       if (response.data.status === true) {
         toast.success(response.data.message);
-        setSectInput("")
-        return
+        setSectInput("");
+        getSect();
+        return;
       }
-      toast.error(response.data.message)
+      toast.error(response.data.message);
     } catch (error) {
       console.log(error);
     }
   };
+
   const addManglik = async () => {
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/add-manglik",
+        "http://localhost:8000/api/admin/add-manglik",
         { manglik: manglikInput }
       );
       if (response.data.status === true) {
         toast.success(response.data.message);
         setManglikInput("");
-        return
+        getManglik();
+        return;
       }
-      toast.error(response.data.message)
+      toast.error(response.data.message);
     } catch (error) {
       console.log(error);
     }
   };
-  const addComplexion = async () =>{
+
+  const addComplexion = async () => {
     try {
-      const response= await axios.post('https://api.manomilan.com/api/admin/add-complexion',{complexion:complexionInput})
-      if(response.data.status===true){
-        toast.success(response.data.message)
-        setComplexionInput("")
-        return
+      const response = await axios.post(
+        "http://localhost:8000/api/admin/add-complexion",
+        { complexion: complexionInput }
+      );
+      if (response.data.status === true) {
+        toast.success(response.data.message);
+        setComplexionInput("");
+        getComplexion();
+        return;
       }
-      toast.error(response.data.message)
+      toast.error(response.data.message);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
-  const addBodyType = async () =>{
+  };
+
+  const addBodyType = async () => {
     try {
-      const response= await axios.post("https://api.manomilan.com/api/admin/add-bodytype",{bodyType:bodyTypeInput})
-      console.log(response.data)
-      if(response.data.status===true){
-        toast.success(response.data.message)
-      setBodyTypeInput("")
-      return
+      const response = await axios.post(
+        "http://localhost:8000/api/admin/add-bodytype",
+        { bodyType: bodyTypeInput }
+      );
+      if (response.data.status === true) {
+        toast.success(response.data.message);
+        setBodyTypeInput("");
+        getBodyType();
+        return;
       }
-      toast.error(response.data.message)
+      toast.error(response.data.message);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
-  const addFamilyBackground =async () =>{
+  };
+
+  const addFamilyBackground = async () => {
     try {
-      const response= await axios.post("https://api.manomilan.com/api/admin/add-familybg",{familyBg:familyBackgroundInput})
-      console.log(response.data)
-      if(response.data.status===true){
-        toast.success(response.data.message)
-        setFamilyBackgroundInput("")
-        return
+      const response = await axios.post(
+        "http://localhost:8000/api/admin/add-familybg",
+        { familyBg: familyBackgroundInput }
+      );
+      if (response.data.status === true) {
+        toast.success(response.data.message);
+        setFamilyBackgroundInput("");
+        getFamBg();
+        return;
       }
-      toast.error(response.data.message)
+      toast.error(response.data.message);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
-  const addPosition = async() =>{
+  };
+
+  const addPosition = async () => {
     try {
-      const response= await axios.post("https://api.manomilan.com/api/admin/add-position",{position:positionInput})
-      console.log(positionInput)
-      console.log(response.data)
-      if(response.data.status===true){
-        toast.success(response.data.message)
-        setPositionInput("")
-        return
+      const response = await axios.post(
+        "http://localhost:8000/api/admin/add-position",
+        { position: positionInput }
+      );
+      if (response.data.status === true) {
+        toast.success(response.data.message);
+        setPositionInput("");
+        getPosition();
+        return;
       }
-      toast.error(response.data.message)
+      toast.error(response.data.message);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
+
   const addMotherTongue = async () => {
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/add-mother-tongue",
+        "http://localhost:8000/api/admin/add-mother-tongue",
         { motherTongue: motherTongueInput }
       );
       if (response.data.status === true) {
         toast.success(response.data.message);
         setMotherTongueInput("");
-        return
+        getMotherTongues();
+        return;
       }
-      toast.error(response.data.message)
+      toast.error(response.data.message);
     } catch (error) {
       console.log(error);
     }
@@ -332,7 +342,7 @@ const UserPreferencesManager = () => {
     }
   };
 
-  // Get all items for table display
+  // Get all items for category
   const getItemsForCategory = (category) => {
     switch (category) {
       case "Food Preferences":
@@ -356,11 +366,11 @@ const UserPreferencesManager = () => {
     }
   };
 
-  // handle delete
+  // Handle delete
   const handleDelete = async (item) => {
     let endpoint = "";
 
-    switch (viewCategory) {
+    switch (expandedCategory) {
       case "Food Preferences":
         endpoint = "/api/admin/delete-foodPref";
         break;
@@ -391,46 +401,38 @@ const UserPreferencesManager = () => {
     }
 
     try {
-      const response = await axios.delete(`https://api.manomilan.com${endpoint}`, {
+      const response = await axios.delete(`http://localhost:8000${endpoint}`, {
         data: item.name,
       });
 
       if (response.data.status === true) {
         toast.success(response.data.message);
 
-        // Remove from state
-        switch (viewCategory) {
+        // Refresh data based on category
+        switch (expandedCategory) {
           case "Food Preferences":
-            setFoodPreferences((prev) =>
-              prev.filter((i) => i.name !== item.name)
-            );
+            getFoodPref();
             break;
           case "Mother Tongue":
-            setMotherTongues((prev) =>
-              prev.filter((i) => i.name !== item.name)
-            );
+            getMotherTongues();
             break;
           case "Sect":
-            setSects((prev) => prev.filter((i) => i.name !== item.name));
+            getSect();
             break;
           case "Manglik Status":
-            setManglikStatus((prev) =>
-              prev.filter((i) => i.name !== item.name)
-            );
+            getManglik();
             break;
           case "Complexion":
-            setComplexions((prev) => prev.filter((i) => i.name !== item.name));
+            getComplexion();
             break;
           case "Body Type":
-            setBodyTypes((prev) => prev.filter((i) => i.name !== item.name));
+            getBodyType();
             break;
           case "Family Background":
-            setFamilyBackgrounds((prev) =>
-              prev.filter((i) => i.name !== item.name)
-            );
+            getFamBg();
             break;
           case "Positions":
-            setPositions((prev) => prev.filter((i) => i.name !== item.name));
+            getPosition();
             break;
           default:
             break;
@@ -449,15 +451,15 @@ const UserPreferencesManager = () => {
       input: foodPreferenceInput,
       setInput: setFoodPreferenceInput,
       addFunction: addFoodPreference,
-      placeholder: "e.g., Vegetarian, Non-Vegetarian, Vegan, Jain",
+      placeholder: "e.g., Vegetarian, Non-Vegetarian",
     },
     {
       title: "Mother Tongue",
-      icon: Languages, // or pick a better icon like Languages or Globe if you have
+      icon: Languages,
       input: motherTongueInput,
       setInput: setMotherTongueInput,
       addFunction: addMotherTongue,
-      placeholder: "e.g., Hindi, Marathi, Tamil, Telugu",
+      placeholder: "e.g., Hindi, Marathi, Tamil",
     },
     {
       title: "Sect",
@@ -465,7 +467,7 @@ const UserPreferencesManager = () => {
       input: sectInput,
       setInput: setSectInput,
       addFunction: addSect,
-      placeholder: "e.g., Brahmin, Kshatriya, Vaishya, Shudra",
+      placeholder: "e.g., Brahmin, Kshatriya",
     },
     {
       title: "Manglik Status",
@@ -473,7 +475,7 @@ const UserPreferencesManager = () => {
       input: manglikInput,
       setInput: setManglikInput,
       addFunction: addManglik,
-      placeholder: "e.g., Manglik, Non-Manglik, Anshik Manglik",
+      placeholder: "e.g., Manglik, Non-Manglik",
     },
     {
       title: "Complexion",
@@ -481,7 +483,7 @@ const UserPreferencesManager = () => {
       input: complexionInput,
       setInput: setComplexionInput,
       addFunction: addComplexion,
-      placeholder: "e.g., Fair, Wheatish, Dark, Very Fair",
+      placeholder: "e.g., Fair, Wheatish, Dark",
     },
     {
       title: "Body Type",
@@ -489,7 +491,7 @@ const UserPreferencesManager = () => {
       input: bodyTypeInput,
       setInput: setBodyTypeInput,
       addFunction: addBodyType,
-      placeholder: "e.g., Slim, Average, Athletic, Heavy",
+      placeholder: "e.g., Slim, Average, Athletic",
     },
     {
       title: "Family Background",
@@ -497,7 +499,7 @@ const UserPreferencesManager = () => {
       input: familyBackgroundInput,
       setInput: setFamilyBackgroundInput,
       addFunction: addFamilyBackground,
-      placeholder: "e.g., Middle Class, Upper Middle Class, Rich",
+      placeholder: "e.g., Middle Class, Upper Middle",
     },
     {
       title: "Positions",
@@ -505,157 +507,135 @@ const UserPreferencesManager = () => {
       input: positionInput,
       setInput: setPositionInput,
       addFunction: addPosition,
-      placeholder: "e.g., Manager, Director, CEO, Engineer",
+      placeholder: "e.g., Manager, Director, CEO",
     },
   ];
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="p-6">
-            {/* Categories Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {categories.map((category, index) => {
-                const IconComponent = category.icon;
-                return (
-                  <div
-                    key={index}
-                    className="border border-gray-200 rounded-lg p-4"
-                  >
-                    <div className="flex items-center gap-3 mb-4">
-                      <IconComponent className="w-5 h-5 text-[#7d0a0a]" />
-                      <h3 className="text-lg font-semibold text-gray-800">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Preferences Manager
+          </h1>
+          <p className="text-gray-600">Manage and organize user preferences</p>
+        </div>
+
+        {/* Categories Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {categories.map((category, index) => {
+            const IconComponent = category.icon;
+            const items = getItemsForCategory(category.title);
+            const isExpanded = expandedCategory === category.title;
+
+            return (
+              <div
+                key={index}
+                className={`rounded-xl border-2 border-gray-200 transition-all duration-300 overflow-hidden shadow-sm hover:shadow-md bg-white`}
+              >
+                {/* Header */}
+                <div className="bg-[#7d0a0a] p-4 text-white">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <IconComponent className="w-6 h-6" />
+                      <h3 className="text-lg font-semibold">
                         {category.title}
                       </h3>
                     </div>
-
-                    <div className="space-y-3">
-                      <div>
-                        <input
-                          type="text"
-                          value={category.input}
-                          onChange={(e) => category.setInput(e.target.value)}
-                          onKeyPress={(e) =>
-                            handleKeyPress(e, category.addFunction)
-                          }
-                          placeholder={category.placeholder}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7d0a0a] focus:border-transparent outline-none transition-all text-sm"
-                        />
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={category.addFunction}
-                          disabled={!category.input.trim()}
-                          className="flex-1 bg-[#7d0a0a] text-white px-3 py-2 rounded-lg hover:bg-red-800 transition-colors flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm"
-                        >
-                          <Plus className="w-4 h-4" />
-                          Add
-                        </button>
-                        <button
-                          onClick={() => setViewCategory(category.title)}
-                          className="flex-1 bg-white border-2 border-[#7d0a0a] text-[#7d0a0a] px-3 py-2 rounded-lg hover:bg-red-50 transition-colors flex items-center justify-center gap-2 text-sm"
-                        >
-                          <Eye className="w-4 h-4" />
-                          View
-                        </button>
-                      </div>
-                    </div>
+                    {items.length > 0 && (
+                      <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-semibold">
+                        {items.length}
+                      </span>
+                    )}
                   </div>
-                );
-              })}
-            </div>
+                </div>
 
-            {/* View All Items Table */}
-            {viewCategory && (
-              <div className="border border-gray-200 rounded-lg p-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                  {viewCategory} Table
-                </h3>
-                {getItemsForCategory(viewCategory).length === 0 ? (
-                  <div className="text-center py-8">
-                    <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 italic">
-                      No preferences added yet
-                    </p>
+                {/* Content */}
+                <div className="p-4">
+                  {/* Input Section */}
+                  <div className="space-y-3 mb-4 pb-4 border-b border-gray-200">
+                    <input
+                      type="text"
+                      value={category.input}
+                      onChange={(e) => category.setInput(e.target.value)}
+                      onKeyPress={(e) => handleKeyPress(e, category.addFunction)}
+                      placeholder={category.placeholder}
+                      className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7d0a0a] focus:border-transparent outline-none transition-all text-sm"
+                    />
+                    <button
+                      onClick={category.addFunction}
+                      disabled={!category.input.trim()}
+                      className="w-full bg-[#7d0a0a] text-white px-4 py-2.5 rounded-lg hover:bg-red-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add
+                    </button>
                   </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse bg-white">
-                      <thead>
-                        <tr className="bg-[#7d0a0a]">
-                          <th className="border border-gray-300 px-4 py-3 text-left text-white font-semibold">
-                            S.No
-                          </th>
-                          <th className="border border-gray-300 px-4 py-3 text-left text-white font-semibold">
-                            Category
-                          </th>
-                          <th className="border border-gray-300 px-4 py-3 text-left text-white font-semibold">
-                            Preference
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {getItemsForCategory(viewCategory).map(
-                          (item, index) => (
-                            <tr
-                              key={index}
-                              className="hover:bg-gray-50 transition-colors"
+
+                  {/* Items Display */}
+                  {isExpanded ? (
+                    <div className="space-y-2">
+                      {items.length === 0 ? (
+                        <div className="text-center py-6 text-gray-400">
+                          <p className="text-sm italic">No items added yet</p>
+                        </div>
+                      ) : (
+                        <>
+                          {items.map((item, idx) => (
+                            <div
+                              key={idx}
+                              className="flex items-center justify-between gap-2 p-3 bg-red-50 rounded-lg border border-gray-200 group hover:shadow-sm transition-all"
                             >
-                              <td className="border border-gray-300 px-4 py-3 text-gray-800">
-                                {index + 1}
-                              </td>
-                              <td className="border border-gray-300 px-4 py-3">
-                                <span className="bg-[#7d0a0a] text-white px-3 py-1 rounded-full text-sm">
-                                  {item.type}
-                                </span>
-                              </td>
-                              <td className="border border-gray-300 px-4 py-3 flex items-center justify-between gap-2">
-                                <span className="font-medium text-gray-800">
-                                  {item.name}
-                                </span>
-                                <button
-                                  onClick={() => handleDelete(item)}
-                                  className="text-red-600 hover:text-red-800 transition-colors"
-                                  title="Delete"
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M6 18L18 6M6 6l12 12"
-                                    />
-                                  </svg>
-                                </button>
-                              </td>
-                            </tr>
-                          )
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-                {/* counts at bottom */}
-                {getItemsForCategory(viewCategory).length > 0 && (
-                  <div className="mt-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 text-sm">
-                    <div className="text-center p-2 bg-gray-50 rounded">
-                      <div className="text-[#7d0a0a] font-bold text-lg">
-                        {getItemsForCategory(viewCategory).length}
-                      </div>
-                      <div className="text-gray-600">{viewCategory}</div>
+                              <span className="text-sm font-medium text-gray-800">
+                                {item.name}
+                              </span>
+                              <button
+                                onClick={() => handleDelete(item)}
+                                className="text-gray-400 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                                title="Delete"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </>
+                      )}
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <button
+                      onClick={() => setExpandedCategory(category.title)}
+                      className={`w-full flex items-center justify-center gap-2 text-sm font-medium transition-all p-2 rounded-lg ${
+                        items.length > 0
+                          ? "text-[#7d0a0a] hover:bg-red-50"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      {items.length > 0 ? (
+                        <>
+                          <span>View {items.length} items</span>
+                          <ChevronDown className="w-4 h-4" />
+                        </>
+                      ) : (
+                        <span>No items</span>
+                      )}
+                    </button>
+                  )}
+
+                  {/* Collapse Button */}
+                  {isExpanded && (
+                    <button
+                      onClick={() => setExpandedCategory(null)}
+                      className="w-full mt-4 text-sm font-medium text-[#7d0a0a] hover:text-red-900 py-2 flex items-center justify-center gap-1 transition-all"
+                    >
+                      <ChevronDown className="w-4 h-4 rotate-180" />
+                      Collapse
+                    </button>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
+            );
+          })}
         </div>
       </div>
     </div>

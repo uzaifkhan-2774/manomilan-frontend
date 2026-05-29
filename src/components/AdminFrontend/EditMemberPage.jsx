@@ -272,7 +272,7 @@ const PreferenceSelector = ({
 };
 
 // Single-page edit form that uses RegisterFresh UI & same APIs (no stepper, no loading screens)
-const EditMemberPage = ({ userId: rawUserId, token }) => {
+const EditMemberPage = ({ userId: rawUserId, token, onClose = () => {} }) => {
   const uid =
     typeof rawUserId === "string"
       ? rawUserId
@@ -460,14 +460,14 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
           manglikRes,
           foodRes,
         ] = await Promise.all([
-          axios.get("https://api.manomilan.com/api/user/get-all-stream"),
-          axios.get("https://api.manomilan.com/api/user/get-all-countries"),
-          axios.get("https://api.manomilan.com/api/user/get-all-cities"),
-          axios.get("https://api.manomilan.com/api/user/get-all-subcaste"),
-          axios.get("https://api.manomilan.com/api/admin/get-mother-tongue"),
-          axios.get("https://api.manomilan.com/api/user/get-sect"),
-          axios.get("https://api.manomilan.com/api/user/get-manglik"),
-          axios.get("https://api.manomilan.com/api/user/food-choices"),
+          axios.get("http://localhost:8000/api/user/get-all-stream"),
+          axios.get("http://localhost:8000/api/user/get-all-countries"),
+          axios.get("http://localhost:8000/api/user/get-all-cities"),
+          axios.get("http://localhost:8000/api/user/get-all-subcaste"),
+          axios.get("http://localhost:8000/api/admin/get-mother-tongue"),
+          axios.get("http://localhost:8000/api/user/get-sect"),
+          axios.get("http://localhost:8000/api/user/get-manglik"),
+          axios.get("http://localhost:8000/api/user/food-choices"),
         ]);
 
         if (streamsRes?.data?.status) {
@@ -480,7 +480,7 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
           for (const stream of fetchedStreams) {
             try {
               const response = await axios.post(
-                "https://api.manomilan.com/api/user/get-degree-by-stream",
+                "http://localhost:8000/api/user/get-degree-by-stream",
                 null,
                 {
                   params: { stream: stream.stream },
@@ -561,7 +561,7 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
     const fetchUser = async () => {
       try {
         const res = await axios.get(
-          `https://api.manomilan.com/api/admin/get-single-user/${uid}`,
+          `http://localhost:8000/api/admin/get-single-user/${uid}`,
           {
             headers: token ? { Authorization: `Bearer ${token}` } : undefined,
           },
@@ -742,7 +742,7 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
       if (payload.expectedIncome)
         payload.expectedIncome = Number(payload.expectedIncome);
 
-            const  result =  await fetch(`https://api.manomilan.com/api/admin/update-user/${uid}`, {method :"PUT",
+            const  result =  await fetch(`http://localhost:8000/api/admin/update-user/${uid}`, {method :"PUT",
         headers:{
           "Content-Type" : "application/json",
           "Authorization" : `Bearer ${token}`
@@ -853,7 +853,17 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
   // render - full UI (single page) following RegisterFresh layout & components
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow">
-      <h3 className="text-lg font-semibold text-red-800 mb-4">Edit Member</h3>
+      <div className="flex justify-between items-center mb-4">
+        <button
+          type="button"
+          className="border border-red-500 bg-red-500 text-white px-3 py-1 rounded-md font-semibold flex items-center"
+          onClick={() => onClose()}
+        >
+          Back
+        </button>
+        <h3 className="text-lg font-semibold text-red-800">Edit Member</h3>
+        <div />
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Basic / personal */}
@@ -1427,9 +1437,7 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
                 <Select
                   {...field}
                   options={cities}
-                  value={casteOptions.find(
-                    (opt) => opt.value === field.value || null,
-                  )}
+                  value={cities.find((opt) => opt.value === field.value) || null}
                   onChange={(selectedOption) => {
                     field.onChange(selectedOption.value);
                     setSelectedParentCity(selectedOption.label);
@@ -1871,12 +1879,10 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
                 <Select
                   {...field}
                   options={cities}
-                  value={casteOptions.find(
-                    (opt) => opt.value === field.value || null,
-                  )}
+                  value={cities.find((opt) => opt.value === field.value) || null}
                   onChange={(selectedOption) => {
                     field.onChange(selectedOption.value);
-                    setSelectedParentCity(selectedOption.label);
+                    setSelectedNativeCity(selectedOption.label);
                   }}
                   classNamePrefix="react-select"
                   placeholder="Select City"
@@ -2725,9 +2731,9 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
               dropdown1Label="Religion"
               dropdown2Label="Caste"
               dropdown3Label="Subcaste"
-              api1Url="https://api.manomilan.com/api/user/get-religions"
-              api2Url="https://api.manomilan.com/api/user/get-caste-by-religion"
-              api3Url="https://api.manomilan.com/api/user/get-subcaste-by-caste"
+              api1Url="http://localhost:8000/api/user/get-religions"
+              api2Url="http://localhost:8000/api/user/get-caste-by-religion"
+              api3Url="http://localhost:8000/api/user/get-subcaste-by-caste"
               api1Key="religion"
               api2Key="caste"
               api3Key="subCaste"
@@ -2749,9 +2755,9 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
               dropdown1Label="Country"
               dropdown2Label="State"
               dropdown3Label="City"
-              api1Url="https://api.manomilan.com/api/user/get-all-countries"
-              api2Url="https://api.manomilan.com/api/user/get-state-by-country"
-              api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
+              api1Url="http://localhost:8000/api/user/get-all-countries"
+              api2Url="http://localhost:8000/api/user/get-state-by-country"
+              api3Url="http://localhost:8000/api/user/get-cities-by-state"
               api1Key="country"
               api2Key="state"
               api3Key="city"
@@ -2773,9 +2779,9 @@ const EditMemberPage = ({ userId: rawUserId, token }) => {
               dropdown1Label="Country"
               dropdown2Label="State"
               dropdown3Label="City"
-              api1Url="https://api.manomilan.com/api/user/get-all-countries"
-              api2Url="https://api.manomilan.com/api/user/get-state-by-country"
-              api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
+              api1Url="http://localhost:8000/api/user/get-all-countries"
+              api2Url="http://localhost:8000/api/user/get-state-by-country"
+              api3Url="http://localhost:8000/api/user/get-cities-by-state"
               api1Key="country"
               api2Key="state"
               api3Key="city"

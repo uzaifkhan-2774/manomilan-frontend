@@ -40,6 +40,17 @@ const MemberTable = ({
   const effectiveCurrentPage = typeof currentPage === "number" ? currentPage : 0;
   const [updateProfile, setUpdateProfile] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [pageInput, setPageInput] = useState("");
+  const goToPage = () => {
+    const targetPage = Number(pageInput);
+    if (
+      Number.isInteger(targetPage) &&
+      targetPage >= 1 &&
+      targetPage <= totalPages
+    ) {
+      onPageChange?.(targetPage - 1);
+    }
+  };
   // Filter distributors based on search and status
   // Update the filteredDistributors logic
   const filteredDistributors = data.filter((distributor) => {
@@ -83,15 +94,16 @@ const MemberTable = ({
     };
 
     // Search conditions
+    const searchLower = searchTerm.trim().toLowerCase();
     const matchesSearch =
       distributor.loginEmail
         ?.toLowerCase()
         .trim()
-        .includes(searchTerm.trim().toLowerCase()) ||
+        .includes(searchLower) ||
       distributor.firstName
         ?.toLowerCase()
         .trim()
-        .includes(searchTerm.trim().toLowerCase()) ||
+        .includes(searchLower) ||
       distributor.UserId?.toString().trim().includes(searchTerm.trim()) ||
       distributor.loginNumber?.toString().trim().includes(searchTerm.trim()) ||
       distributor.mamkul?.toString().trim().includes(searchTerm.trim()) ||
@@ -103,12 +115,13 @@ const MemberTable = ({
       distributor.nativeVillage
         ?.toString()
         .trim()
-        .includes(searchTerm.trim()) ||
+        .toLowerCase()
+        .includes(searchLower) ||
       distributor.parentsCity
         ?.toString()
         .trim()
         .toLowerCase()
-        .includes(searchTerm.trim().toLowerCase()) ||
+        .includes(searchLower) ||
       distributor.parentsContact
         ?.toString()
         .trim()
@@ -123,22 +136,15 @@ const MemberTable = ({
         ?.toString()
         .trim()
         .toLowerCase()
+        .includes(searchLower) ||
+      distributor.franchiseUnder
+        ?.toLowerCase()
         .trim()
-        .includes(searchTerm.trim().toLowerCase()) ||
-      (isValidDate(searchTerm) && formattedDob === searchTerm)(
-        // DOB exact match
-        searchTerm.length >= 2 && formattedDob.includes(searchTerm),
-      )(
-        // Partial DOB match
-        isValidDate(searchTerm) && formattedReg === searchTerm,
-      )(
-        // Reg Date exact match
-        searchTerm.length >= 2 && formattedReg.includes(searchTerm),
-      ); // Partial Reg date match
-    distributor.franchiseUnder
-      ?.toLowerCase()
-      .trim()
-      .includes(searchTerm.trim().toLowerCase());
+        .includes(searchLower) ||
+      (isValidDate(searchTerm) && formattedDob === searchTerm) ||
+      (searchTerm.length >= 2 && formattedDob.includes(searchTerm)) ||
+      (isValidDate(searchTerm) && formattedReg === searchTerm) ||
+      (searchTerm.length >= 2 && formattedReg.includes(searchTerm));
     return matchesSearch;
   });
 
@@ -173,9 +179,9 @@ const MemberTable = ({
     // Fetch single user details
     let endpoint;
     if (pathname.includes("/admin")) {
-      endpoint = `https://api.manomilan.com/api/admin/get-single-user/${id}`;
+      endpoint = `http://localhost:8000/api/admin/get-single-user/${id}`;
     } else {
-      endpoint = `https://api.manomilan.com/api/franchise/get-single-user/${id}`;
+      endpoint = `http://localhost:8000/api/franchise/get-single-user/${id}`;
     }
     try {
       const response = await axios.get(endpoint, {
@@ -195,7 +201,7 @@ const MemberTable = ({
   const updateProfilePic = async () => {
     try {
       const response = await axios.put(
-        "https://api.manomilan.com/api/admin/update-userpfp",
+        "http://localhost:8000/api/admin/update-userpfp",
         {
           userId: singleUser._id,
           userStatus: "Approved",
@@ -231,7 +237,7 @@ const MemberTable = ({
   const rejectProfilePic = async () => {
     try {
       const response = await axios.put(
-        "https://api.manomilan.com/api/admin/update-userpfp",
+        "http://localhost:8000/api/admin/update-userpfp",
         {
           userId: singleUser._id,
           userStatus: "Rejected",
@@ -256,7 +262,7 @@ const MemberTable = ({
     if (result) {
       try {
         const response = await axios.post(
-          "https://api.manomilan.com/api/franchise/inactivate-user",
+          "http://localhost:8000/api/franchise/inactivate-user",
           {
             userId: singleUser._id,
           },
@@ -276,9 +282,8 @@ const MemberTable = ({
     }
   };
   const handleEditFrDetails = (distributor) => {
-    setEdit(!edit);
     setUserId(distributor);
-    alert(`Editing distributor ${distributor._id}`);
+    setEdit(true);
   };
 
   const getStatusBadge = (status) => {
@@ -311,7 +316,7 @@ const MemberTable = ({
     console.log(currFranchiseId);
     try {
       const response = await axios.get(
-        `https://api.manomilan.com/api/franchise/get-packages/${currFranchiseId}`,
+        `http://localhost:8000/api/franchise/get-packages/${currFranchiseId}`,
       );
       console.log(response.data);
       if (response.data.status) {
@@ -325,9 +330,9 @@ const MemberTable = ({
   const allotPackageToUser = async (data) => {
     let endpoint;
     if (data.vipPackage === undefined) {
-      endpoint = "https://api.manomilan.com/api/franchise/allot-main-addOnpackage";
+      endpoint = "http://localhost:8000/api/franchise/allot-main-addOnpackage";
     } else {
-      endpoint = "https://api.manomilan.com/api/franchise/allot-vip-package";
+      endpoint = "http://localhost:8000/api/franchise/allot-vip-package";
     }
 
     const payload = {
@@ -362,7 +367,7 @@ const MemberTable = ({
   const getAllotedPackages = async (data) => {
     try {
       const response = await axios.get(
-        `https://api.manomilan.com/api/user/get-packages/${data}`,
+        `http://localhost:8000/api/user/get-packages/${data}`,
       );
       console.log(response.data);
       if (response.data?.status && response.data?.userPackages) {
@@ -420,7 +425,7 @@ const MemberTable = ({
                     {/* <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" /> */}
                     <div className="flex flex-wrap gap-4 items-center">
                       {[
-                        { label: "All Status", value: "All" },
+                        { label: "ALL", value: "All" },
                         { label: "Active", value: "Active" },
                         { label: "Inactive", value: "Inactive" },
                         { label: "Incomplete", value: "Pending" },
@@ -465,6 +470,9 @@ const MemberTable = ({
                         ID
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                        Actions
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                         First Name
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
@@ -496,13 +504,10 @@ const MemberTable = ({
                       <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                         Status
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
-                        Actions
-                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredDistributors.map((distributor, index) => (
+                    {paginatedDistributors.map((distributor, index) => (
                       <tr
                         key={distributor.UserId}
                         className={`${
@@ -516,6 +521,38 @@ const MemberTable = ({
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
                             {distributor.UserId}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => {
+                                handleView(distributor?._id);
+                                setBiodata(!biodata);
+                              }}
+                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white hover:opacity-90 transition-opacity"
+                              style={{ backgroundColor: "#7d0a0a" }}
+                            >
+                              <Eye className="w-3 h-3 mr-1" />
+                              View
+                            </button>
+                            {pathname.includes("/franchise" || "/admin") ? (
+                              <button
+                                onClick={() => {
+                                  handleEditFrDetails(distributor);
+                                }}
+                                className="inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded-md text-white hover:opacity-90 transition-opacity"
+                                style={{
+                                  backgroundColor: "#a51d1d",
+                                  borderColor: "#7d0a0a",
+                                }}
+                              >
+                                <Edit3 className="w-3 h-3 mr-1" />
+                                Edit
+                              </button>
+                            ) : (
+                              " "
+                            )}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -581,38 +618,7 @@ const MemberTable = ({
                             {distributor.ActiveStatus ? "Active" : "Inactive"}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => {
-                                handleView(distributor?._id);
-                                setBiodata(!biodata);
-                              }}
-                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white hover:opacity-90 transition-opacity"
-                              style={{ backgroundColor: "#7d0a0a" }}
-                            >
-                              <Eye className="w-3 h-3 mr-1" />
-                              View
-                            </button>
-                            {pathname.includes("/franchise" || "/admin") ? (
-                              <button
-                                onClick={() => {
-                                  handleEditFrDetails(distributor);
-                                }}
-                                className="inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded-md text-white hover:opacity-90 transition-opacity"
-                                style={{
-                                  backgroundColor: "#a51d1d",
-                                  borderColor: "#7d0a0a",
-                                }}
-                              >
-                                <Edit3 className="w-3 h-3 mr-1" />
-                                Edit
-                              </button>
-                            ) : (
-                              " "
-                            )}
-                          </div>
-                        </td>
+                        
                       </tr>
                     ))}
                   </tbody>
@@ -630,24 +636,47 @@ const MemberTable = ({
                     of {filteredDistributors.length} results
                   </div>
                   {/* Pagination Controls */}
-                  <div className="mt-4 flex justify-center gap-2">
-                    <button
-                      disabled={effectiveCurrentPage === 0}
-                      onClick={() => onPageChange?.(effectiveCurrentPage - 1)}
-                      className="px-3 py-1 border rounded disabled:opacity-50"
-                    >
-                      Prev
-                    </button>
-                    <span className="px-3 py-1">
-                      {effectiveCurrentPage + 1} / {totalPages || 1}
-                    </span>
-                    <button
-                      disabled={effectiveCurrentPage >= totalPages - 1}
-                      onClick={() => onPageChange?.(effectiveCurrentPage + 1)}
-                      className="px-3 py-1 border rounded disabled:opacity-50"
-                    >
-                      Next
-                    </button>
+                  <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                    <div className="flex items-center gap-2">
+                      <button
+                        disabled={effectiveCurrentPage === 0}
+                        onClick={() => onPageChange?.(effectiveCurrentPage - 1)}
+                        className="px-3 py-1 border rounded disabled:opacity-50"
+                      >
+                        Prev
+                      </button>
+                      <span className="px-3 py-1">
+                        {effectiveCurrentPage + 1} / {totalPages || 1}
+                      </span>
+                      <button
+                        disabled={effectiveCurrentPage >= totalPages - 1}
+                        onClick={() => onPageChange?.(effectiveCurrentPage + 1)}
+                        className="px-3 py-1 border rounded disabled:opacity-50"
+                      >
+                        Next
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm text-gray-700">Go to page</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max={totalPages || 1}
+                        value={pageInput}
+                        onChange={(e) => setPageInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") goToPage();
+                        }}
+                        className="w-20 px-2 py-1 border rounded"
+                      />
+                      <button
+                        type="button"
+                        onClick={goToPage}
+                        className="px-3 py-1 border rounded bg-red-600 text-white hover:bg-red-700"
+                      >
+                        Go
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -672,7 +701,13 @@ const MemberTable = ({
     );
   } else {
     if (detailProfile) {
-      return <EditMemberTable userId={singleUser._id} token={token} />;
+      return (
+        <EditMemberTable
+          userId={singleUser._id}
+          token={token}
+          onClose={() => setDetailProfile(false)}
+        />
+      );
     } else {
       return (
         <>
@@ -692,7 +727,7 @@ const MemberTable = ({
                   <img
                     src={
                       singleUser.userPhotoStatus === "Approved"
-                        ? `https://api.manomilan.com/upload/${singleUser.profilePic}${updatePic ? `?t=${updatePic}` : ""}`
+                        ? `http://localhost:8000/upload/${singleUser.profilePic}${updatePic ? `?t=${updatePic}` : ""}`
                         : "https://imgs.search.brave.com/rwE-hC6ESt3hBJZhImPkb-KvU26bLDKVe-OKv1y50-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzE0LzQz/LzU1LzE0NDM1NWQ3/YjM2YzVmNjQ2NDM1/NDIzNzk4MjgxY2U5/LmpwZw"
                     }
                     alt="Profile"
@@ -857,7 +892,7 @@ const MemberTable = ({
               <div className="w-full  h-1/2 md:w-1/2 md:h-1/2 bg-white rounded-md shadow-md flex flex-col gap-3 justify-center items-center">
                 <div className="w-[250px] h-[250px] bg-red-300 rounded-md">
                   <img
-                    src={`https://api.manomilan.com/upload/${
+                    src={`http://localhost:8000/upload/${
                       singleUser.profilePic || singleUser.userPhotoOne || ""
                     }`}
                     alt=""

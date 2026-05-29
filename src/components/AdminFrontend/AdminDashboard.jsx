@@ -271,7 +271,7 @@ const MatrimonialForm = () => {
       const payload = { filters, fields };
 
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/get-reports",
+        "http://localhost:8000/api/admin/get-reports",
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -394,7 +394,7 @@ const MatrimonialForm = () => {
   const fetchStreams = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-streams"
+        "http://localhost:8000/api/admin/get-streams"
       );
       if (response.data.status) {
         setStreams(response.data.data);
@@ -415,7 +415,7 @@ const MatrimonialForm = () => {
     for (const stream of streams) {
       try {
         const response = await axios.get(
-          "https://api.manomilan.com/api/admin/get-degrees-by-stream",
+          "http://localhost:8000/api/admin/get-degrees-by-stream",
           {
             params: { stream: stream.stream }, // assuming stream is like { stream: 'Engineering' }
           }
@@ -464,7 +464,7 @@ const MatrimonialForm = () => {
   const viewCountries = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-country"
+        "http://localhost:8000/api/admin/get-country"
       );
       setCountriesView(response.data.result || []);
     } catch (error) {
@@ -475,7 +475,7 @@ const MatrimonialForm = () => {
   const viewStates = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-all-states"
+        "http://localhost:8000/api/admin/get-all-states"
       );
       setstatesView(response.data.allStates || []);
     } catch (error) {
@@ -486,7 +486,7 @@ const MatrimonialForm = () => {
   const viewCity = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-all-cities"
+        "http://localhost:8000/api/admin/get-all-cities"
       );
       setCityView(response.data.allLocations || []);
     } catch (error) {
@@ -497,7 +497,7 @@ const MatrimonialForm = () => {
   const viewReligion = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-religion"
+        "http://localhost:8000/api/admin/get-religion"
       );
       setReligionView(response.data.result || []);
     } catch (error) {
@@ -508,7 +508,7 @@ const MatrimonialForm = () => {
   const viewCaste = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-all-castes"
+        "http://localhost:8000/api/admin/get-all-castes"
       );
       setCasteView(response.data.result || []);
     } catch (error) {
@@ -519,7 +519,7 @@ const MatrimonialForm = () => {
   const viewSubcaste = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-all-subcastes"
+        "http://localhost:8000/api/admin/get-all-subcastes"
       );
       setSubcasteView(response.data.result || []);
     } catch (error) {
@@ -530,7 +530,7 @@ const MatrimonialForm = () => {
   // const DegreeView = async () => {
   //   try {
   //     const response = await axios.get(
-  //       "https://api.manomilan.com/api/admin/get-all-degrees"
+  //       "http://localhost:8000/api/admin/get-all-degrees"
   //     );
   //     setViewdegrees(response.data.data);
   //     await DegreeView();
@@ -542,7 +542,7 @@ const MatrimonialForm = () => {
   const getFranchises = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-franchises",
+        "http://localhost:8000/api/user/get-franchises",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -561,7 +561,7 @@ const MatrimonialForm = () => {
   const fetchMotherTongue = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-mother-tongue"
+        "http://localhost:8000/api/admin/get-mother-tongue"
       );
       if (response.data.status === true) {
         setMotherTongue(response.data.result);
@@ -574,7 +574,7 @@ const MatrimonialForm = () => {
   const getDistributors = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-distributors",
+        "http://localhost:8000/api/admin/get-distributors",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -594,7 +594,7 @@ const MatrimonialForm = () => {
   const getSect = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-sect"
+        "http://localhost:8000/api/admin/get-sect"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -612,7 +612,7 @@ const MatrimonialForm = () => {
   const getManglik = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-manglik"
+        "http://localhost:8000/api/user/get-manglik"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -629,7 +629,7 @@ const MatrimonialForm = () => {
   const getFoodPref = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/food-choices"
+        "http://localhost:8000/api/user/food-choices"
       );
       if (response.data.status === false) {
         const fetched = response.data.result.map((item) => ({
@@ -646,7 +646,7 @@ const MatrimonialForm = () => {
   const getComplexion = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-complexion"
+        "http://localhost:8000/api/user/get-complexion"
       );
       if (response.data.status) {
         setComplexions(response.data?.result);
@@ -658,7 +658,7 @@ const MatrimonialForm = () => {
   const getBodyType = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-bodytype"
+        "http://localhost:8000/api/user/get-bodytype"
       );
       if (response.data.status) {
         setBodyType(response.data?.result);
@@ -670,7 +670,7 @@ const MatrimonialForm = () => {
   const getFamilyBg = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-familybg"
+        "http://localhost:8000/api/user/get-familybg"
       );
       if (response.data.status) {
         setFamilyBg(response.data?.result);
@@ -682,7 +682,7 @@ const MatrimonialForm = () => {
   const getPosition = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-position"
+        "http://localhost:8000/api/user/get-position"
       );
       if (response.data.status) {
         setPositions(response.data?.result);
@@ -1494,7 +1494,7 @@ const PasswordChangeComponent = ({ currAdmin }) => {
     try {
       // Simulate API call to send OTP
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/forgot-password-otp",
+        "http://localhost:8000/api/admin/forgot-password-otp",
         {
           id: currAdmin._id,
         }
@@ -1527,7 +1527,7 @@ const PasswordChangeComponent = ({ currAdmin }) => {
   //   setSuccessMessage('');
 
   //   try {
-  //     const response = await axios.post('https://api.manomilan.com/api/admin/change-password', {
+  //     const response = await axios.post('http://localhost:8000/api/admin/change-password', {
   //       id:currAdmin._id,
   //       otp:formData.otp,
   //       newpassword:formData.newPassword
@@ -1582,7 +1582,7 @@ const PasswordChangeComponent = ({ currAdmin }) => {
 
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/change-password",
+        "http://localhost:8000/api/admin/change-password",
         {
           id: currAdmin._id,
           otp: formData.otp,
@@ -2075,7 +2075,7 @@ const TransactionPasswordChangeComponent = ({ adminId, token }) => {
     setIsTransactionLoading(true);
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/change-transactionPassword",
+        "http://localhost:8000/api/admin/change-transactionPassword",
         {
           transactionPassword: transactionFormData.oldTransactionPassword,
           newTransactionPassword: transactionFormData.newTransactionPassword,
@@ -2899,7 +2899,7 @@ const AdminDashboard = () => {
   const getCurrentAdmin = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/current-admin",
+        "http://localhost:8000/api/admin/current-admin",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -2942,7 +2942,7 @@ const AdminDashboard = () => {
     const [tableData,setTableData]=useState(null)
     const getPackagesLog=async()=>{
       try {
-        const response=await axios.get("https://api.manomilan.com/api/admin/get-all-packages")
+        const response=await axios.get("http://localhost:8000/api/admin/get-all-packages")
         if(response.data.status){
           setTableData(response.data)
         }
@@ -2956,7 +2956,7 @@ const AdminDashboard = () => {
   const getAdminInboxMsgs = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/message/replies",
+        "http://localhost:8000/api/admin/message/replies",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -2987,7 +2987,7 @@ const AdminDashboard = () => {
     };
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/add-points",
+        "http://localhost:8000/api/admin/add-points",
         payload,
         {
           headers: {
@@ -3013,7 +3013,7 @@ const AdminDashboard = () => {
   const getPoints = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-points",
+        "http://localhost:8000/api/admin/get-points",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3060,7 +3060,7 @@ const AdminDashboard = () => {
     };
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/add-main-packages",
+        "http://localhost:8000/api/admin/add-main-packages",
         payload,
         {
           headers: {
@@ -3081,7 +3081,7 @@ const AdminDashboard = () => {
   const getMainPackage = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-main-packages",
+        "http://localhost:8000/api/admin/get-main-packages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3107,7 +3107,7 @@ const AdminDashboard = () => {
     console.log(payload);
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/add-vip-packages",
+        "http://localhost:8000/api/admin/add-vip-packages",
         payload,
         {
           headers: {
@@ -3134,7 +3134,7 @@ const AdminDashboard = () => {
   const getVipPackage = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-vip-packages",
+        "http://localhost:8000/api/admin/get-vip-packages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3162,7 +3162,7 @@ const AdminDashboard = () => {
     console.log(payload);
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/add-free-packages",
+        "http://localhost:8000/api/admin/add-free-packages",
         payload,
         {
           headers: {
@@ -3187,7 +3187,7 @@ const AdminDashboard = () => {
   const getFreePackage = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-free-packages",
+        "http://localhost:8000/api/admin/get-free-packages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3237,7 +3237,7 @@ const AdminDashboard = () => {
     console.log(payload)
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/admin/add-addon-packages",
+        "http://localhost:8000/api/admin/add-addon-packages",
         payload,
         {
           headers: {
@@ -3266,7 +3266,7 @@ const AdminDashboard = () => {
   const getAddOnPackage = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-addon-packages",
+        "http://localhost:8000/api/admin/get-addon-packages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3292,7 +3292,7 @@ const AdminDashboard = () => {
   const getFranchises = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-franchises",
+        "http://localhost:8000/api/user/get-franchises",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3311,7 +3311,7 @@ const AdminDashboard = () => {
   const getDistributors = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-distributors",
+        "http://localhost:8000/api/admin/get-distributors",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3329,15 +3329,15 @@ const AdminDashboard = () => {
   };
 
   const [page, setPage] = useState(0); // 0 = first page
-  const pageSize = 10;
+  const pageSize = 20;
   const [totalUsers, setTotalUsers] = useState(0);
 
   const getMembers = async () => {
-    const lowerLimit = page * pageSize;
-    const upperLimit = pageSize;
+    const lowerLimit = 0;
+    const upperLimit = 1000000;
     try {
       const response = await axios.get(
-        `https://api.manomilan.com/api/admin/get-users?lowerLimit=${lowerLimit}&upperLimit=${upperLimit}`,
+        `http://localhost:8000/api/admin/get-users?lowerLimit=${lowerLimit}&upperLimit=${upperLimit}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3346,12 +3346,8 @@ const AdminDashboard = () => {
       );
 
       if (response.data.status === true) {
-        if (page === 0) {
-          setMembers(response.data.users);
-          setTotalUsers(response.data.users.length);
-        } else {
-          setMembers((prev) => [...prev, ...response.data.users]);
-        }
+        setMembers(response.data.users);
+        setTotalUsers(response.data.users.length);
       }
     } catch (error) {
       console.log(error);
@@ -3363,9 +3359,6 @@ const AdminDashboard = () => {
   const seeLess = () => {
     setPage((prev) => prev - 1);
   };
-  useEffect(() => {
-    getMembers();
-  }, [page]);
 
   useEffect(() => {
     getFranchises();
@@ -3403,7 +3396,7 @@ const AdminDashboard = () => {
     console.log(receiverIds, message, token);
     try {
       const res = await axios.post(
-        "https://api.manomilan.com/api/admin/message/send",
+        "http://localhost:8000/api/admin/message/send",
         {
           receiverIds,
           message,
@@ -3496,7 +3489,7 @@ const AdminDashboard = () => {
   const getAdminSentMsgs = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/message/get-sendMessages",
+        "http://localhost:8000/api/admin/message/get-sendMessages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3550,7 +3543,7 @@ const AdminDashboard = () => {
       items: [
         { id: "viewMember", label: "View Member", icon: Eye },
         { id: "Memberpackages", label: "Packages", icon: Package },
-        { id: "editMember", label: "Edit Member", icon: Pen },
+        // { id: "editMember", label: "Edit Member", icon: Pen },
         // { id: "controlField", label: "Control Fields", icon: PlayCircle },
       ],
     },
@@ -3879,17 +3872,17 @@ const AdminDashboard = () => {
                     <td className="px-4 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-8 h-8 bg-[#7d0a0a] rounded-full flex items-center justify-center text-white text-sm font-medium">
-                          A
+                          S
                         </div>
                         <div className="ml-3">
                           <div className="text-sm font-medium text-gray-900">
-                            Admin User
+                            Sudhanshu Mohod
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                      admin@example.com
+                      mymanomilan@gmail.com
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap">
                       <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
@@ -5387,9 +5380,9 @@ const AdminDashboard = () => {
 
         {/* Navigation */}
         <div className="p-4">
-          <p className="text-sm md:text-base font-semibold cursor-pointer text-[#7d0a0a] mb-4">
+          {/* <p className="text-sm md:text-base font-semibold cursor-pointer text-[#7d0a0a] mb-4">
             Goto Default Distributor
-          </p>
+          </p> */}
           {Object.entries(sidebarItems).map(([sectionKey, section]) => {
             const SectionIcon = section.icon;
             const isExpanded = expandedSections[sectionKey];

@@ -17,7 +17,7 @@ const Register = () => {
   // api to get all the franchises 
   const getFranchises=async()=>{
     try {
-      const response= await axios.get("https://api.manomilan.com/api/user/get-franchises")
+      const response= await axios.get("http://localhost:8000/api/user/get-franchises")
       if(response.data.status===true){
         setTotalFranchises(response.data.franchises)
         return

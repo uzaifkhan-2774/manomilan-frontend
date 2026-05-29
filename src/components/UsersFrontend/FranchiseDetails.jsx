@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 const FranchiseDetails = ({ setEdit,userId }) => {
   const { register, handleSubmit, watch, setValue } = useForm({
@@ -30,9 +31,9 @@ const FranchiseDetails = ({ setEdit,userId }) => {
   const fetchOptions = async () => {
     try {
       const [complexionRes, bodyTypeRes, familyBgRes] = await Promise.all([
-        axios.get("https://api.manomilan.com/api/user/get-complexion"),
-        axios.get("https://api.manomilan.com/api/user/get-bodytype"),
-        axios.get("https://api.manomilan.com/api/user/get-familybg")
+        axios.get("http://localhost:8000/api/user/get-complexion"),
+        axios.get("http://localhost:8000/api/user/get-bodytype"),
+        axios.get("http://localhost:8000/api/user/get-familybg")
       ]);
 
       if (complexionRes.data.status) {
@@ -73,8 +74,9 @@ const FranchiseDetails = ({ setEdit,userId }) => {
     formData.append("familyData",data.familyData)
     console.log("Form Data:", data);
     try {
-      const response = await axios.put("https://api.manomilan.com/api/franchise/update-user-profile",formData)
+      const response = await axios.put("http://localhost:8000/api/franchise/update-user-profile",formData)
       console.log(response.data)
+      toast.success(response.data.message)
     } catch (error) {
       console.log(error)
     }
