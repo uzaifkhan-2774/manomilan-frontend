@@ -5,10 +5,12 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const ForgotFranchisePass = () => {
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+
   const [pin, setPin] = useState(["", "", "", "", "", ""]);
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState(null);
+
+
+  let token = localStorage.getItem("userToken")
   // Generic handler for OTP & PIN
   const handleInputChange = (index, value, state, setState, prefix) => {
     if (value.length <= 1 && /^[0-9]*$/.test(value)) {
@@ -30,45 +32,23 @@ const ForgotFranchisePass = () => {
     }
   };
 
-  const disableOtp=(e)=>{
-    if(email===null){
-      toast.error("Email Required!")
-      return
-    }
-    e.target.disable = true
-  }
-  const sendOtp = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/api/user/get-otp",
-        {
-          email: email,
-        }
-      );
-      if(response.data.status){
-        toast.success(response.data.message)
-        return
-      }else{
-        toast.error(response.data.message)
-      }
-      console.log(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   const changePass = async()=>{
     const payload={
-      email:email,
-      otp:Number(otp.join("")),
+    
       newPassword:Number(pin.join(""))
     }
     try {
-      const response = await axios.post('http://localhost:8000/api/user/verify-otp-reset-password',payload)
+      const response = await axios.post('http://localhost:8000/api/user/verify-otp-reset-password',payload,
+     {    headers: {
+          Authorization: `Bearer ${token}`,
+        }}
+      )
       if(response.data.status){
         toast.success(response.data.message)
-        setEmail(null)
+       
         setPin(["", "", "", "", "", ""])
-        setOtp(["", "", "", "", "", ""])
+
         return
       }
       else{

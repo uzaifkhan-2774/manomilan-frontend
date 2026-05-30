@@ -275,7 +275,6 @@ const QuickSearchCards = () => {
     { name: "ANY", degrees: [] },
     ...educationCategories,
   ];
-
   const partnerDegreeToggle = (degree, categoryName) => {
     if (categoryName === "ANY") {
       const allDegrees = partnerEducationCategories
@@ -298,7 +297,12 @@ const QuickSearchCards = () => {
         if (exists) {
           return prev.filter((edu) => edu.degree !== degree);
         } else {
-          return [...prev, { degree }];
+          const degreesInCategory = partnerEducationCategories
+            .find((cat) => cat.name === categoryName)?.degrees || [];
+          const filtered = prev.filter(
+            (edu) => !degreesInCategory.includes(edu.degree)
+          );
+          return [...filtered, { degree, category: categoryName }];
         }
       });
     }

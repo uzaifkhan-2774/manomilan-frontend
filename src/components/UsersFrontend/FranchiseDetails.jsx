@@ -13,9 +13,9 @@ const FranchiseDetails = ({ setEdit,userId }) => {
       height:"",
       position:"",
       vipReg:'',
-      reference:"",
-      ReferenceMobile:"",
-      familyDetails:"",
+      Reference:"",
+     ReferenceMobile:"",
+       FamilyDetails:"",
       photo1:null,
       photo2:null
     }
@@ -67,12 +67,13 @@ const FranchiseDetails = ({ setEdit,userId }) => {
     formData.append("height",data.height)
     formData.append("position",data.position)
     formData.append("vipMember",data.vipReg)
-    formData.append("Reference",data.reference)
+    formData.append("Reference",data.Reference)
     formData.append("ReferenceMobile",data.ReferenceMobile)
     formData.append("userPhotoFive",data.photo1[0])
     formData.append("userPhotoSix",data.photo2[0])
-    formData.append("familyData",data.familyData)
+    formData.append("FamilyDetails",data.FamilyDetails)
     console.log("Form Data:", data);
+    console.log(formData)
     try {
       const response = await axios.put("http://localhost:8000/api/franchise/update-user-profile",formData)
       console.log(response.data)
@@ -125,7 +126,7 @@ const FranchiseDetails = ({ setEdit,userId }) => {
           <label className="block text-gray-700 font-medium mb-2">Reference</label>
           <input
             type="text"
-            {...register("reference")}
+            {...register("Reference")}
             placeholder="Name"
             maxLength={100}
             className="border border-gray-300 focus:border-red-500 focus:ring-red-500 p-3 rounded-xl w-full md:w-1/3 shadow-sm"
@@ -136,7 +137,7 @@ const FranchiseDetails = ({ setEdit,userId }) => {
           <label className="block text-gray-700 font-medium mb-2">Reference Mobile Number</label>
           <input
             type="tel"
-            {...register("referenceMobile")}
+            {...register("ReferenceMobile")}
             placeholder="Reference Mobile Number"
             maxLength={10}
             className="border border-gray-300 focus:border-red-500 focus:ring-red-500 p-3 rounded-xl w-full md:w-1/3 shadow-sm"
@@ -146,7 +147,7 @@ const FranchiseDetails = ({ setEdit,userId }) => {
           <label className="block text-gray-700 font-medium mb-2">Family Details</label>
           <input
             type="text"
-            {...register("familyData")}
+            {...register("FamilyDetails")}
             placeholder="Family Details"
             className="border border-gray-300 focus:border-red-500 focus:ring-red-500 p-3 rounded-xl w-full md:w-1/3 shadow-sm"
           />
