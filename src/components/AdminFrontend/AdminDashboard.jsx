@@ -150,7 +150,8 @@ const MatrimonialForm = () => {
         "City,State,Country",
         "WhatsApp Number",
         "Alternate Number",
-        "Parents Contact Number"
+        "Parents Contact Number",
+        "Family Details"
       ],
       name: "parentsAddress",
     },
@@ -172,10 +173,74 @@ const MatrimonialForm = () => {
         "Status",
         "Member Id",
         "Package Name",
+        "Reference",
+        "Reference mobile number"
       ],
       name: "other",
     },
   ];
+
+  const fieldKeyMap = {
+    userInformation: {
+      Email: "loginEmail",
+      "Mobile Number": "loginNumber",
+    },
+    generalInfo: {
+      "First Name": "firstName",
+      "Middle Name": "midname",
+      "Last Name": "lastName",
+      Gender: "gender",
+      "Date Of Birth": "dob",
+      "Marital Status": "maritalStatus",
+      Nationality: "nationality",
+    },
+    nativeInfo: {
+      "District,State,Country": "nativeCity",
+    },
+    workingInfo: {
+      "City,State,Country": "workLocation",
+    },
+    communityInfo: {
+      "Subcaste,Caste,Religion": "caste",
+      "Mother Tongue": "motherTongue",
+    },
+    career: {
+      "Education / Degree": "education",
+      "Monthly Income": "monthlyIncome",
+    },
+    health: {
+      "Blood Group": "bloodGroup",
+      Height: "height",
+      "Body Type": "BodyType",
+      Complexion: "Complexion",
+      "Physical Abnormality": "divyang",
+    },
+    parentsAddress: {
+      "Address Line": "parentsResidence",
+      "City,State,Country": "parentsCity",
+      "WhatsApp Number": "whatsApp",
+      "Alternate Number": "alternateNumber",
+      "Parents Contact Number": "parentsContact",
+      "Family Details": "familyBackground",
+    },
+    relativesInfo: {
+      Mamkul: "mamkul",
+    },
+    familyMem: {
+      "No. of Brothers": "brothersCount",
+      "No. of Sisters": "sistersExactCount",
+    },
+    other: {
+      Distributor: "CreatedBy",
+      Franchisee: "franchiseUnder",
+      Status: "ActiveStatus",
+      "Member Id": "UserId",
+      "Package Name": "vipMember",
+      Reference: "Reference",
+      "Reference mobile number": "ReferenceMobile",
+    },
+  };
+
 
   // compose msg ddm closer
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -221,12 +286,19 @@ const MatrimonialForm = () => {
     }));
   };
 
+  const isFilterValueValid = (value) => {
+    if (value === undefined || value === null) return false;
+    const normalized = String(value).trim();
+    return normalized !== "" && !/^Select\s+/i.test(normalized);
+  };
+
   const handleCheck = (sectionName, value, checked) => {
+    const fieldName = fieldKeyMap[sectionName]?.[value] || value;
     setSelectedColumns((prev) => {
       const existing = prev[sectionName] || [];
-      let updated = checked
-        ? [...existing, value]
-        : existing.filter((v) => v !== value);
+      const updated = checked
+        ? [...existing, { label: value, field: fieldName }]
+        : existing.filter((item) => item.label !== value);
       return {
         ...prev,
         [sectionName]: updated,
@@ -236,7 +308,10 @@ const MatrimonialForm = () => {
 
   const handleClick = async () => {
     try {
+      setIsLoading(true);
       const filters = {
+        memberId: formData.memberId || "",
+        memberName: formData.memberName || "",
         nativeCountry: formData.nativeCountry || "",
         nativeState: formData.nativeState || "",
         nativeCity: formData.nativeCity || "",
@@ -259,23 +334,21 @@ const MatrimonialForm = () => {
       };
 
       Object.keys(filters).forEach((key) => {
-        if (
-          !filters[key] ||
-          (Array.isArray(filters[key]) && filters[key].length === 0)
-        ) {
+        if (!isFilterValueValid(filters[key])) {
           delete filters[key];
         }
       });
 
-      const fields = Object.values(selectedColumns).flat();
+      const selectedEntries = Object.values(selectedColumns).flat();
+      const fields = selectedEntries.map((entry) => entry.field);
       const payload = { filters, fields };
 
       const response = await axios.post(
-        "http://localhost:8000/api/admin/get-reports",
+        "https://api.manomilan.com/api/admin/get-reports",
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       console.log(payload, "payload");
       console.log(response.data);
@@ -287,6 +360,8 @@ const MatrimonialForm = () => {
       setExportData(flatData); // Flattened data for export
     } catch (error) {
       console.error("API Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -313,7 +388,7 @@ const MatrimonialForm = () => {
         flatItem.expectedReligion = item.expectedReligion
           .map(
             (r) =>
-              `${r.religion || ""} - ${r.caste || ""} - ${r.subCaste || ""}`
+              `${r.religion || ""} - ${r.caste || ""} - ${r.subCaste || ""}`,
           )
           .join(", ");
       }
@@ -342,13 +417,43 @@ const MatrimonialForm = () => {
 
   const handleExport = () => {
     const data = exportData || [];
-    console.log(data)
+    const selectedEntries = Object.values(selectedColumns).flat();
     if (!Array.isArray(data) || data.length === 0) {
       alert("No data to export.");
       return;
     }
+    if (selectedEntries.length === 0) {
+      alert("Please select at least one column before exporting.");
+      return;
+    }
 
-    const worksheet = XLSX.utils.json_to_sheet(data);
+    const rows = data.map((item) => {
+      const row = {};
+      selectedEntries.forEach(({ label, field }) => {
+        if (field === "nativeCity") {
+          const city = item.nativeCity || {};
+          row[label] = [city.city, city.state, city.country]
+            .filter(Boolean)
+            .join(", ");
+        } else if (field === "workLocation") {
+          row[label] = item.workLocation || "";
+        } else if (field === "caste") {
+          const caste = item.caste || {};
+          row[label] = [caste.caste, caste.religion, caste.subCaste]
+            .filter(Boolean)
+            .join(", ");
+        } else if (field === "nationality" || field === "education") {
+          row[label] = Array.isArray(item[field]) ? item[field].join(", ") : item[field] || "";
+        } else {
+          row[label] = item[field] ?? "";
+        }
+      });
+      return row;
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(rows, {
+      header: selectedEntries.map((entry) => entry.label),
+    });
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "ExportedData");
 
@@ -372,7 +477,7 @@ const MatrimonialForm = () => {
   const educationCategories = streams.map((stream) => ({
     name: stream.stream,
     degrees: (degreesByStream[stream.stream] || []).map(
-      (degree) => degree.degree
+      (degree) => degree.degree,
     ),
   }));
 
@@ -394,7 +499,7 @@ const MatrimonialForm = () => {
   const fetchStreams = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-streams"
+        "https://api.manomilan.com/api/admin/get-streams",
       );
       if (response.data.status) {
         setStreams(response.data.data);
@@ -415,10 +520,10 @@ const MatrimonialForm = () => {
     for (const stream of streams) {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/admin/get-degrees-by-stream",
+          "https://api.manomilan.com/api/admin/get-degrees-by-stream",
           {
             params: { stream: stream.stream }, // assuming stream is like { stream: 'Engineering' }
-          }
+          },
         );
         if (response.data.status) {
           degreesData[stream.stream] = response.data.data;
@@ -454,6 +559,7 @@ const MatrimonialForm = () => {
   const [distributor, setDistributor] = useState([]);
   const [motherTongue, setMotherTongue] = useState([]);
   const [exportData, setExportData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [sect, setSect] = useState([]);
   const [manglik, setManglik] = useState([]);
   const [foodPref, setFoodPref] = useState([]);
@@ -464,7 +570,7 @@ const MatrimonialForm = () => {
   const viewCountries = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-country"
+        "https://api.manomilan.com/api/admin/get-country",
       );
       setCountriesView(response.data.result || []);
     } catch (error) {
@@ -475,7 +581,7 @@ const MatrimonialForm = () => {
   const viewStates = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-all-states"
+        "https://api.manomilan.com/api/admin/get-all-states",
       );
       setstatesView(response.data.allStates || []);
     } catch (error) {
@@ -486,7 +592,7 @@ const MatrimonialForm = () => {
   const viewCity = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-all-cities"
+        "https://api.manomilan.com/api/admin/get-all-cities",
       );
       setCityView(response.data.allLocations || []);
     } catch (error) {
@@ -497,7 +603,7 @@ const MatrimonialForm = () => {
   const viewReligion = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-religion"
+        "https://api.manomilan.com/api/admin/get-religion",
       );
       setReligionView(response.data.result || []);
     } catch (error) {
@@ -508,7 +614,7 @@ const MatrimonialForm = () => {
   const viewCaste = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-all-castes"
+        "https://api.manomilan.com/api/admin/get-all-castes",
       );
       setCasteView(response.data.result || []);
     } catch (error) {
@@ -519,7 +625,7 @@ const MatrimonialForm = () => {
   const viewSubcaste = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-all-subcastes"
+        "https://api.manomilan.com/api/admin/get-all-subcastes",
       );
       setSubcasteView(response.data.result || []);
     } catch (error) {
@@ -530,7 +636,7 @@ const MatrimonialForm = () => {
   // const DegreeView = async () => {
   //   try {
   //     const response = await axios.get(
-  //       "http://localhost:8000/api/admin/get-all-degrees"
+  //       "https://api.manomilan.com/api/admin/get-all-degrees"
   //     );
   //     setViewdegrees(response.data.data);
   //     await DegreeView();
@@ -542,12 +648,12 @@ const MatrimonialForm = () => {
   const getFranchises = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/get-franchises",
+        "https://api.manomilan.com/api/user/get-franchises",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data.status === true) {
         setFranchises(response.data.franchises);
@@ -561,7 +667,7 @@ const MatrimonialForm = () => {
   const fetchMotherTongue = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-mother-tongue"
+        "https://api.manomilan.com/api/admin/get-mother-tongue",
       );
       if (response.data.status === true) {
         setMotherTongue(response.data.result);
@@ -574,12 +680,12 @@ const MatrimonialForm = () => {
   const getDistributors = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-distributors",
+        "https://api.manomilan.com/api/admin/get-distributors",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data.status === true) {
         setDistributor(response.data.result);
@@ -594,7 +700,7 @@ const MatrimonialForm = () => {
   const getSect = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-sect"
+        "https://api.manomilan.com/api/admin/get-sect",
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -612,7 +718,7 @@ const MatrimonialForm = () => {
   const getManglik = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/get-manglik"
+        "https://api.manomilan.com/api/user/get-manglik",
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -629,7 +735,7 @@ const MatrimonialForm = () => {
   const getFoodPref = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/food-choices"
+        "https://api.manomilan.com/api/user/food-choices",
       );
       if (response.data.status === false) {
         const fetched = response.data.result.map((item) => ({
@@ -646,7 +752,7 @@ const MatrimonialForm = () => {
   const getComplexion = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/get-complexion"
+        "https://api.manomilan.com/api/user/get-complexion",
       );
       if (response.data.status) {
         setComplexions(response.data?.result);
@@ -658,7 +764,7 @@ const MatrimonialForm = () => {
   const getBodyType = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/get-bodytype"
+        "https://api.manomilan.com/api/user/get-bodytype",
       );
       if (response.data.status) {
         setBodyType(response.data?.result);
@@ -670,7 +776,7 @@ const MatrimonialForm = () => {
   const getFamilyBg = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/get-familybg"
+        "https://api.manomilan.com/api/user/get-familybg",
       );
       if (response.data.status) {
         setFamilyBg(response.data?.result);
@@ -682,7 +788,7 @@ const MatrimonialForm = () => {
   const getPosition = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/get-position"
+        "https://api.manomilan.com/api/user/get-position",
       );
       if (response.data.status) {
         setPositions(response.data?.result);
@@ -743,18 +849,25 @@ const MatrimonialForm = () => {
             onChange={(e) => handleChange("memberName", e.target.value)}
           />
           <button
-            className="border text-white font-semibold bg-[#7d0a0a] border-#7d0a0a p-1 rounded-md cursor-pointer"
+            className="border text-white font-semibold bg-[#7d0a0a] border-#7d0a0a p-1 rounded-md cursor-pointer disabled:opacity-50"
             onClick={handleClick}
+            disabled={isLoading}
           >
-            Search
+            {isLoading ? "Searching..." : "Search"}
           </button>
           <button
-            className="border text-white font-semibold bg-[#7d0a0a] border-#7d0a0a p-1 rounded-md cursor-pointer"
+            className="border text-white font-semibold bg-[#7d0a0a] border-#7d0a0a p-1 rounded-md cursor-pointer disabled:opacity-50"
             onClick={handleExport}
+            disabled={isLoading || exportData.length === 0}
           >
             Export To Excel
           </button>
         </div>
+        {isLoading && (
+          <div className="text-sm text-gray-600 mt-2">
+            Fetching report data, please wait...
+          </div>
+        )}
 
         <div className="w-full flex justify-center">
           <div className="flex flex-col gap-2 w-1/2">
@@ -767,7 +880,7 @@ const MatrimonialForm = () => {
                   handleChange("nativeCountry", e.target.value);
                 }}
               >
-                <option value="Select Country">Select Country</option>
+                <option value="">Select Country</option>
                 {countriesView.map((ele, index) => (
                   <option value={ele.country} key={index}>
                     {ele.country}
@@ -783,7 +896,7 @@ const MatrimonialForm = () => {
                   handleChange("nativeState", e.target.value);
                 }}
               >
-                <option value="Select State">Select State</option>
+                <option value="">Select State</option>
                 {statesView.map((ele, index) => (
                   <option value={ele.state} key={index}>
                     {ele.state}
@@ -799,7 +912,7 @@ const MatrimonialForm = () => {
                   handleChange("nativeCity", e.target.value);
                 }}
               >
-                <option value="Select City">Select City</option>
+                <option value="">Select City</option>
                 {cityView.map((ele, index) => (
                   <option value={ele.city} key={index}>
                     {ele.city}
@@ -818,7 +931,7 @@ const MatrimonialForm = () => {
                   handleChange("workingCountry", e.target.value);
                 }}
               >
-                <option value="Select Country">Select Country</option>
+                <option value="">Select Country</option>
                 {countriesView.map((ele, index) => (
                   <option value={ele.country} key={index}>
                     {ele.country}
@@ -834,7 +947,7 @@ const MatrimonialForm = () => {
                   handleChange("workingState", e.target.value);
                 }}
               >
-                <option value="Select State">Select State</option>
+                <option value="">Select State</option>
                 {statesView.map((ele, index) => (
                   <option value={ele.state} key={index}>
                     {ele.state}
@@ -850,7 +963,7 @@ const MatrimonialForm = () => {
                   handleChange("workingCity", e.target.value);
                 }}
               >
-                <option value="Select City">Select City</option>
+                <option value="">Select City</option>
                 {cityView.map((ele, index) => (
                   <option value={ele.city} key={index}>
                     {ele.city}
@@ -872,7 +985,7 @@ const MatrimonialForm = () => {
                   handleChange("religion", e.target.value);
                 }}
               >
-                <option value="Select Religion">Select Religion</option>
+                <option value="">Select Religion</option>
                 {religionView.map((ele, index) => (
                   <option value={ele.religion} key={index}>
                     {ele.religion}
@@ -888,7 +1001,7 @@ const MatrimonialForm = () => {
                   handleChange("caste", e.target.value);
                 }}
               >
-                <option value="Select Caste">Select Caste</option>
+                <option value="">Select Caste</option>
                 {casteView.map((ele, index) => (
                   <option value={ele.caste} key={index}>
                     {ele.caste}
@@ -904,7 +1017,7 @@ const MatrimonialForm = () => {
                   handleChange("subCaste", e.target.value);
                 }}
               >
-                <option value="Select subcaste">Select Subcaste</option>
+                <option value="">Select Subcaste</option>
                 {subcasteView.map((ele, index) => (
                   <option value={ele.subCaste} key={index}>
                     {ele.subCaste}
@@ -920,7 +1033,7 @@ const MatrimonialForm = () => {
                   handleChange("motherTongue", e.target.value);
                 }}
               >
-                <option value="Select City">Select Language</option>
+                <option value="">Select Language</option>
                 {motherTongue.map((ele) => (
                   <option key={ele.motherTongue}>{ele.motherTongue}</option>
                 ))}
@@ -929,7 +1042,7 @@ const MatrimonialForm = () => {
           </div>
           <div className="flex flex-col gap-2 w-1/2">
             <p className="font-semibold text-lg">Career</p>
-            <div className="space-x-14">
+            {/* <div className="space-x-14">
               <label htmlFor="education">Education </label>
               <select
                 className="w-1/3 border border-gray-400 rounded-md p-1"
@@ -944,7 +1057,7 @@ const MatrimonialForm = () => {
                   </option>
                 ))}
               </select>
-            </div>
+            </div> */}
             <div className="space-x-12">
               <label htmlFor="occupation">Occuptaion</label>
               <select
@@ -953,7 +1066,7 @@ const MatrimonialForm = () => {
                   handleChange("occuptaion", e.target.value);
                 }}
               >
-                <option value="Select occuptaion">Select Occupation</option>
+                <option value="">Select Occupation</option>
                 {occupations.map((ele, index) => (
                   <option value={ele} key={index}>
                     {ele}
@@ -969,7 +1082,7 @@ const MatrimonialForm = () => {
                   handleChange("monthlyInc", e.target.value);
                 }}
               >
-                <option value="Select monthlyInc">Select Income</option>
+                <option value="">Select Income</option>
                 <option value="10000">Above ₹10,000</option>
                 <option value="20000">Above ₹20,000</option>
                 <option value="30000">Above ₹30,000</option>
@@ -1019,7 +1132,7 @@ const MatrimonialForm = () => {
                             const isSelected = selectedEducation.some(
                               (edu) =>
                                 edu.degree === degree &&
-                                edu.category === category.name
+                                edu.category === category.name,
                             );
                             const isDisabled =
                               !isSelected && selectedEducation.length >= 1;
@@ -1036,8 +1149,8 @@ const MatrimonialForm = () => {
                                   isSelected
                                     ? "bg-red-600 text-white hover:bg-red-700"
                                     : isDisabled
-                                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                                    : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-300"
+                                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                      : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-300"
                                 }`}
                               >
                                 {degree}
@@ -1068,7 +1181,7 @@ const MatrimonialForm = () => {
                   handleChange("maritalSts", e.target.value);
                 }}
               >
-                <option value="Select MStatus">Select Status</option>
+                <option value="">Select Status</option>
                 {maritalStsOptions.map((ele, index) => (
                   <option value={ele.value} key={index}>
                     {ele.label}
@@ -1107,7 +1220,7 @@ const MatrimonialForm = () => {
                   handleChange("nationality", e.target.value);
                 }}
               >
-                <option value="Select nationality">Select Nationality</option>
+                <option value="">Select Nationality</option>
                 {countriesView.map((ele, index) => (
                   <option value={ele.country} key={index}>
                     {ele.country}
@@ -1126,7 +1239,7 @@ const MatrimonialForm = () => {
                   handleChange("distributor", e.target.value);
                 }}
               >
-                <option value="Select distributor">Select Distributor</option>
+                <option value="">Select Distributor</option>
                 {distributor.map((ele, index) => (
                   <option value={ele.distributorName} key={index}>
                     {ele.distributorName}
@@ -1142,7 +1255,7 @@ const MatrimonialForm = () => {
                   handleChange("franchise", e.target.value);
                 }}
               >
-                <option value="Select franchise">Select Franchise</option>
+                <option value="">Select Franchise</option>
                 {franchises.map((ele, index) => (
                   <option value={ele.franchiseName} key={index}>
                     {ele.franchiseName}
@@ -1158,7 +1271,7 @@ const MatrimonialForm = () => {
                   handleChange("packageType", e.target.value);
                 }}
               >
-                <option value="Select packageType">Select Package Type</option>
+                <option value="">Select Package Type</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
@@ -1171,7 +1284,7 @@ const MatrimonialForm = () => {
                   handleChange("status", e.target.value);
                 }}
               >
-                <option value="Select status">Select Status</option>
+                <option value="">Select Status</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
@@ -1210,7 +1323,7 @@ const MatrimonialForm = () => {
                   handleChange("sect", e.target.value);
                 }}
               >
-                <option value="Select Sect">Select Sect</option>
+                <option value="">Select Sect</option>
                 {sect.map((ele, index) => (
                   <option value={ele.name} key={index}>
                     {ele.name}
@@ -1226,7 +1339,7 @@ const MatrimonialForm = () => {
                   handleChange("manglik", e.target.value);
                 }}
               >
-                <option value="Select Manglik">Select Manglik</option>
+                <option value="">Select Manglik</option>
                 {manglik.map((ele, index) => (
                   <option value={ele.name} key={index}>
                     {ele.name}
@@ -1242,7 +1355,7 @@ const MatrimonialForm = () => {
                   handleChange("foodChoices", e.target.value);
                 }}
               >
-                <option value="Select food">Select Food choices</option>
+                <option value="">Select Food choices</option>
                 {foodPref.map((ele, index) => (
                   <option value={ele.name} key={index}>
                     {ele.name}
@@ -1258,15 +1371,17 @@ const MatrimonialForm = () => {
                   handleChange("bloodGroup", e.target.value);
                 }}
               >
-                <option value="Select Blood Group">Select Blood Group</option>
-                {distributor.map((ele, index) => (
-                  <option value={ele.distributorName} key={index}>
-                    {ele.distributorName}
-                  </option>
-                ))}
+                <option value="">Select Blood Group</option>
+                {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
+                  (ele, index) => (
+                    <option value={ele} key={index}>
+                      {ele}
+                    </option>
+                  ),
+                )}
               </select>
             </div>
-          </div>
+                      </div>
           <div className="flex flex-col gap-2 w-1/2">
             <div className="space-x-8">
               <label htmlFor="complexion">Complexion </label>
@@ -1276,7 +1391,7 @@ const MatrimonialForm = () => {
                   handleChange("complexion", e.target.value);
                 }}
               >
-                <option value="Select complexion">Select Complexion</option>
+                <option value="">Select Complexion</option>
                 {complexion.map((ele, index) => (
                   <option value={ele.complexion} key={index}>
                     {ele.complexion}
@@ -1292,7 +1407,7 @@ const MatrimonialForm = () => {
                   handleChange("bodyType", e.target.value);
                 }}
               >
-                <option value="Select bodyType">Select Body Type</option>
+                <option value="">Select Body Type</option>
                 {bodyType.map((ele, index) => (
                   <option value={ele.bodyType} key={index}>
                     {ele.bodyType}
@@ -1308,9 +1423,7 @@ const MatrimonialForm = () => {
                   handleChange("familyBackground", e.target.value);
                 }}
               >
-                <option value="Select familyBackground">
-                  Select Family Background
-                </option>
+                <option value="">Select Family Background</option>
                 {familyBg.map((ele, index) => (
                   <option value={ele.familyBg} key={index}>
                     {ele.familyBg}
@@ -1326,7 +1439,7 @@ const MatrimonialForm = () => {
                   handleChange("features", e.target.value);
                 }}
               >
-                <option value="Select features">Select Features</option>
+                <option value="">Select Features</option>
                 {distributor.map((ele, index) => (
                   <option value={ele.distributorName} key={index}>
                     {ele.distributorName}
@@ -1342,7 +1455,7 @@ const MatrimonialForm = () => {
                   handleChange("height", e.target.value);
                 }}
               >
-                <option value="Select height">Select Height</option>
+                <option value="">Select Height</option>
                 {distributor.map((ele, index) => (
                   <option value={ele.distributorName} key={index}>
                     {ele.distributorName}
@@ -1358,7 +1471,7 @@ const MatrimonialForm = () => {
                   handleChange("position", e.target.value);
                 }}
               >
-                <option value="Select position">Select Position</option>
+                <option value="">Select Position</option>
                 {positions.map((ele, index) => (
                   <option value={ele.position} key={index}>
                     {ele.position}
@@ -1374,7 +1487,7 @@ const MatrimonialForm = () => {
                   handleChange("vipReg", e.target.value);
                 }}
               >
-                <option value="Select vipReg">Select Vip Reg</option>
+                <option value="">Select Vip Reg</option>
                 <option value="yes">Yes</option>
                 <option value="no">No</option>
               </select>
@@ -1412,7 +1525,11 @@ const MatrimonialForm = () => {
           </div>
         </div>
       </div>
-      <ReportsMemberTable data={reportsData} />
+      <ReportsMemberTable
+        data={reportsData}
+        headers={Object.values(selectedColumns).flat().map((entry) => entry.label)}
+        fields={Object.values(selectedColumns).flat().map((entry) => entry.field)}
+      />
     </>
   );
 };
@@ -1494,10 +1611,10 @@ const PasswordChangeComponent = ({ currAdmin }) => {
     try {
       // Simulate API call to send OTP
       const response = await axios.post(
-        "http://localhost:8000/api/admin/forgot-password-otp",
+        "https://api.manomilan.com/api/admin/forgot-password-otp",
         {
           id: currAdmin._id,
-        }
+        },
       );
       console.log(response.data);
 
@@ -1527,7 +1644,7 @@ const PasswordChangeComponent = ({ currAdmin }) => {
   //   setSuccessMessage('');
 
   //   try {
-  //     const response = await axios.post('http://localhost:8000/api/admin/change-password', {
+  //     const response = await axios.post('https://api.manomilan.com/api/admin/change-password', {
   //       id:currAdmin._id,
   //       otp:formData.otp,
   //       newpassword:formData.newPassword
@@ -1582,12 +1699,12 @@ const PasswordChangeComponent = ({ currAdmin }) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/change-password",
+        "https://api.manomilan.com/api/admin/change-password",
         {
           id: currAdmin._id,
           otp: formData.otp,
           newPassword: formData.newPassword,
-        }
+        },
       );
       if (response.data.status) {
         toast.success(response.data.message);
@@ -1787,7 +1904,7 @@ const PasswordChangeComponent = ({ currAdmin }) => {
                         onChange={(e) =>
                           handleInputChange(
                             "otp",
-                            e.target.value.replace(/\D/g, "").slice(0, 6)
+                            e.target.value.replace(/\D/g, "").slice(0, 6),
                           )
                         }
                         className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors text-center text-lg tracking-widest ${
@@ -1908,8 +2025,8 @@ const PasswordChangeComponent = ({ currAdmin }) => {
                     currentStep === 1
                       ? handleEmailValidation
                       : currentStep === 2
-                      ? handlePasswordChange
-                      : null
+                        ? handlePasswordChange
+                        : null
                   }
                   disabled={isLoading}
                   className="w-full py-3 bg-red-900 text-white rounded-lg hover:bg-red-800 disabled:bg-red-400 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center space-x-2"
@@ -1922,8 +2039,8 @@ const PasswordChangeComponent = ({ currAdmin }) => {
                         {currentStep === 1
                           ? "Sending OTP..."
                           : currentStep === 2
-                          ? "Verifying OTP..."
-                          : "Changing Password..."}
+                            ? "Verifying OTP..."
+                            : "Changing Password..."}
                       </span>
                     </>
                   ) : (
@@ -1939,8 +2056,8 @@ const PasswordChangeComponent = ({ currAdmin }) => {
                         {currentStep === 1
                           ? "Send OTP"
                           : currentStep === 2
-                          ? "Change Password"
-                          : "Change Password"}
+                            ? "Change Password"
+                            : "Change Password"}
                       </span>
                     </>
                   )}
@@ -1999,7 +2116,8 @@ const TransactionPasswordChangeComponent = ({ adminId, token }) => {
 
   const [transactionErrors, setTransactionErrors] = useState({});
   const [isTransactionLoading, setIsTransactionLoading] = useState(false);
-  const [transactionSuccessMessage, setTransactionSuccessMessage] = useState("");
+  const [transactionSuccessMessage, setTransactionSuccessMessage] =
+    useState("");
 
   // ✅ Handle Input Change
   const handleTransactionInputChange = (field, value) => {
@@ -2075,7 +2193,7 @@ const TransactionPasswordChangeComponent = ({ adminId, token }) => {
     setIsTransactionLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/change-transactionPassword",
+        "https://api.manomilan.com/api/admin/change-transactionPassword",
         {
           transactionPassword: transactionFormData.oldTransactionPassword,
           newTransactionPassword: transactionFormData.newTransactionPassword,
@@ -2085,11 +2203,13 @@ const TransactionPasswordChangeComponent = ({ adminId, token }) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.data.status) {
-        setTransactionSuccessMessage("Transaction password changed successfully!");
+        setTransactionSuccessMessage(
+          "Transaction password changed successfully!",
+        );
         // toast.success("Transaction password changed successfully!");
         setTransactionFormData({
           oldTransactionPassword: "",
@@ -2097,7 +2217,9 @@ const TransactionPasswordChangeComponent = ({ adminId, token }) => {
           confirmTransactionPassword: "",
         });
       } else {
-        toast.error(response.data.message || "Failed to change transaction password");
+        toast.error(
+          response.data.message || "Failed to change transaction password",
+        );
         setTransactionErrors({ submit: response.data.message });
       }
     } catch (error) {
@@ -2165,7 +2287,7 @@ const TransactionPasswordChangeComponent = ({ adminId, token }) => {
                     onChange={(e) =>
                       handleTransactionInputChange(
                         "oldTransactionPassword",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
@@ -2213,7 +2335,7 @@ const TransactionPasswordChangeComponent = ({ adminId, token }) => {
                     onChange={(e) =>
                       handleTransactionInputChange(
                         "newTransactionPassword",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
@@ -2261,7 +2383,7 @@ const TransactionPasswordChangeComponent = ({ adminId, token }) => {
                     onChange={(e) =>
                       handleTransactionInputChange(
                         "confirmTransactionPassword",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
@@ -2441,7 +2563,7 @@ const TransactionPasswordChangeComponentForDist = () => {
 
       // Simulate success
       setTransactionSuccessMessage(
-        "Transaction password changed successfully!"
+        "Transaction password changed successfully!",
       );
       setTransactionFormData({
         oldTransactionPassword: "",
@@ -2512,7 +2634,7 @@ const TransactionPasswordChangeComponentForDist = () => {
                     onChange={(e) =>
                       handleTransactionInputChange(
                         "oldTransactionPassword",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
@@ -2560,7 +2682,7 @@ const TransactionPasswordChangeComponentForDist = () => {
                     onChange={(e) =>
                       handleTransactionInputChange(
                         "newTransactionPassword",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
@@ -2611,7 +2733,7 @@ const TransactionPasswordChangeComponentForDist = () => {
                     onChange={(e) =>
                       handleTransactionInputChange(
                         "confirmTransactionPassword",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
@@ -2899,12 +3021,12 @@ const AdminDashboard = () => {
   const getCurrentAdmin = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/current-admin",
+        "https://api.manomilan.com/api/admin/current-admin",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data.status) {
         setCurrAdmin(response.data?.admin);
@@ -2939,29 +3061,31 @@ const AdminDashboard = () => {
     };
   }, [modalVisible]);
   // get all packages table
-    const [tableData,setTableData]=useState(null)
-    const getPackagesLog=async()=>{
-      try {
-        const response=await axios.get("http://localhost:8000/api/admin/get-all-packages")
-        if(response.data.status){
-          setTableData(response.data)
-        }
-      } catch (error) {
-        console.log(error)
+  const [tableData, setTableData] = useState(null);
+  const getPackagesLog = async () => {
+    try {
+      const response = await axios.get(
+        "https://api.manomilan.com/api/admin/get-all-packages",
+      );
+      if (response.data.status) {
+        setTableData(response.data);
       }
-    } 
-    useEffect(()=>{
-    getPackagesLog()
-    },[])
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getPackagesLog();
+  }, []);
   const getAdminInboxMsgs = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/message/replies",
+        "https://api.manomilan.com/api/admin/message/replies",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data?.status) {
         setGetInboxMsg(response.data?.data);
@@ -2987,13 +3111,13 @@ const AdminDashboard = () => {
     };
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/add-points",
+        "https://api.manomilan.com/api/admin/add-points",
         payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data.status) {
         toast.success(response.data.message);
@@ -3002,8 +3126,8 @@ const AdminDashboard = () => {
           password: "",
         });
         getPoints();
-      }else{
-        toast.error(response.data.message)
+      } else {
+        toast.error(response.data.message);
       }
     } catch (error) {
       console.log;
@@ -3013,12 +3137,12 @@ const AdminDashboard = () => {
   const getPoints = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-points",
+        "https://api.manomilan.com/api/admin/get-points",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data.status) {
         // console.log(response.data.entries);
@@ -3060,13 +3184,13 @@ const AdminDashboard = () => {
     };
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/add-main-packages",
+        "https://api.manomilan.com/api/admin/add-main-packages",
         payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data.status) {
         toast.success(response.data?.message || "Package added successfully");
@@ -3081,12 +3205,12 @@ const AdminDashboard = () => {
   const getMainPackage = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-main-packages",
+        "https://api.manomilan.com/api/admin/get-main-packages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data.status) {
         setDisplayMainPackage(response.data?.existingPackages || []);
@@ -3107,13 +3231,13 @@ const AdminDashboard = () => {
     console.log(payload);
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/add-vip-packages",
+        "https://api.manomilan.com/api/admin/add-vip-packages",
         payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data?.status) {
         toast.success(response.data?.message);
@@ -3134,12 +3258,12 @@ const AdminDashboard = () => {
   const getVipPackage = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-vip-packages",
+        "https://api.manomilan.com/api/admin/get-vip-packages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       setDisplayVipPackage(response.data);
     } catch (error) {
@@ -3162,13 +3286,13 @@ const AdminDashboard = () => {
     console.log(payload);
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/add-free-packages",
+        "https://api.manomilan.com/api/admin/add-free-packages",
         payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data?.status) {
         toast.success(response.data?.message || "Package Added Successfully");
@@ -3187,12 +3311,12 @@ const AdminDashboard = () => {
   const getFreePackage = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-free-packages",
+        "https://api.manomilan.com/api/admin/get-free-packages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data?.status) {
         setDisplayFreePackage(response.data?.freepackages || []);
@@ -3234,18 +3358,18 @@ const AdminDashboard = () => {
       distributorShare: Number(addOnPackage.distShare),
       franchiseShare: Number(addOnPackage.franchiseShare),
     };
-    console.log(payload)
+    console.log(payload);
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/add-addon-packages",
+        "https://api.manomilan.com/api/admin/add-addon-packages",
         payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
-      console.log(response.data)
+      console.log(response.data);
       if (response.data.status) {
         toast.success(response.data?.message || "Package created successfully");
         setAddOnPackage({
@@ -3266,12 +3390,12 @@ const AdminDashboard = () => {
   const getAddOnPackage = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-addon-packages",
+        "https://api.manomilan.com/api/admin/get-addon-packages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data?.status) {
         setDisplayAddOnPackage(response.data?.addOnPackages || []);
@@ -3292,12 +3416,12 @@ const AdminDashboard = () => {
   const getFranchises = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/user/get-franchises",
+        "https://api.manomilan.com/api/user/get-franchises",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data.status === true) {
         setFranchises(response.data.franchises);
@@ -3311,12 +3435,12 @@ const AdminDashboard = () => {
   const getDistributors = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-distributors",
+        "https://api.manomilan.com/api/admin/get-distributors",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data.status === true) {
         setDistributor(response.data.result);
@@ -3337,12 +3461,12 @@ const AdminDashboard = () => {
     const upperLimit = 1000000;
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/get-users?lowerLimit=${lowerLimit}&upperLimit=${upperLimit}`,
+        `https://api.manomilan.com/api/admin/get-users?lowerLimit=${lowerLimit}&upperLimit=${upperLimit}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.data.status === true) {
@@ -3396,7 +3520,7 @@ const AdminDashboard = () => {
     console.log(receiverIds, message, token);
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/admin/message/send",
+        "https://api.manomilan.com/api/admin/message/send",
         {
           receiverIds,
           message,
@@ -3405,7 +3529,7 @@ const AdminDashboard = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (res.data?.status) {
         getAdminSentMsgs();
@@ -3489,12 +3613,12 @@ const AdminDashboard = () => {
   const getAdminSentMsgs = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/message/get-sendMessages",
+        "https://api.manomilan.com/api/admin/message/get-sendMessages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data?.status) {
         setGetSentMsg(response.data?.data);
@@ -3682,7 +3806,9 @@ const AdminDashboard = () => {
                 <p className="text-gray-500 font-semibold">1</p>
               </div>
             </div>
-            <h2 className="w-full text-[#7d0a0a] my-3 mx-auto font-bold text-2xl text-center">Profile Details</h2>
+            <h2 className="w-full text-[#7d0a0a] my-3 mx-auto font-bold text-2xl text-center">
+              Profile Details
+            </h2>
             <div className="my-6 w-full flex flex-col gap-4 rounded-md p-2 border border-gray-500">
               <p>
                 <span className="font-bold">Name : </span> {currAdmin.name}
@@ -3821,11 +3947,9 @@ const AdminDashboard = () => {
           </div>
         ),
       },
-      Memberpackages:{
-        title:"Member Packages",
-        content:(
-          <PackageTable data={tableData}/>
-        )
+      Memberpackages: {
+        title: "Member Packages",
+        content: <PackageTable data={tableData} />,
       },
       createAdmin: {
         title: "Create Admin",
@@ -5296,7 +5420,10 @@ const AdminDashboard = () => {
         title: "Change Transaction Password",
         content: (
           <div className="w-full flex justify-center">
-            <TransactionPasswordChangeComponent adminId={currAdmin._id} token={token}/>
+            <TransactionPasswordChangeComponent
+              adminId={currAdmin._id}
+              token={token}
+            />
             <TransactionPasswordChangeComponentForDist />
           </div>
         ),

@@ -45,6 +45,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
   ];
 
   const [selectedColumns, setSelectedColumns] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const maritalStsOptions = [
     { value: "Unmarried", label: "Unmarried" },
     { value: "divorced", label: "Divorced" },
@@ -139,6 +140,63 @@ const ReportsUserForFran = ({ tokenProp }) => {
   const franchiseDropdownRef = useRef(null);
   const distDropdownRef = useRef(null);
 
+  const fieldKeyMap = {
+    userInformation: {
+      Email: "loginEmail",
+      "Mobile Number": "loginNumber",
+    },
+    generalInfo: {
+      "First Name": "firstName",
+      "Middle Name": "midname",
+      "Last Name": "lastName",
+      Gender: "gender",
+      "Date Of Birth": "dob",
+      "Marital Status": "maritalStatus",
+      Nationality: "nationality",
+    },
+    nativeInfo: {
+      "District,State,Country": "nativeCity",
+    },
+    workingInfo: {
+      "City,State,Country": "workLocation",
+    },
+    communityInfo: {
+      "Subcaste,Caste,Religion": "caste",
+      "Mother Tongue": "motherTongue",
+    },
+    career: {
+      "Education / Degree": "education",
+      "Monthly Income": "monthlyIncome",
+    },
+    health: {
+      "Blood Group": "bloodGroup",
+      Height: "height",
+      "Body Type": "BodyType",
+      Complexion: "Complexion",
+      "Physical Abnormality": "divyang",
+    },
+    parentsAddress: {
+      "Address Line": "parentsResidence",
+      "City,State,Country": "nativeCity",
+      "WhatsApp Number": "whatsApp",
+      "Alternate Number": "alternateNumber",
+    },
+    relativesInfo: {
+      Mamkul: "mamkul",
+    },
+    familyMem: {
+      "No. of Brothers": "brothersCount",
+      "No. of Sisters": "sistersExactCount",
+    },
+    other: {
+      Distributor: "CreatedBy",
+      Franchisee: "franchiseUnder",
+      Status: "ActiveStatus",
+      "Member Id": "UserId",
+      "Package Name": "vipMember",
+    },
+  };
+
   const handleChange = (prop, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -147,11 +205,12 @@ const ReportsUserForFran = ({ tokenProp }) => {
   };
 
   const handleCheck = (sectionName, value, checked) => {
+    const fieldName = fieldKeyMap[sectionName]?.[value] || value;
     setSelectedColumns((prev) => {
       const existing = prev[sectionName] || [];
-      let updated = checked
-        ? [...existing, value]
-        : existing.filter((v) => v !== value);
+      const updated = checked
+        ? [...existing, { label: value, field: fieldName }]
+        : existing.filter((item) => item.label !== value);
       return {
         ...prev,
         [sectionName]: updated,
@@ -161,7 +220,10 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const handleClick = async () => {
     try {
+      setIsLoading(true);
       const filters = {
+        memberId: formData.memberId || "",
+        memberName: formData.memberName || "",
         nativeCountry: formData.nativeCountry || "",
         nativeState: formData.nativeState || "",
         nativeCity: formData.nativeCity || "",
@@ -184,25 +246,31 @@ const ReportsUserForFran = ({ tokenProp }) => {
       };
 
       Object.keys(filters).forEach((key) => {
-        if (
-          !filters[key] ||
-          (Array.isArray(filters[key]) && filters[key].length === 0)
-        ) {
+        const value = filters[key];
+        const isInvalidFilter =
+          value === "" ||
+          value === undefined ||
+          value === null ||
+          (typeof value === "string" && value.startsWith("Select ")) ||
+          (Array.isArray(value) && value.length === 0);
+
+        if (isInvalidFilter) {
           delete filters[key];
         }
       });
 
-      const fields = Object.values(selectedColumns).flat();
+      const selectedEntries = Object.values(selectedColumns).flat();
+      const fields = selectedEntries.map((entry) => entry.field);
       const payload = { filters, fields };
 
       const response = await axios.post(
-        "http://localhost:8000/api/franchise/reports",
+        "https://api.manomilan.com/api/franchise/reports",
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(response.data)
+      console.log(response.data);
       const rawData = response.data?.data || [];
       const flatData = flattenData(rawData);
 
@@ -211,6 +279,8 @@ const ReportsUserForFran = ({ tokenProp }) => {
     } catch (error) {
       console.error("API Error:", error);
       toast.error("Failed to fetch reports");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -219,15 +289,24 @@ const ReportsUserForFran = ({ tokenProp }) => {
       const flatItem = { ...item };
 
       if (item.caste) {
+        flatItem.caste = `${item.caste.religion || ""} - ${item.caste.caste || ""} - ${item.caste.subCaste || ""}`.trim();
         flatItem.caste_religion = item.caste.religion || "";
         flatItem.caste_caste = item.caste.caste || "";
         flatItem.caste_subCaste = item.caste.subCaste || "";
       }
 
       if (item.nativeCity) {
+        flatItem.nativeCity = `${item.nativeCity.city || ""}, ${item.nativeCity.state || ""}, ${item.nativeCity.country || ""}`.replace(/(^[,\s]+|[,\s]+$)/g, "");
         flatItem.nativeCountry = item.nativeCity.country || "";
         flatItem.nativeState = item.nativeCity.state || "";
         flatItem.nativeCityName = item.nativeCity.city || "";
+      }
+
+      if (item.workLocation) {
+        flatItem.workLocation = `${item.workLocation.city || ""}, ${item.workLocation.state || ""}, ${item.workLocation.country || ""}`.replace(/(^[,\s]+|[,\s]+$)/g, "");
+        flatItem.workCountry = item.workLocation.country || "";
+        flatItem.workState = item.workLocation.state || "";
+        flatItem.workCity = item.workLocation.city || "";
       }
 
       if (Array.isArray(item.expectedReligion)) {
@@ -265,7 +344,27 @@ const ReportsUserForFran = ({ tokenProp }) => {
       return;
     }
 
-    const worksheet = XLSX.utils.json_to_sheet(data);
+    const selectedEntries = Object.values(selectedColumns).flat();
+    if (selectedEntries.length === 0) {
+      alert("Please select at least one column to export.");
+      return;
+    }
+
+    const headers = selectedEntries.map((entry) => entry.label);
+    const fieldKeys = selectedEntries.map((entry) => entry.field);
+    const rows = data.map((item) => {
+      const row = {};
+      fieldKeys.forEach((key) => {
+        row[key] = item[key] !== undefined && item[key] !== null ? item[key] : "";
+      });
+      return row;
+    });
+
+    const worksheet = XLSX.utils.aoa_to_sheet([headers]);
+    XLSX.utils.sheet_add_json(worksheet, rows, {
+      origin: "A2",
+      skipHeader: true,
+    });
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "ExportedData");
 
@@ -308,7 +407,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const fetchStreams = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/admin/get-streams");
+      const response = await axios.get("https://api.manomilan.com/api/admin/get-streams");
       if (response.data.status) {
         setStreams(response.data.data);
       }
@@ -323,7 +422,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
     for (const stream of streamsArr) {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/admin/get-degrees-by-stream",
+          "https://api.manomilan.com/api/admin/get-degrees-by-stream",
           { params: { stream: stream.stream } }
         );
         if (response.data.status) {
@@ -356,7 +455,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const viewCountries = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/admin/get-country");
+      const response = await axios.get("https://api.manomilan.com/api/admin/get-country");
       setCountriesView(response.data.result || []);
     } catch (error) {
       console.error("Error fetching countries:", error);
@@ -365,7 +464,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const viewStates = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/admin/get-all-states");
+      const response = await axios.get("https://api.manomilan.com/api/admin/get-all-states");
       setstatesView(response.data.allStates || []);
     } catch (error) {
       console.error("Error fetching states:", error);
@@ -374,7 +473,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const viewCity = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/admin/get-all-cities");
+      const response = await axios.get("https://api.manomilan.com/api/admin/get-all-cities");
       setCityView(response.data.allLocations || []);
     } catch (error) {
       console.error("Error fetching cities:", error);
@@ -383,7 +482,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const viewReligion = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/admin/get-religion");
+      const response = await axios.get("https://api.manomilan.com/api/admin/get-religion");
       setReligionView(response.data.result || []);
     } catch (error) {
       console.error("Error fetching religions:", error);
@@ -392,7 +491,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const viewCaste = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/admin/get-all-castes");
+      const response = await axios.get("https://api.manomilan.com/api/admin/get-all-castes");
       setCasteView(response.data.result || []);
     } catch (error) {
       console.error("Error fetching castes:", error);
@@ -401,7 +500,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const viewSubcaste = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/admin/get-all-subcastes");
+      const response = await axios.get("https://api.manomilan.com/api/admin/get-all-subcastes");
       setSubcasteView(response.data.result || []);
     } catch (error) {
       console.error("Error fetching subcastes:", error);
@@ -410,7 +509,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const getFranchises = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/user/get-franchises", {
+      const response = await axios.get("https://api.manomilan.com/api/user/get-franchises", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data.status === true) {
@@ -425,7 +524,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const fetchMotherTongue = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/admin/get-mother-tongue");
+      const response = await axios.get("https://api.manomilan.com/api/admin/get-mother-tongue");
       if (response.data.status === true) setMotherTongue(response.data.result);
     } catch (error) {
       console.log(error);
@@ -434,7 +533,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const getDistributors = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/admin/get-distributors", {
+      const response = await axios.get("https://api.manomilan.com/api/admin/get-distributors", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data.status === true) {
@@ -449,7 +548,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const getSect = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/admin/get-sect");
+      const response = await axios.get("https://api.manomilan.com/api/admin/get-sect");
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
           id: Date.now(),
@@ -465,7 +564,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const getManglik = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/user/get-manglik");
+      const response = await axios.get("https://api.manomilan.com/api/user/get-manglik");
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
           id: Date.now(),
@@ -481,7 +580,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const getFoodPref = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/user/food-choices");
+      const response = await axios.get("https://api.manomilan.com/api/user/food-choices");
       if (response.data.status === false) {
         const fetched = response.data.result.map((item) => ({
           id: Date.now(),
@@ -497,7 +596,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const getComplexion = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/user/get-complexion");
+      const response = await axios.get("https://api.manomilan.com/api/user/get-complexion");
       if (response.data.status) setComplexions(response.data?.result);
     } catch (error) {
       console.log(error);
@@ -506,7 +605,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const getBodyType = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/user/get-bodytype");
+      const response = await axios.get("https://api.manomilan.com/api/user/get-bodytype");
       if (response.data.status) setBodyType(response.data?.result);
     } catch (error) {
       console.log(error);
@@ -515,7 +614,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const getFamilyBg = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/user/get-familybg");
+      const response = await axios.get("https://api.manomilan.com/api/user/get-familybg");
       if (response.data.status) setFamilyBg(response.data?.result);
     } catch (error) {
       console.log(error);
@@ -524,7 +623,7 @@ const ReportsUserForFran = ({ tokenProp }) => {
 
   const getPosition = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/user/get-position");
+      const response = await axios.get("https://api.manomilan.com/api/user/get-position");
       if (response.data.status) setPositions(response.data?.result);
     } catch (error) {
       console.log(error);
@@ -566,23 +665,27 @@ const ReportsUserForFran = ({ tokenProp }) => {
             type="text"
             className="border border-gray-500 px-2 py-1 rounded-md"
             placeholder="Enter Member Id"
+            value={formData.memberId}
             onChange={(e) => handleChange("memberId", e.target.value)}
           />
           <input
             type="text"
             className="border border-gray-500 px-2 py-1 rounded-md"
             placeholder="Enter Member Name"
+            value={formData.memberName}
             onChange={(e) => handleChange("memberName", e.target.value)}
           />
           <button
-            className="border text-white font-semibold bg-[#7d0a0a] p-1 rounded-md cursor-pointer"
+            className="border text-white font-semibold bg-[#7d0a0a] p-1 rounded-md cursor-pointer disabled:opacity-50"
             onClick={handleClick}
+            disabled={isLoading}
           >
-            Search
+            {isLoading ? "Searching..." : "Search"}
           </button>
           <button
-            className="border text-white font-semibold bg-[#7d0a0a] p-1 rounded-md cursor-pointer"
+            className="border text-white font-semibold bg-[#7d0a0a] p-1 rounded-md cursor-pointer disabled:opacity-50"
             onClick={handleExport}
+            disabled={isLoading}
           >
             Export To Excel
           </button>

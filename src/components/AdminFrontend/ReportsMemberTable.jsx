@@ -16,7 +16,8 @@ const MemberTable = ({ data }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const [gotoPage, setGotoPage] = useState("");
+  const itemsPerPage = 20;
 
   const filteredDistributors = data.filter((distributor) => {
     const matchesSearch =
@@ -26,12 +27,26 @@ const MemberTable = ({ data }) => {
     return matchesSearch;
   });
 
-  const totalPages = Math.ceil(filteredDistributors.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(filteredDistributors.length / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedDistributors = filteredDistributors.slice(
     startIndex,
     startIndex + itemsPerPage
   );
+
+  const handleGoToPage = () => {
+    const targetPage = parseInt(gotoPage, 10);
+    if (!Number.isInteger(targetPage) || targetPage < 1 || targetPage > totalPages) {
+      return;
+    }
+    setCurrentPage(targetPage);
+  };
+
+  React.useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   const getStatusBadge = (status) => {
     const baseClasses = "px-3 py-1 rounded-full text-xs font-medium";
@@ -214,26 +229,57 @@ const MemberTable = ({ data }) => {
               {Math.min(startIndex + itemsPerPage, filteredDistributors.length)} of{" "}
               {filteredDistributors.length} results
             </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Previous
-              </button>
-              <span className="text-sm text-gray-700">
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-              >
-                Next
-                <ChevronRight className="w-4 h-4" />
-              </button>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 gap-2">
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </button>
+
+                <span className="text-sm text-gray-700">
+                  Page {currentPage} of {totalPages}
+                </span>
+
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={gotoPage}
+                  onChange={(e) => setGotoPage(e.target.value.replace(/[^0-9]/g, ""))}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleGoToPage();
+                    }
+                  }}
+                  className="w-16 px-2 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-red-500"
+                  placeholder="Page"
+                />
+                <button
+                  type="button"
+                  onClick={handleGoToPage}
+                  disabled={
+                    !gotoPage ||
+                    Number(gotoPage) < 1 ||
+                    Number(gotoPage) > totalPages
+                  }
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Go
+                </button>
+              </div>
             </div>
           </div>
         )}

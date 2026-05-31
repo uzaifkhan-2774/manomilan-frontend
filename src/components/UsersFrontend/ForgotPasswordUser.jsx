@@ -39,7 +39,7 @@ const ForgotFranchisePass = () => {
       newPassword:Number(pin.join(""))
     }
     try {
-      const response = await axios.post('http://localhost:8000/api/user/verify-otp-reset-password',payload,
+      const response = await axios.post('https://api.manomilan.com/api/user/verify-otp-reset-password',payload,
      {    headers: {
           Authorization: `Bearer ${token}`,
         }}

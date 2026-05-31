@@ -56,7 +56,7 @@ export default function TableGenerator({ data, activeTab }) {
   const singleFranchise = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/get-single-franchise/${userId}`,
+        `https://api.manomilan.com/api/admin/get-single-franchise/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -82,7 +82,7 @@ export default function TableGenerator({ data, activeTab }) {
   const addPointsToSinDist = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/give-points-to-distributor",
+        "https://api.manomilan.com/api/admin/give-points-to-distributor",
         addPointsToDist,
         {
           headers: {
@@ -105,7 +105,7 @@ export default function TableGenerator({ data, activeTab }) {
     try {
       if (distId !== null) {
         const response = await axios.get(
-          `http://localhost:8000/api/admin/get-franchise-under/${distId}`
+          `https://api.manomilan.com/api/admin/get-franchise-under/${distId}`
         );
         setDisplayFranchiseUnderDist(response.data?.franchiseUnder || []);
       }
@@ -121,7 +121,7 @@ export default function TableGenerator({ data, activeTab }) {
   const getPointsLog = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/get/pointsLog/${usId}`,
+        `https://api.manomilan.com/api/admin/get/pointsLog/${usId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -316,7 +316,7 @@ export default function TableGenerator({ data, activeTab }) {
           <div className="w-[20%] space-y-2">
             <div className="h-[150px] w-[150px]">
               <img
-                src={`http://localhost:8000/upload/${singleDist.franchisePhoto}`}
+                src={`https://api.manomilan.com/upload/${singleDist.franchisePhoto}`}
                 alt="Franchisee"
               />
             </div>

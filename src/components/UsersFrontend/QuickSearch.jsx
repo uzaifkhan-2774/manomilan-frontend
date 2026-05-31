@@ -116,7 +116,7 @@ const QuickSearchCards = () => {
   const findCaste = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:8000/api/user/get-all-subcaste"
+        "https://api.manomilan.com/api/user/get-all-subcaste"
       );
       console.log(res.data.result);
       setCaste(res?.data?.result);
@@ -158,19 +158,18 @@ const QuickSearchCards = () => {
   };
 
   const handleAgeChange = (raw) => {
-    // allow only digits, max 2 chars, and clamp according to gender
-    const digits = (raw || "").toString().replace(/\D/g, "").slice(0, 2);
-    if (!digits) {
-      setFormData((prev) => ({ ...prev, age: "" }));
-      return;
-    }
-    let ageNum = parseInt(digits, 10);
-    const min =
-      formData.gender === "Bride" ? 18 : formData.gender === "Groom" ? 21 : 18;
-    if (ageNum < min) ageNum = min;
-    if (ageNum > 99) ageNum = 99;
-    setFormData((prev) => ({ ...prev, age: String(ageNum) }));
-  };
+  const digits = (raw || "").toString().replace(/\D/g, "").slice(0, 2);
+  setFormData((prev) => ({ ...prev, age: digits }));
+};
+const handleAgeBlur = () => {
+  if (!formData.age) return;
+  const min = formData.gender === "Bride" ? 18 : formData.gender === "Groom" ? 21 : 18;
+  let ageNum = parseInt(formData.age, 10);
+  if (isNaN(ageNum)) { setFormData((prev) => ({ ...prev, age: "" })); return; }
+  if (ageNum < min) ageNum = min;
+  if (ageNum > 99) ageNum = 99;
+  setFormData((prev) => ({ ...prev, age: String(ageNum) }));
+};
 
   const [loading, setLoading] = useState(false);
 
@@ -195,7 +194,7 @@ const QuickSearchCards = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:8000/api/user/quick-search", {
+      const res = await axios.post("https://api.manomilan.com/api/user/quick-search", {
         gender: formData.gender,
         caste: formData.caste,
         income: parseInt(formData.income, 10),
@@ -217,7 +216,7 @@ const QuickSearchCards = () => {
             (c.dob ? new Date().getFullYear() - new Date(c.dob).getFullYear() : "N/A"),
           religion: c.caste?.religion || c.caste?.caste || "",
           image: c.profilePic
-            ? `http://localhost:8000/upload/${c.profilePic}`
+            ? `https://api.manomilan.com/upload/${c.profilePic}`
             : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
           occupation: c.occupation || "Not listed",
           city: c.city || c.nativeCity?.city || "",
@@ -272,10 +271,11 @@ const QuickSearchCards = () => {
   }));
 
   const partnerEducationCategories = [
-    { name: "ANY", degrees: [] },
+    // { name: "ANY", degrees: [] },
     ...educationCategories,
   ];
-  const partnerDegreeToggle = (degree, categoryName) => {
+
+const partnerDegreeToggle = (degree, categoryName) => {
     if (categoryName === "ANY") {
       const allDegrees = partnerEducationCategories
         .filter((cat) => cat.name !== "ANY")
@@ -332,7 +332,7 @@ const QuickSearchCards = () => {
   const fetchStreams = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-streams"
+        "https://api.manomilan.com/api/admin/get-streams"
       );
       if (response.data.status) {
         setStreams(response.data.data);
@@ -350,7 +350,7 @@ const QuickSearchCards = () => {
     for (const stream of streamsArr) {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/admin/get-degrees-by-stream",
+          "https://api.manomilan.com/api/admin/get-degrees-by-stream",
           { params: { stream: stream.stream } }
         );
         if (response.data.status) {
@@ -512,19 +512,20 @@ const QuickSearchCards = () => {
   </label>
 
   <input
-    type="number"
-    value={formData.age}
-    onChange={(e) => handleAgeChange(e.target.value)}
-    max={99}
-    className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none"
-    placeholder={
-      formData.gender === "Bride"
-        ? "Enter age (18-99)"
-        : formData.gender === "Groom"
-        ? "Enter age (21-99)"
-        : "Enter age (18-99)"
-    }
-  />
+  type="number"
+  value={formData.age}
+  onChange={(e) => handleAgeChange(e.target.value)}
+  onBlur={handleAgeBlur}
+  max={99}
+  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none"
+  placeholder={
+    formData.gender === "Bride"
+      ? "Enter age (18-99)"
+      : formData.gender === "Groom"
+      ? "Enter age (21-99)"
+      : "Enter age (18-99)"
+  }
+/>
 
   {/* Validation Message */}
   {formData.age && (
@@ -623,24 +624,7 @@ const QuickSearchCards = () => {
                               </td>
                               <td className="px-4 py-3 align-top">
                                 <div className="flex flex-wrap gap-2">
-                                  {category.name === "ANY" ? (
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        partnerDegreeToggle(null, category.name)
-                                      }
-                                      className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
-                                        isAnySelected
-                                          ? "bg-red-600 text-white hover:bg-red-700"
-                                          : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-300"
-                                      }`}
-                                    >
-                                      ANY
-                                      {isAnySelected && (
-                                        <span className="ml-1">✓</span>
-                                      )}
-                                    </button>
-                                  ) : (
+                                   {
                                     category.degrees.map((degree) => {
                                       const isSelected = partnerEducation.some(
                                         (edu) => edu.degree === degree,
@@ -667,7 +651,7 @@ const QuickSearchCards = () => {
                                           )}
                                         </button>
                                       );
-                                    })
+                                    }
                                   )}
                                 </div>
                               </td>

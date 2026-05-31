@@ -41,7 +41,7 @@ const UserPreferencesManager = () => {
   const getMotherTongues = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-mother-tongue"
+        "https://api.manomilan.com/api/admin/get-mother-tongue"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -59,7 +59,7 @@ const UserPreferencesManager = () => {
   const getFoodPref = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-foodPref"
+        "https://api.manomilan.com/api/admin/get-foodPref"
       );
       const fetched = response.data.result.map((item) => ({
         id: Date.now(),
@@ -75,7 +75,7 @@ const UserPreferencesManager = () => {
   const getSect = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-sect"
+        "https://api.manomilan.com/api/admin/get-sect"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -93,7 +93,7 @@ const UserPreferencesManager = () => {
   const getManglik = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-manglik"
+        "https://api.manomilan.com/api/admin/get-manglik"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -111,7 +111,7 @@ const UserPreferencesManager = () => {
   const getComplexion = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-complexion"
+        "https://api.manomilan.com/api/admin/get-complexion"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -129,7 +129,7 @@ const UserPreferencesManager = () => {
   const getBodyType = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-bodytype"
+        "https://api.manomilan.com/api/admin/get-bodytype"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -147,7 +147,7 @@ const UserPreferencesManager = () => {
   const getPosition = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-position"
+        "https://api.manomilan.com/api/admin/get-position"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -165,7 +165,7 @@ const UserPreferencesManager = () => {
   const getFamBg = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/get-familybg"
+        "https://api.manomilan.com/api/admin/get-familybg"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -195,7 +195,7 @@ const UserPreferencesManager = () => {
   const addFoodPreference = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/add-foodPref",
+        "https://api.manomilan.com/api/admin/add-foodPref",
         { foodPreference: foodPreferenceInput }
       );
       if (response.data.status === true) {
@@ -213,7 +213,7 @@ const UserPreferencesManager = () => {
   const addSect = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/add-sect",
+        "https://api.manomilan.com/api/admin/add-sect",
         { sect: sectInput }
       );
       if (response.data.status === true) {
@@ -231,7 +231,7 @@ const UserPreferencesManager = () => {
   const addManglik = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/add-manglik",
+        "https://api.manomilan.com/api/admin/add-manglik",
         { manglik: manglikInput }
       );
       if (response.data.status === true) {
@@ -249,7 +249,7 @@ const UserPreferencesManager = () => {
   const addComplexion = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/add-complexion",
+        "https://api.manomilan.com/api/admin/add-complexion",
         { complexion: complexionInput }
       );
       if (response.data.status === true) {
@@ -267,7 +267,7 @@ const UserPreferencesManager = () => {
   const addBodyType = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/add-bodytype",
+        "https://api.manomilan.com/api/admin/add-bodytype",
         { bodyType: bodyTypeInput }
       );
       if (response.data.status === true) {
@@ -285,7 +285,7 @@ const UserPreferencesManager = () => {
   const addFamilyBackground = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/add-familybg",
+        "https://api.manomilan.com/api/admin/add-familybg",
         { familyBg: familyBackgroundInput }
       );
       if (response.data.status === true) {
@@ -303,7 +303,7 @@ const UserPreferencesManager = () => {
   const addPosition = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/add-position",
+        "https://api.manomilan.com/api/admin/add-position",
         { position: positionInput }
       );
       if (response.data.status === true) {
@@ -321,7 +321,7 @@ const UserPreferencesManager = () => {
   const addMotherTongue = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/add-mother-tongue",
+        "https://api.manomilan.com/api/admin/add-mother-tongue",
         { motherTongue: motherTongueInput }
       );
       if (response.data.status === true) {
@@ -401,7 +401,7 @@ const UserPreferencesManager = () => {
     }
 
     try {
-      const response = await axios.delete(`http://localhost:8000${endpoint}`, {
+      const response = await axios.delete(`https://api.manomilan.com${endpoint}`, {
         data: item.name,
       });
 
