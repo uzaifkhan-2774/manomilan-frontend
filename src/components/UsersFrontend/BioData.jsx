@@ -16,13 +16,13 @@ const BiodataProfile = ({ userId }) => {
         let response;
         if (targetId) {
           // admin-style single user endpoint (works when viewing another user)
-          response = await axios.get(`https://api.manomilan.com/api/admin/get-single-user/${targetId}`);
+          response = await axios.get(`http://127.0.0.1:8000/api/admin/get-single-user/${targetId}`);
           // normalize: res.data.user or res.data.result
           const user = response.data?.user || response.data?.result || response.data;
           setBioDataDetails(user);
         } else {
           // fetch current logged-in user
-          response = await axios.get("https://api.manomilan.com/api/user/getcurrentuser", {
+          response = await axios.get("http://127.0.0.1:8000/api/user/getcurrentuser", {
             headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
           });
           const user = response.data?.result || response.data || {};
@@ -130,9 +130,9 @@ const BiodataProfile = ({ userId }) => {
                   <img
   src={
     bioDataDetails.profilePic
-      ? `https://api.manomilan.com/upload/${bioDataDetails.profilePic}`
+      ? `http://127.0.0.1:8000/upload/${bioDataDetails.profilePic}`
       : bioDataDetails.userPhotoOne
-      ? `https://api.manomilan.com/upload/${bioDataDetails.userPhotoOne}`
+      ? `http://127.0.0.1:8000/upload/${bioDataDetails.userPhotoOne}`
       : "https://imgs.search.brave.com/rwE-hC6ESt3hBJZhImPkb-KvU26bLDKVe-OKv1y50-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3JpZ2luYWxzLzE0LzQz/LzU1LzE0NDM1NWQ3/YjM2YzVmNjQ2NDM1/NDIzNzk4MjgxY2U5LmpwZw"
   }
 />

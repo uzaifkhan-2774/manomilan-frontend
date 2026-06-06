@@ -66,7 +66,7 @@ const PasswordChangeComponent = ({ currDistributor }) => {
     try {
       // Simulate OTP sending
       const response = await axios.post(
-        "https://api.manomilan.com/api/distributor/get-otp",
+        "http://127.0.0.1:8000/api/distributor/get-otp",
         { id: currDistributor._id }
       );
       if (response.data.status) {
@@ -86,7 +86,7 @@ const PasswordChangeComponent = ({ currDistributor }) => {
 
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/distributor/verify-otp-reset-password",
+        "http://127.0.0.1:8000/api/distributor/verify-otp-reset-password",
         {
           id: currDistributor._id,
           otp: formData.otp,
@@ -739,7 +739,7 @@ const DistributorDashboard = () => {
   const getCurrDist = async () => {
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/distributor/get-current-distributor",
+        "http://127.0.0.1:8000/api/distributor/get-current-distributor",
         {
           distributorId: distributorId,
         },
@@ -770,7 +770,7 @@ const DistributorDashboard = () => {
     const [tableData,setTableData]=useState(null)
     const getPackagesLog=async()=>{
       try {
-        const response=await axios.get("https://api.manomilan.com/api/admin/get-all-packages")
+        const response=await axios.get("http://127.0.0.1:8000/api/admin/get-all-packages")
         if(response.data.status){
           setTableData(response.data)
         }
@@ -793,7 +793,7 @@ const DistributorDashboard = () => {
   const getPointsLogOfDist = async () => {
     try {
       const response = await axios.get(
-        `https://api.manomilan.com/api/distributor/get/pointsLog/${currDistributor._id}`
+        `http://127.0.0.1:8000/api/distributor/get/pointsLog/${currDistributor._id}`
       );
       if (response.data.status) {
         setBalanceEntries(response.data?.distributorLogs);
@@ -807,7 +807,7 @@ const DistributorDashboard = () => {
     const payload = { lowerLimit: 0, upperLimit: 10 };
     try {
       const response = await axios.post(
-        `https://api.manomilan.com/api/distributor/get-all-users`,
+        `http://127.0.0.1:8000/api/distributor/get-all-users`,
         payload,
         {
           headers: {
@@ -838,7 +838,7 @@ const DistributorDashboard = () => {
   const getFranchises = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/distributor/get-franchise-admin",
+        "http://127.0.0.1:8000/api/distributor/get-franchise-admin",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -884,7 +884,7 @@ const DistributorDashboard = () => {
   const getDistributorInboxMsg = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/distributor/message/replies",
+        "http://127.0.0.1:8000/api/distributor/message/replies",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -902,7 +902,7 @@ const DistributorDashboard = () => {
   const getDistributorSentMsg = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/distributor/message/get-sendMessages",
+        "http://127.0.0.1:8000/api/distributor/message/get-sendMessages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -967,7 +967,7 @@ const DistributorDashboard = () => {
     console.log(admin, "admin", receiverIds);
     try {
       const res = await axios.post(
-        "https://api.manomilan.com/api/distributor/message/send",
+        "http://127.0.0.1:8000/api/distributor/message/send",
         {
           receiverIds,
           message,
@@ -1186,7 +1186,7 @@ const DistributorDashboard = () => {
 };
   const changeEmail=async(id)=>{
     try {
-      const response=await axios.put("https://api.manomilan.com/api/distributor/change-distributor-email",{
+      const response=await axios.put("http://127.0.0.1:8000/api/distributor/change-distributor-email",{
       distributorId:currDistributor._id || id, newEmail:newEmail
     },{
           headers: {
@@ -1249,7 +1249,7 @@ const handleInputChange = (field, value) => {
 const handleSave = async () => {
   try {
     const response = await axios.put(
-      "https://api.manomilan.com/api/distributor/edit-profile",
+      "http://127.0.0.1:8000/api/distributor/edit-profile",
       {
         distributorId: currDistributor?._id,
         updateData: userInfo,
@@ -1420,7 +1420,7 @@ const toggleEdit = () => {
                       <div className="text-center">
                         <div className="relative inline-block">
                           <img
-                            src={currDistributor?.distributorPhoto!==""?`https://api.manomilan.com/upload/${currDistributor?.distributorPhoto}`:"https://imgs.search.brave.com/rwE-hC6ESt3hBJZhImPkb-KvU26bLDKVe-OKv1y50-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzE0LzQz/LzU1LzE0NDM1NWQ3/YjM2YzVmNjQ2NDM1/NDIzNzk4MjgxY2U5/LmpwZw"}
+                            src={currDistributor?.distributorPhoto!==""?`http://127.0.0.1:8000/upload/${currDistributor?.distributorPhoto}`:"https://imgs.search.brave.com/rwE-hC6ESt3hBJZhImPkb-KvU26bLDKVe-OKv1y50-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzE0LzQz/LzU1LzE0NDM1NWQ3/YjM2YzVmNjQ2NDM1/NDIzNzk4MjgxY2U5/LmpwZw"}
                             alt={currDistributor.ownerName}
                             className="w-48 h-48 rounded-full border-4 border-white shadow-xl object-cover"
                           />

@@ -29,7 +29,7 @@ const AdminRegister = () => {
     setMessage({ type: '', text: '' });
 
     try {
-      const response = await axios.post('https://api.manomilan.com/api/admin/register', data);
+      const response = await axios.post('http://127.0.0.1:8000/api/admin/register', data);
       const result = response.data;
       console.log(result)
 

@@ -264,7 +264,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
       const payload = { filters, fields };
 
       const response = await axios.post(
-        "https://api.manomilan.com/api/distributor/reports",
+        "http://127.0.0.1:8000/api/distributor/reports",
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -407,7 +407,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const fetchStreams = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/admin/get-streams");
+      const response = await axios.get("http://127.0.0.1:8000/api/admin/get-streams");
       if (response.data.status) {
         setStreams(response.data.data);
       }
@@ -422,7 +422,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
     for (const stream of streamsArr) {
       try {
         const response = await axios.get(
-          "https://api.manomilan.com/api/admin/get-degrees-by-stream",
+          "http://127.0.0.1:8000/api/admin/get-degrees-by-stream",
           { params: { stream: stream.stream } }
         );
         if (response.data.status) {
@@ -455,7 +455,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const viewCountries = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/admin/get-country");
+      const response = await axios.get("http://127.0.0.1:8000/api/admin/get-country");
       setCountriesView(response.data.result || []);
     } catch (error) {
       console.error("Error fetching countries:", error);
@@ -464,7 +464,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const viewStates = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/admin/get-all-states");
+      const response = await axios.get("http://127.0.0.1:8000/api/admin/get-all-states");
       setstatesView(response.data.allStates || []);
     } catch (error) {
       console.error("Error fetching states:", error);
@@ -473,7 +473,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const viewCity = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/admin/get-all-cities");
+      const response = await axios.get("http://127.0.0.1:8000/api/admin/get-all-cities");
       setCityView(response.data.allLocations || []);
     } catch (error) {
       console.error("Error fetching cities:", error);
@@ -482,7 +482,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const viewReligion = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/admin/get-religion");
+      const response = await axios.get("http://127.0.0.1:8000/api/admin/get-religion");
       setReligionView(response.data.result || []);
     } catch (error) {
       console.error("Error fetching religions:", error);
@@ -491,7 +491,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const viewCaste = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/admin/get-all-castes");
+      const response = await axios.get("http://127.0.0.1:8000/api/admin/get-all-castes");
       setCasteView(response.data.result || []);
     } catch (error) {
       console.error("Error fetching castes:", error);
@@ -500,7 +500,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const viewSubcaste = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/admin/get-all-subcastes");
+      const response = await axios.get("http://127.0.0.1:8000/api/admin/get-all-subcastes");
       setSubcasteView(response.data.result || []);
     } catch (error) {
       console.error("Error fetching subcastes:", error);
@@ -509,7 +509,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const getFranchises = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/user/get-franchises", {
+      const response = await axios.get("http://127.0.0.1:8000/api/user/get-franchises", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data.status === true) {
@@ -524,7 +524,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const fetchMotherTongue = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/admin/get-mother-tongue");
+      const response = await axios.get("http://127.0.0.1:8000/api/admin/get-mother-tongue");
       if (response.data.status === true) setMotherTongue(response.data.result);
     } catch (error) {
       console.log(error);
@@ -533,7 +533,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const getDistributors = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/admin/get-distributors", {
+      const response = await axios.get("http://127.0.0.1:8000/api/admin/get-distributors", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data.status === true) {
@@ -548,7 +548,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const getSect = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/admin/get-sect");
+      const response = await axios.get("http://127.0.0.1:8000/api/admin/get-sect");
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
           id: Date.now(),
@@ -564,7 +564,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const getManglik = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/user/get-manglik");
+      const response = await axios.get("http://127.0.0.1:8000/api/user/get-manglik");
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
           id: Date.now(),
@@ -580,7 +580,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const getFoodPref = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/user/food-choices");
+      const response = await axios.get("http://127.0.0.1:8000/api/user/food-choices");
       if (response.data.status === false) {
         const fetched = response.data.result.map((item) => ({
           id: Date.now(),
@@ -596,7 +596,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const getComplexion = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/user/get-complexion");
+      const response = await axios.get("http://127.0.0.1:8000/api/user/get-complexion");
       if (response.data.status) setComplexions(response.data?.result);
     } catch (error) {
       console.log(error);
@@ -605,7 +605,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const getBodyType = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/user/get-bodytype");
+      const response = await axios.get("http://127.0.0.1:8000/api/user/get-bodytype");
       if (response.data.status) setBodyType(response.data?.result);
     } catch (error) {
       console.log(error);
@@ -614,7 +614,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const getFamilyBg = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/user/get-familybg");
+      const response = await axios.get("http://127.0.0.1:8000/api/user/get-familybg");
       if (response.data.status) setFamilyBg(response.data?.result);
     } catch (error) {
       console.log(error);
@@ -623,7 +623,7 @@ const ReportsUserForDist = ({ tokenProp }) => {
 
   const getPosition = async () => {
     try {
-      const response = await axios.get("https://api.manomilan.com/api/user/get-position");
+      const response = await axios.get("http://127.0.0.1:8000/api/user/get-position");
       if (response.data.status) setPositions(response.data?.result);
     } catch (error) {
       console.log(error);

@@ -63,7 +63,7 @@ const PasswordChangeComponent = ({ currFranchiseId }) => {
     try {
       // Simulate OTP sending
       const response = await axios.post(
-        "https://api.manomilan.com/api/franchise/get-otp",
+        "http://127.0.0.1:8000/api/franchise/get-otp",
         { id: currFranchiseId }
       );
       if (response.data.status) {
@@ -88,7 +88,7 @@ const PasswordChangeComponent = ({ currFranchiseId }) => {
         console.log(payload)
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/franchise/verify-otp-reset-password",
+        "http://127.0.0.1:8000/api/franchise/verify-otp-reset-password",
         {
           id: id || currFranchiseId,
           otp: formData.otp,
@@ -366,7 +366,7 @@ const FranchiseDashboard = () => {
     const [tableData,setTableData]=useState(null)
     const getPackagesLog=async()=>{
       try {
-        const response=await axios.get("https://api.manomilan.com/api/admin/get-all-packages")
+        const response=await axios.get("http://127.0.0.1:8000/api/admin/get-all-packages")
         if(response.data.status){
           setTableData(response.data)
         }
@@ -417,7 +417,7 @@ const FranchiseDashboard = () => {
   const getAdminFranMemForMsg = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/franchise/get-distributor-admin",
+        "http://127.0.0.1:8000/api/franchise/get-distributor-admin",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -428,12 +428,8 @@ const FranchiseDashboard = () => {
       if (response.data?.status) {
         setMessageDistributor(res.distributor[0]);
         setAdmin(res.admin[0]);
-        const sortedUsers = Array.isArray(res?.users)
-          ? [...res.users].sort((a, b) =>
-              String(a._id || "").localeCompare(String(b._id || "")),
-            )
-          : [];
-        setMembers(sortedUsers);
+     
+        setMembers(res.users || []);
         setMemberPage(0);
       }
     } catch (error) {
@@ -487,7 +483,7 @@ const FranchiseDashboard = () => {
     const receiverIds = [...selected, ...distAndAdmin];
     try {
       const res = await axios.post(
-        "https://api.manomilan.com/api/franchise/message/send",
+        "http://127.0.0.1:8000/api/franchise/message/send",
         {
           receiverIds,
           message,
@@ -516,7 +512,7 @@ const FranchiseDashboard = () => {
   const getFranchiseMsg = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/franchise/message/replies",
+        "http://127.0.0.1:8000/api/franchise/message/replies",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -533,7 +529,7 @@ const FranchiseDashboard = () => {
   const getSentMessagesForFranchise = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/franchise/message/get-sendMessages",
+        "http://127.0.0.1:8000/api/franchise/message/get-sendMessages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -576,7 +572,7 @@ const FranchiseDashboard = () => {
   const getCurrFranchise = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/franchise/get-current-franchise",
+        "http://127.0.0.1:8000/api/franchise/get-current-franchise",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -602,7 +598,7 @@ const FranchiseDashboard = () => {
   const getFranchiseeLog = async () => {
     try {
       const response = await axios.get(
-        `https://api.manomilan.com/api/franchise/get/franchiseLogs/${CurrFranchise._id}`
+        `http://127.0.0.1:8000/api/franchise/get/franchiseLogs/${CurrFranchise._id}`
       );
       if (response.data?.status) {
         setBalanceEntries(response.data?.franchiseLogs);
@@ -728,7 +724,7 @@ const FranchiseDashboard = () => {
   const changeEmail = async (id) => {
     try {
       const response = await axios.put(
-        "https://api.manomilan.com/api/franchise/change-franchise-email",
+        "http://127.0.0.1:8000/api/franchise/change-franchise-email",
         {
           distributorId: currFranchiseId._id || id,
           newEmail: newEmail,
@@ -806,7 +802,7 @@ const handleChange = (e) => {
 const handleSave = async () => {
   try {
     const response = await axios.put(
-      `https://api.manomilan.com/api/franchise/update/${CurrFranchise._id}`,
+      `http://127.0.0.1:8000/api/franchise/update/${CurrFranchise._id}`,
       editedData, // ✅ send the update data directly
       {
         headers: {
