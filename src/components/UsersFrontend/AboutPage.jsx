@@ -31,7 +31,7 @@ Manomilan.com
         </p>
       </div>
       <div className="border-t w-full fixed bottom-0 left-0 border-gray-800 py-8 text-center text-black">
-            <p>Powered By - Manisha Systems | Designed and Developed By - Alkesh Mahamune & Manas Kokate</p>
+            <p>Powered By - Manisha Systems | Designed and Developed By - Alkesh Mahamune, Manas Kokate & Uzaif Khan</p>
           </div>
     </div>
   );

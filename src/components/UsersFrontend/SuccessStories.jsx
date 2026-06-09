@@ -286,7 +286,7 @@ Manomilan.com
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>Powered By - Manisha Systems | Designed and Developed By - Alkesh Mahamune & Manas Kokate</p>
+            <p>Powered By - Manisha Systems | Designed and Developed By - Alkesh Mahamune, Manas Kokate & Uzaif Khan</p>
           </div>
         </div>
       </footer>
