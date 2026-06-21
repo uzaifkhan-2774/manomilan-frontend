@@ -31,7 +31,7 @@ const OtherInfoEdit = () => {
   const getSect = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/get-sect"
+        "https://api.manomilan.com/api/user/get-sect"
       );
       if (response.data.status === true) {
         setSect(response.data.result || []);
@@ -45,7 +45,7 @@ const OtherInfoEdit = () => {
   const getManglik = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/get-manglik"
+        "https://api.manomilan.com/api/user/get-manglik"
       );
       console.log(response.data);
       if (response.data.status === true) {
@@ -61,7 +61,7 @@ const OtherInfoEdit = () => {
   const getFoodPref = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/food-choices"
+        "https://api.manomilan.com/api/user/food-choices"
       );
       if (response.data.status === false) {
         const fetched = response.data.result.map((item) => ({
@@ -79,7 +79,7 @@ const OtherInfoEdit = () => {
   const getCurrentUser = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/getcurrentuser",
+        "https://api.manomilan.com/api/user/getcurrentuser",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -127,7 +127,7 @@ const OtherInfoEdit = () => {
   const onSubmit = async (data) => {
     try {
       const response = await axios.put(
-        "http://127.0.0.1:8000/api/user/special-info-edit",
+        "https://api.manomilan.com/api/user/special-info-edit",
         { specialInfo: data },
         {
           headers: {

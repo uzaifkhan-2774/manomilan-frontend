@@ -36,7 +36,7 @@ const FranchiseRegistrationForm = () => {
   const fetchCities = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/get-all-cities"
+        "https://api.manomilan.com/api/user/get-all-cities"
       );
       if (response.data.status === true) {
         const transformed = response.data.allLocations.map((item) => ({
@@ -82,7 +82,7 @@ const FranchiseRegistrationForm = () => {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/franchise/register",
+        "https://api.manomilan.com/api/franchise/register",
         formData,
         {
           headers: {

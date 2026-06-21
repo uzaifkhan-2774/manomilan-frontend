@@ -40,7 +40,7 @@ const ForgotPassword = () => {
   const sendOtp = async () => {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/user/get-otp",
+        "https://api.manomilan.com/api/user/get-otp",
         {
           email: email,
         }
@@ -63,7 +63,7 @@ const ForgotPassword = () => {
       newPassword:Number(pin.join(""))
     }
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/user/verify-otp-reset-password',payload)
+      const response = await axios.post('https://api.manomilan.com/api/user/verify-otp-reset-password',payload)
       if(response.data.status){
         toast.success(response.data.message)
         setEmail(null)

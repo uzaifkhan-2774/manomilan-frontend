@@ -344,7 +344,7 @@ const MatrimonialForm = () => {
       const payload = { filters, fields };
 
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/admin/get-reports",
+        "https://api.manomilan.com/api/admin/get-reports",
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -499,7 +499,7 @@ const MatrimonialForm = () => {
   const fetchStreams = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-streams",
+        "https://api.manomilan.com/api/admin/get-streams",
       );
       if (response.data.status) {
         setStreams(response.data.data);
@@ -520,7 +520,7 @@ const MatrimonialForm = () => {
     for (const stream of streams) {
       try {
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/admin/get-degrees-by-stream",
+          "https://api.manomilan.com/api/admin/get-degrees-by-stream",
           {
             params: { stream: stream.stream }, // assuming stream is like { stream: 'Engineering' }
           },
@@ -570,7 +570,7 @@ const MatrimonialForm = () => {
   const viewCountries = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-country",
+        "https://api.manomilan.com/api/admin/get-country",
       );
       setCountriesView(response.data.result || []);
     } catch (error) {
@@ -581,7 +581,7 @@ const MatrimonialForm = () => {
   const viewStates = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-all-states",
+        "https://api.manomilan.com/api/admin/get-all-states",
       );
       setstatesView(response.data.allStates || []);
     } catch (error) {
@@ -592,7 +592,7 @@ const MatrimonialForm = () => {
   const viewCity = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-all-cities",
+        "https://api.manomilan.com/api/admin/get-all-cities",
       );
       setCityView(response.data.allLocations || []);
     } catch (error) {
@@ -603,7 +603,7 @@ const MatrimonialForm = () => {
   const viewReligion = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-religion",
+        "https://api.manomilan.com/api/admin/get-religion",
       );
       setReligionView(response.data.result || []);
     } catch (error) {
@@ -614,7 +614,7 @@ const MatrimonialForm = () => {
   const viewCaste = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-all-castes",
+        "https://api.manomilan.com/api/admin/get-all-castes",
       );
       setCasteView(response.data.result || []);
     } catch (error) {
@@ -625,7 +625,7 @@ const MatrimonialForm = () => {
   const viewSubcaste = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-all-subcastes",
+        "https://api.manomilan.com/api/admin/get-all-subcastes",
       );
       setSubcasteView(response.data.result || []);
     } catch (error) {
@@ -636,7 +636,7 @@ const MatrimonialForm = () => {
   // const DegreeView = async () => {
   //   try {
   //     const response = await axios.get(
-  //       "http://127.0.0.1:8000/api/admin/get-all-degrees"
+  //       "https://api.manomilan.com/api/admin/get-all-degrees"
   //     );
   //     setViewdegrees(response.data.data);
   //     await DegreeView();
@@ -648,7 +648,7 @@ const MatrimonialForm = () => {
   const getFranchises = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/get-franchises",
+        "https://api.manomilan.com/api/user/get-franchises",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -667,7 +667,7 @@ const MatrimonialForm = () => {
   const fetchMotherTongue = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-mother-tongue",
+        "https://api.manomilan.com/api/admin/get-mother-tongue",
       );
       if (response.data.status === true) {
         setMotherTongue(response.data.result);
@@ -680,7 +680,7 @@ const MatrimonialForm = () => {
   const getDistributors = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-distributors",
+        "https://api.manomilan.com/api/admin/get-distributors",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -700,7 +700,7 @@ const MatrimonialForm = () => {
   const getSect = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-sect",
+        "https://api.manomilan.com/api/admin/get-sect",
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -718,7 +718,7 @@ const MatrimonialForm = () => {
   const getManglik = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/get-manglik",
+        "https://api.manomilan.com/api/user/get-manglik",
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -735,7 +735,7 @@ const MatrimonialForm = () => {
   const getFoodPref = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/food-choices",
+        "https://api.manomilan.com/api/user/food-choices",
       );
       if (response.data.status === false) {
         const fetched = response.data.result.map((item) => ({
@@ -752,7 +752,7 @@ const MatrimonialForm = () => {
   const getComplexion = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/get-complexion",
+        "https://api.manomilan.com/api/user/get-complexion",
       );
       if (response.data.status) {
         setComplexions(response.data?.result);
@@ -764,7 +764,7 @@ const MatrimonialForm = () => {
   const getBodyType = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/get-bodytype",
+        "https://api.manomilan.com/api/user/get-bodytype",
       );
       if (response.data.status) {
         setBodyType(response.data?.result);
@@ -776,7 +776,7 @@ const MatrimonialForm = () => {
   const getFamilyBg = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/get-familybg",
+        "https://api.manomilan.com/api/user/get-familybg",
       );
       if (response.data.status) {
         setFamilyBg(response.data?.result);
@@ -788,7 +788,7 @@ const MatrimonialForm = () => {
   const getPosition = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/get-position",
+        "https://api.manomilan.com/api/user/get-position",
       );
       if (response.data.status) {
         setPositions(response.data?.result);
@@ -1611,7 +1611,7 @@ const PasswordChangeComponent = ({ currAdmin }) => {
     try {
       // Simulate API call to send OTP
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/admin/forgot-password-otp",
+        "https://api.manomilan.com/api/admin/forgot-password-otp",
         {
           id: currAdmin._id,
         },
@@ -1644,7 +1644,7 @@ const PasswordChangeComponent = ({ currAdmin }) => {
   //   setSuccessMessage('');
 
   //   try {
-  //     const response = await axios.post('http://127.0.0.1:8000/api/admin/change-password', {
+  //     const response = await axios.post('https://api.manomilan.com/api/admin/change-password', {
   //       id:currAdmin._id,
   //       otp:formData.otp,
   //       newpassword:formData.newPassword
@@ -1699,7 +1699,7 @@ const PasswordChangeComponent = ({ currAdmin }) => {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/admin/change-password",
+        "https://api.manomilan.com/api/admin/change-password",
         {
           id: currAdmin._id,
           otp: formData.otp,
@@ -2193,7 +2193,7 @@ const TransactionPasswordChangeComponent = ({ adminId, token }) => {
     setIsTransactionLoading(true);
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/admin/change-transactionPassword",
+        "https://api.manomilan.com/api/admin/change-transactionPassword",
         {
           transactionPassword: transactionFormData.oldTransactionPassword,
           newTransactionPassword: transactionFormData.newTransactionPassword,
@@ -3021,7 +3021,7 @@ const AdminDashboard = () => {
   const getCurrentAdmin = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/current-admin",
+        "https://api.manomilan.com/api/admin/current-admin",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3065,7 +3065,7 @@ const AdminDashboard = () => {
   const getPackagesLog = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-all-packages",
+        "https://api.manomilan.com/api/admin/get-all-packages",
       );
       if (response.data.status) {
         setTableData(response.data);
@@ -3080,7 +3080,7 @@ const AdminDashboard = () => {
   const getAdminInboxMsgs = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/message/replies",
+        "https://api.manomilan.com/api/admin/message/replies",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3111,7 +3111,7 @@ const AdminDashboard = () => {
     };
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/admin/add-points",
+        "https://api.manomilan.com/api/admin/add-points",
         payload,
         {
           headers: {
@@ -3137,7 +3137,7 @@ const AdminDashboard = () => {
   const getPoints = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-points",
+        "https://api.manomilan.com/api/admin/get-points",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3184,7 +3184,7 @@ const AdminDashboard = () => {
     };
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/admin/add-main-packages",
+        "https://api.manomilan.com/api/admin/add-main-packages",
         payload,
         {
           headers: {
@@ -3205,7 +3205,7 @@ const AdminDashboard = () => {
   const getMainPackage = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-main-packages",
+        "https://api.manomilan.com/api/admin/get-main-packages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3231,7 +3231,7 @@ const AdminDashboard = () => {
     console.log(payload);
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/admin/add-vip-packages",
+        "https://api.manomilan.com/api/admin/add-vip-packages",
         payload,
         {
           headers: {
@@ -3258,7 +3258,7 @@ const AdminDashboard = () => {
   const getVipPackage = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-vip-packages",
+        "https://api.manomilan.com/api/admin/get-vip-packages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3286,7 +3286,7 @@ const AdminDashboard = () => {
     console.log(payload);
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/admin/add-free-packages",
+        "https://api.manomilan.com/api/admin/add-free-packages",
         payload,
         {
           headers: {
@@ -3311,7 +3311,7 @@ const AdminDashboard = () => {
   const getFreePackage = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-free-packages",
+        "https://api.manomilan.com/api/admin/get-free-packages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3361,7 +3361,7 @@ const AdminDashboard = () => {
     console.log(payload);
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/admin/add-addon-packages",
+        "https://api.manomilan.com/api/admin/add-addon-packages",
         payload,
         {
           headers: {
@@ -3390,7 +3390,7 @@ const AdminDashboard = () => {
   const getAddOnPackage = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-addon-packages",
+        "https://api.manomilan.com/api/admin/get-addon-packages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3416,7 +3416,7 @@ const AdminDashboard = () => {
   const getFranchises = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/get-franchises",
+        "https://api.manomilan.com/api/user/get-franchises",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3435,7 +3435,7 @@ const AdminDashboard = () => {
   const getDistributors = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-distributors",
+        "https://api.manomilan.com/api/admin/get-distributors",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3461,7 +3461,7 @@ const AdminDashboard = () => {
     const upperLimit = 1000000;
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/admin/get-users?lowerLimit=${lowerLimit}&upperLimit=${upperLimit}`,
+        `https://api.manomilan.com/api/admin/get-users?lowerLimit=${lowerLimit}&upperLimit=${upperLimit}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3520,7 +3520,7 @@ const AdminDashboard = () => {
     console.log(receiverIds, message, token);
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8000/api/admin/message/send",
+        "https://api.manomilan.com/api/admin/message/send",
         {
           receiverIds,
           message,
@@ -3613,7 +3613,7 @@ const AdminDashboard = () => {
   const getAdminSentMsgs = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/message/get-sendMessages",
+        "https://api.manomilan.com/api/admin/message/get-sendMessages",
         {
           headers: {
             Authorization: `Bearer ${token}`,

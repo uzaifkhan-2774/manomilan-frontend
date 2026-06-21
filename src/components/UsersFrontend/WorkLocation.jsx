@@ -29,7 +29,7 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
 
   const fetchCities = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/user/get-all-cities");
+      const res = await axios.get("https://api.manomilan.com/api/user/get-all-cities");
       if (res.data?.status === true) {
         const transformed = (res.data.allLocations || []).map((item) => ({
           label: `${item.city}, ${item.stateCountry?.state || ""}, ${item.stateCountry?.country || ""}`,
@@ -49,7 +49,7 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
   useEffect(() => {
     const fetchStreamsAndDegrees = async () => {
       try {
-        const streamsRes = await axios.get("http://127.0.0.1:8000/api/user/get-all-stream");
+        const streamsRes = await axios.get("https://api.manomilan.com/api/user/get-all-stream");
         const fetchedStreams = streamsRes?.data?.result || streamsRes?.data?.data || [];
         setStreams(fetchedStreams);
 
@@ -57,7 +57,7 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
         for (const stream of fetchedStreams) {
           try {
             const response = await axios.post(
-              "http://127.0.0.1:8000/api/user/get-degree-by-stream",
+              "https://api.manomilan.com/api/user/get-degree-by-stream",
               null,
               { params: { stream: stream.stream } }
             );
@@ -80,7 +80,7 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
     if (!userId) return;
     try {
       setLoading(true);
-      const res = await axios.get("http://127.0.0.1:8000/api/user/getcurrentuser",{
+      const res = await axios.get("https://api.manomilan.com/api/user/getcurrentuser",{
         headers:{
           Authorization:`Bearer ${token}`
         }
@@ -168,7 +168,7 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
       };
       // update user endpoint - uses PUT to /api/user/:id (keeps shape similar to registration)
       const res = await axios.put(
-        "http://127.0.0.1:8000/api/user/editprofile",
+        "https://api.manomilan.com/api/user/editprofile",
         { newUpdates },
         {
           headers: {
