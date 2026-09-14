@@ -5,6 +5,28 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 import { SearchableDropdown } from "../CommonComponents/SearchableDDM";
 
+  const indianCities = [
+  "Mumbai", "Delhi", "Bengaluru", "Hyderabad", "Ahmedabad", "Chennai",
+  "Kolkata", "Surat", "Pune", "Jaipur", "Lucknow", "Kanpur", "Nagpur",
+  "Indore", "Thane", "Bhopal", "Visakhapatnam", "Pimpri-Chinchwad",
+  "Patna", "Vadodara", "Ghaziabad", "Ludhiana", "Agra", "Nashik",
+  "Faridabad", "Meerut", "Rajkot", "Kalyan-Dombivli", "Vasai-Virar",
+  "Varanasi", "Srinagar", "Aurangabad", "Dhanbad", "Amritsar",
+  "Navi Mumbai", "Allahabad", "Ranchi", "Howrah", "Coimbatore",
+  "Jabalpur", "Gwalior", "Vijayawada", "Jodhpur", "Madurai", "Raipur",
+  "Kota", "Guwahati", "Chandigarh", "Solapur", "Hubballi-Dharwad",
+  "Bareilly", "Moradabad", "Mysuru", "Gurugram", "Aligarh", "Jalandhar",
+  "Tiruchirappalli", "Bhubaneswar", "Salem", "Warangal", "Guntur",
+  "Bhiwandi", "Saharanpur", "Gorakhpur", "Bikaner", "Amravati",
+  "Noida", "Jamshedpur", "Bhilai", "Cuttack", "Firozabad", "Kochi",
+  "Nellore", "Bhavnagar", "Dehradun", "Durgapur", "Asansol",
+  "Rourkela", "Nanded", "Kolhapur", "Ajmer", "Akola", "Gulbarga",
+  "Jamnagar", "Ujjain", "Loni", "Siliguri", "Jhansi", "Ulhasnagar",
+  "Jammu", "Sangli-Miraj", "Mangaluru", "Erode", "Belgaum",
+  "Ambattur", "Tirunelveli", "Malegaon", "Gaya", "Jalgaon",
+  "Udaipur", "Maheshtala",
+].map((city) => ({ label: city, value: city }));
+
 const PreferenceSelector = ({
   title,
   dropdown1Label,
@@ -24,6 +46,8 @@ const PreferenceSelector = ({
   const [prefs, setPrefs] = useState([]);
   const [loading, setLoading] = useState([false, false, false]);
   const [error, setError] = useState("");
+  
+
 
   // normalize incoming initialPreferences once
   useEffect(() => {
@@ -342,7 +366,7 @@ const EditMemberPage = ({ userId: rawUserId, token, onClose = () => {} }) => {
       expectedMaritalStatus: "",
       expectedNationality: ["India"],
       childAccepted: "No",
-      workAbroadpref: "No", 
+      workAbroadpref: "Yes", 
       divyangPrefer: "No", 
 
       sect: "",
@@ -460,14 +484,14 @@ const EditMemberPage = ({ userId: rawUserId, token, onClose = () => {} }) => {
           manglikRes,
           foodRes,
         ] = await Promise.all([
-          axios.get("https://api.manomilan.com/api/user/get-all-stream"),
-          axios.get("https://api.manomilan.com/api/user/get-all-countries"),
-          axios.get("https://api.manomilan.com/api/user/get-all-cities"),
-          axios.get("https://api.manomilan.com/api/user/get-all-subcaste"),
-          axios.get("https://api.manomilan.com/api/admin/get-mother-tongue"),
-          axios.get("https://api.manomilan.com/api/user/get-sect"),
-          axios.get("https://api.manomilan.com/api/user/get-manglik"),
-          axios.get("https://api.manomilan.com/api/user/food-choices"),
+          axios.get("http://127.0.0.1:8000/api/user/get-all-stream"),
+          axios.get("http://127.0.0.1:8000/api/user/get-all-countries"),
+          axios.get("http://127.0.0.1:8000/api/user/get-all-cities"),
+          axios.get("http://127.0.0.1:8000/api/user/get-all-subcaste"),
+          axios.get("http://127.0.0.1:8000/api/admin/get-mother-tongue"),
+          axios.get("http://127.0.0.1:8000/api/user/get-sect"),
+          axios.get("http://127.0.0.1:8000/api/user/get-manglik"),
+          axios.get("http://127.0.0.1:8000/api/user/food-choices"),
         ]);
 
         if (streamsRes?.data?.status) {
@@ -480,7 +504,7 @@ const EditMemberPage = ({ userId: rawUserId, token, onClose = () => {} }) => {
           for (const stream of fetchedStreams) {
             try {
               const response = await axios.post(
-                "https://api.manomilan.com/api/user/get-degree-by-stream",
+                "http://127.0.0.1:8000/api/user/get-degree-by-stream",
                 null,
                 {
                   params: { stream: stream.stream },
@@ -561,7 +585,7 @@ const EditMemberPage = ({ userId: rawUserId, token, onClose = () => {} }) => {
     const fetchUser = async () => {
       try {
         const res = await axios.get(
-          `https://api.manomilan.com/api/admin/get-single-user/${uid}`,
+          `http://127.0.0.1:8000/api/admin/get-single-user/${uid}`,
           {
             headers: token ? { Authorization: `Bearer ${token}` } : undefined,
           },
@@ -622,7 +646,7 @@ const EditMemberPage = ({ userId: rawUserId, token, onClose = () => {} }) => {
             designation: u.designation || "",
             candidateNumber: u.candidateNumber || "",
             candidateEmail: u.candidateEmail || "",
-            workLocation: u.workLocation || u.parentsCity || "",
+            workLocation: u.workLocation || "",
 
             ageFrom: u.ageFrom ?? "",
             ageTo: u.ageTo ?? "",
@@ -742,7 +766,7 @@ const EditMemberPage = ({ userId: rawUserId, token, onClose = () => {} }) => {
       if (payload.expectedIncome)
         payload.expectedIncome = Number(payload.expectedIncome);
 
-            const  result =  await fetch(`https://api.manomilan.com/api/admin/update-user/${uid}`, {method :"PUT",
+            const  result =  await fetch(`http://127.0.0.1:8000/api/admin/update-user/${uid}`, {method :"PUT",
         headers:{
           "Content-Type" : "application/json",
           "Authorization" : `Bearer ${token}`
@@ -1843,29 +1867,28 @@ const EditMemberPage = ({ userId: rawUserId, token, onClose = () => {} }) => {
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-red-700 mb-2">
-              Native (Village / Town) *
-            </label>
-            <Controller
-              name="nativeVillage"
-              control={control}
-              rules={{ required: "Native place is required" }}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder="Enter Native Address"
-                />
-              )}
-            />
-            {errors.nativeVillage && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.nativeVillage.message}
-              </p>
-            )}
-          </div>
+         <div>
+  <label className="block text-sm font-medium text-red-700 mb-2">
+    Native (Village / Town)
+  </label>
+  <Controller
+    name="nativeVillage"
+    control={control}
+    render={({ field }) => (
+      <input
+        {...field}
+        type="text"
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+        placeholder="Enter Native Address"
+      />
+    )}
+  />
+  {errors.nativeVillage && (
+    <p className="text-red-500 text-xs mt-1">
+      {errors.nativeVillage.message}
+    </p>
+  )}
+</div>
 
           <div>
             <label className="block text-sm font-medium text-red-700 mb-2">
@@ -2122,44 +2145,47 @@ const EditMemberPage = ({ userId: rawUserId, token, onClose = () => {} }) => {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-red-700 mb-2">
-                Work Location
-              </label>
-              <Controller
-                name="workLocation"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    options={cities}
-                    value={cities.find(
-                      (opt) => opt.value === field.value || null,
-                    )}
-                    onChange={(selectedOption) => {
-                      field.onChange(selectedOption.value);
-                      setSelectedWorkingLocation(selectedOption.label);
-                    }}
-                    classNamePrefix="react-select"
-                    placeholder="Work location"
-                    styles={{
-                      control: (base, state) => ({
-                        ...base,
-                        border: "none",
-                        boxShadow: "none", // removes the blue border when focused
-                        backgroundColor: "transparent", // optional
-                      }),
-                      dropdownIndicator: (base) => ({
-                        ...base,
-                        padding: 4,
-                      }),
-                      indicatorSeparator: () => ({ display: "none" }), // optional: remove vertical separator
-                    }}
-                    className="w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  ></Select>
-                )}
-              />
-            </div>
+           <div>
+  <label className="block text-sm font-medium text-red-700 mb-2">
+    Work Location *
+  </label>
+  <Controller
+    name="workLocation"
+    control={control}
+    rules={{ required: "Work Location is required" }}
+    render={({ field }) => (
+      <Select
+        options={indianCities}
+        value={indianCities.find((opt) => opt.value === field.value) || null}
+        onChange={(selectedOption) => {
+          field.onChange(selectedOption ? selectedOption.value : "");
+          setSelectedWorkingLocation(selectedOption ? selectedOption.label : "");
+        }}
+        classNamePrefix="react-select"
+        placeholder="Work location"
+        styles={{
+          control: (base, state) => ({
+            ...base,
+            border: "none",
+            boxShadow: "none",
+            backgroundColor: "transparent",
+          }),
+          dropdownIndicator: (base) => ({
+            ...base,
+            padding: 4,
+          }),
+          indicatorSeparator: () => ({ display: "none" }),
+        }}
+        className="w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+      />
+    )}
+  />
+  {errors.workLocation && (
+    <p className="text-red-500 text-xs mt-1">
+      {errors.workLocation.message}
+    </p>
+  )}
+</div>
           </div>
         </div>
 
@@ -2366,47 +2392,37 @@ const EditMemberPage = ({ userId: rawUserId, token, onClose = () => {} }) => {
               <label className="block text-sm font-medium text-red-700 mb-3">
                 Do you prefer candidate working abroad?
               </label>
-              <Controller
-                name="workAbroadpref"
-                control={control}
-                rules={{
-                  required: "Please select work abroad preference",
-                }}
-                render={({ field }) => (
-                  <div className="flex gap-6">
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        {...field}
-                        value="Yes"
-                        className="accent-[#7d0a0a] w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        {...field}
-                        value="No"
-                        // defaultChecked
-                        className="accent-[#7d0a0a] w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                    {/* <label className="flex items-center">
-                                        <input
-                                          type="radio"
-                                          {...field}
-                                          value="any"
-                                          className="accent-[#7d0a0a] w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500"
-                                        />
-                                        <span className="ml-2 text-sm text-gray-700">
-                                          Any
-                                        </span>
-                                      </label> */}
-                  </div>
-                )}
-              />
+            <Controller
+  name="workAbroadpref"
+  control={control}
+  rules={{
+    required: "Please select work abroad preference",
+  }}
+  render={({ field }) => (
+    <div className="flex gap-6">
+      <label className="flex items-center">
+        <input
+          type="radio"
+          {...field}
+          value="Yes"
+          checked={field.value === "Yes"}
+          className="accent-[#7d0a0a] w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500"
+        />
+        <span className="ml-2 text-sm text-gray-700">Yes</span>
+      </label>
+      <label className="flex items-center">
+        <input
+          type="radio"
+          {...field}
+          value="No"
+          checked={field.value === "No"}
+          className="accent-[#7d0a0a] w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500"
+        />
+        <span className="ml-2 text-sm text-gray-700">No</span>
+      </label>
+    </div>
+  )}
+/>
               {errors.workAbroad && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.workAbroad.message}
@@ -2419,36 +2435,37 @@ const EditMemberPage = ({ userId: rawUserId, token, onClose = () => {} }) => {
               <label className="block text-sm font-medium text-red-700 mb-3">
                 Do you prefer divyang?
               </label>
-              <Controller
-                name="divyangPrefer"
-                control={control}
-                rules={{
-                  required: "Please select work divyang preference",
-                }}
-                render={({ field }) => (
-                  <div className="flex gap-6">
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        {...field}
-                        value="Yes"
-                        className="accent-[#7d0a0a] w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        {...field}
-                        value="No"
-                        // defaultChecked
-                        className="accent-[#7d0a0a] w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
-                )}
-              />
+           <Controller
+  name="divyangPrefer"
+  control={control}
+  rules={{
+    required: "Please select work divyang preference",
+  }}
+  render={({ field }) => (
+    <div className="flex gap-6">
+      <label className="flex items-center">
+        <input
+          type="radio"
+          {...field}
+          value="Yes"
+          checked={field.value === "Yes"}
+          className="accent-[#7d0a0a] w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500"
+        />
+        <span className="ml-2 text-sm text-gray-700">Yes</span>
+      </label>
+      <label className="flex items-center">
+        <input
+          type="radio"
+          {...field}
+          value="No"
+          checked={field.value === "No"}
+          className="accent-[#7d0a0a] w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500"
+        />
+        <span className="ml-2 text-sm text-gray-700">No</span>
+      </label>
+    </div>
+  )}
+/>
               {errors.divyangPrefer && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.divyangPrefer.message}
@@ -2731,9 +2748,9 @@ const EditMemberPage = ({ userId: rawUserId, token, onClose = () => {} }) => {
               dropdown1Label="Religion"
               dropdown2Label="Caste"
               dropdown3Label="Subcaste"
-              api1Url="https://api.manomilan.com/api/user/get-religions"
-              api2Url="https://api.manomilan.com/api/user/get-caste-by-religion"
-              api3Url="https://api.manomilan.com/api/user/get-subcaste-by-caste"
+              api1Url="http://127.0.0.1:8000/api/user/get-religions"
+              api2Url="http://127.0.0.1:8000/api/user/get-caste-by-religion"
+              api3Url="http://127.0.0.1:8000/api/user/get-subcaste-by-caste"
               api1Key="religion"
               api2Key="caste"
               api3Key="subCaste"
@@ -2755,9 +2772,9 @@ const EditMemberPage = ({ userId: rawUserId, token, onClose = () => {} }) => {
               dropdown1Label="Country"
               dropdown2Label="State"
               dropdown3Label="City"
-              api1Url="https://api.manomilan.com/api/user/get-all-countries"
-              api2Url="https://api.manomilan.com/api/user/get-state-by-country"
-              api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
+              api1Url="http://127.0.0.1:8000/api/user/get-all-countries"
+              api2Url="http://127.0.0.1:8000/api/user/get-state-by-country"
+              api3Url="http://127.0.0.1:8000/api/user/get-cities-by-state"
               api1Key="country"
               api2Key="state"
               api3Key="city"
@@ -2779,9 +2796,9 @@ const EditMemberPage = ({ userId: rawUserId, token, onClose = () => {} }) => {
               dropdown1Label="Country"
               dropdown2Label="State"
               dropdown3Label="City"
-              api1Url="https://api.manomilan.com/api/user/get-all-countries"
-              api2Url="https://api.manomilan.com/api/user/get-state-by-country"
-              api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
+              api1Url="http://127.0.0.1:8000/api/user/get-all-countries"
+              api2Url="http://127.0.0.1:8000/api/user/get-state-by-country"
+              api3Url="http://127.0.0.1:8000/api/user/get-cities-by-state"
               api1Key="country"
               api2Key="state"
               api3Key="city"
