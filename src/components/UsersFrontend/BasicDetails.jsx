@@ -51,7 +51,7 @@ const BasicDetails = () => {
 
   const getcurrentuser=async()=>{
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/user/getcurrentuser",{
+      const response = await axios.get("https://api.manomilan.com/api/user/getcurrentuser",{
         headers:{
           Authorization:`Bearer ${token}`
         }
@@ -114,7 +114,7 @@ const BasicDetails = () => {
   const fetchNationalities = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/get-all-countries"
+        "https://api.manomilan.com/api/user/get-all-countries"
       );
       if (response.data.status === true) {
         setNationalities(response.data.result || []);
@@ -129,7 +129,7 @@ const BasicDetails = () => {
   const fetchMotherTongue = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-mother-tongue"
+        "https://api.manomilan.com/api/admin/get-mother-tongue"
       );
       if (response.data.status === true) {
         setMotherTongues(response.data.result);
@@ -178,7 +178,7 @@ const BasicDetails = () => {
       };
 
       const response = await axios.put(
-        "http://127.0.0.1:8000/api/user/editprofile",
+        "https://api.manomilan.com/api/user/editprofile",
         { newUpdates },
         {
           headers: {

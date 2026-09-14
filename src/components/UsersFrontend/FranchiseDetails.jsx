@@ -31,9 +31,9 @@ const FranchiseDetails = ({ setEdit,userId }) => {
   const fetchOptions = async () => {
     try {
       const [complexionRes, bodyTypeRes, familyBgRes] = await Promise.all([
-        axios.get("http://127.0.0.1:8000/api/user/get-complexion"),
-        axios.get("http://127.0.0.1:8000/api/user/get-bodytype"),
-        axios.get("http://127.0.0.1:8000/api/user/get-familybg")
+        axios.get("https://api.manomilan.com/api/user/get-complexion"),
+        axios.get("https://api.manomilan.com/api/user/get-bodytype"),
+        axios.get("https://api.manomilan.com/api/user/get-familybg")
       ]);
 
       if (complexionRes.data.status) {
@@ -75,7 +75,7 @@ const FranchiseDetails = ({ setEdit,userId }) => {
     console.log("Form Data:", data);
     console.log(formData)
     try {
-      const response = await axios.put("http://127.0.0.1:8000/api/franchise/update-user-profile",formData)
+      const response = await axios.put("https://api.manomilan.com/api/franchise/update-user-profile",formData)
       console.log(response.data)
       toast.success(response.data.message)
     } catch (error) {

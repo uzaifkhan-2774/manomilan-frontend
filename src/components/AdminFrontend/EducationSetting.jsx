@@ -14,7 +14,7 @@ const EducationSetting = () => {
 
   const StreamView = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/admin/get-streams");
+      const response = await axios.get("https://api.manomilan.com/api/admin/get-streams");
       setViewStreams(response.data.data || response.data);
     } catch (error) {
       console.error("Error fetching streams:", error);
@@ -23,7 +23,7 @@ const EducationSetting = () => {
 
   const DegreeView = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/admin/get-all-degrees");
+      const response = await axios.get("https://api.manomilan.com/api/admin/get-all-degrees");
       console.log("Degree API response:", response.data);
       setViewdegrees(response.data.data || response.data);
     } catch (error) {
@@ -36,8 +36,8 @@ const EducationSetting = () => {
       setIsLoading(true);
       try {
         const [streamResponse, degreeResponse] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/admin/get-streams"),
-          axios.get("http://127.0.0.1:8000/api/admin/get-all-degrees"),
+          axios.get("https://api.manomilan.com/api/admin/get-streams"),
+          axios.get("https://api.manomilan.com/api/admin/get-all-degrees"),
         ]);
         setViewStreams(streamResponse.data.data || streamResponse.data);
         setViewdegrees(degreeResponse.data.data || degreeResponse.data);
@@ -59,7 +59,7 @@ const EducationSetting = () => {
       setViewStreams([...viewStreams, newStream]); // Update viewStreams for immediate UI feedback
       setStreamInput("");
       try {
-        const response = await axios.post("http://127.0.0.1:8000/api/admin/add-stream", {
+        const response = await axios.post("https://api.manomilan.com/api/admin/add-stream", {
           stream: newStream.stream,
         });
         alert(response.data.message);
@@ -83,7 +83,7 @@ const EducationSetting = () => {
       setDegreeInput("");
       setSelectedStream("");
       try {
-        const response = await axios.post("http://127.0.0.1:8000/api/admin/add-degree", {
+        const response = await axios.post("https://api.manomilan.com/api/admin/add-degree", {
           degree: newDegree.degree,
           stream: selectedStream,
         });
@@ -101,7 +101,7 @@ const EducationSetting = () => {
   console.log(degreeName, streamName)
   try {
     const response = await axios.delete(
-      "http://127.0.0.1:8000/api/admin/delete-degree",
+      "https://api.manomilan.com/api/admin/delete-degree",
       {
         headers: { "Content-Type": "application/json" },
         data: { stream: streamName, degree: degreeName }, // ✅ send JSON body
@@ -123,7 +123,7 @@ const EducationSetting = () => {
 const deleteStream = async (streamName) => {
   try {
     const response = await axios.delete(
-      "http://127.0.0.1:8000/api/admin/delete-stream",
+      "https://api.manomilan.com/api/admin/delete-stream",
       {
         headers: {
           "Content-Type": "application/json",

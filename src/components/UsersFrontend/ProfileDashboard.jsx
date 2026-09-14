@@ -129,7 +129,7 @@ const ProfileDashboard = () => {
   const getCurrentUser = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/getcurrentuser",
+        "https://api.manomilan.com/api/user/getcurrentuser",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -154,7 +154,7 @@ const ProfileDashboard = () => {
         return;
       }
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/user/get-franchise-distributor/${currUser.franchiseUnder}`,
+        `https://api.manomilan.com/api/user/get-franchise-distributor/${currUser.franchiseUnder}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -206,7 +206,7 @@ const ProfileDashboard = () => {
     const subscribedMembers = await getSubscribed();
 
     const response = await axios.get(
-      "http://127.0.0.1:8000/api/user/mutual-matching",
+      "https://api.manomilan.com/api/user/mutual-matching",
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -266,7 +266,7 @@ useEffect(() => {
     };
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/user/message/send",
+        "https://api.manomilan.com/api/user/message/send",
         payload,
         {
           headers: {
@@ -326,7 +326,7 @@ useEffect(() => {
   const getSentMessages = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/message/get-sendMessages",
+        "https://api.manomilan.com/api/user/message/get-sendMessages",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -343,7 +343,7 @@ useEffect(() => {
   const getInboxMessages = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/message/replies",
+        "https://api.manomilan.com/api/user/message/replies",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -368,7 +368,7 @@ useEffect(() => {
   const token = localStorage.getItem("userToken");
   try {
     const response = await axios.get(
-      "http://127.0.0.1:8000/api/user/getSubscribes",
+      "https://api.manomilan.com/api/user/getSubscribes",
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -391,7 +391,7 @@ useEffect(() => {
   const packagesAvailable = async (userId) => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/user/get-packages/${userId}`
+        `https://api.manomilan.com/api/user/get-packages/${userId}`
       );
       console.log(response.data)
       if (response.data.status) {
@@ -469,7 +469,7 @@ useEffect(() => {
     try {
       const response = await axios.put(
         //login email will change accordingly
-        "http://127.0.0.1:8000/api/user/change-user-email",
+        "https://api.manomilan.com/api/user/change-user-email",
         {
           distributorId: currFranchiseId._id || id,
           newEmail: newEmail,
