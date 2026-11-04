@@ -303,7 +303,7 @@ const MemberRegistration = ({ franchiseeName }) => {
     const fetchStreams = async () => {
       try {
         const response = await axios.get(
-          "https://api.manomilan.com/api/user/get-all-stream"
+          "http://127.0.0.1:8000/api/user/get-all-stream"
         );
         if (response.data.status) {
           setStreams(response.data.data);
@@ -325,7 +325,7 @@ const MemberRegistration = ({ franchiseeName }) => {
     for (const stream of streams) {
       try {
         const response = await axios.post(
-          "https://api.manomilan.com/api/user/get-degree-by-stream",
+          "http://127.0.0.1:8000/api/user/get-degree-by-stream",
           null,
           {
             params: { stream: stream.stream },
@@ -599,7 +599,7 @@ const MemberRegistration = ({ franchiseeName }) => {
   const fetchDegree = async (degree) => {
     try {
       const response = await axios.post(
-        "https://api.manomilan.com/api/user/get-degree-by-stream"
+        "http://127.0.0.1:8000/api/user/get-degree-by-stream"
       );
       if (response.data.status === true) {
         // console.log(response.data);
@@ -613,7 +613,7 @@ const MemberRegistration = ({ franchiseeName }) => {
   const fetchStreams = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-all-stream"
+        "http://127.0.0.1:8000/api/user/get-all-stream"
       );
       if (response.data.status === true) {
         const dataToSave = await Promise.all(
@@ -635,7 +635,7 @@ const MemberRegistration = ({ franchiseeName }) => {
   const fetchNationalities = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-all-countries"
+        "http://127.0.0.1:8000/api/user/get-all-countries"
       );
       if (response.data.status === true) {
         setNationalities(response.data.result || []);
@@ -650,7 +650,7 @@ const MemberRegistration = ({ franchiseeName }) => {
   const fetchCities = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-all-cities"
+        "http://127.0.0.1:8000/api/user/get-all-cities"
       );
       if (response.data.status === true) {
         const transformed = response.data.allLocations.map((item) => ({
@@ -673,7 +673,7 @@ const MemberRegistration = ({ franchiseeName }) => {
   const fetchCaste = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-all-subcaste"
+        "http://127.0.0.1:8000/api/user/get-all-subcaste"
       );
 
       if (response.data?.result?.length > 0) {
@@ -690,7 +690,7 @@ const MemberRegistration = ({ franchiseeName }) => {
   const fetchMotherTongue = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-mother-tongue"
+        "http://127.0.0.1:8000/api/admin/get-mother-tongue"
       );
       if (response.data.status === true) {
         setMotherTongue(response.data.result);
@@ -703,7 +703,7 @@ const MemberRegistration = ({ franchiseeName }) => {
   const getSect = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-sect"
+        "http://127.0.0.1:8000/api/user/get-sect"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -721,7 +721,7 @@ const MemberRegistration = ({ franchiseeName }) => {
   const getManglik = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-manglik"
+        "http://127.0.0.1:8000/api/user/get-manglik"
       );
       if (response.data.status === true) {
         const fetched = response.data.result.map((item) => ({
@@ -739,7 +739,7 @@ const MemberRegistration = ({ franchiseeName }) => {
   const getFoodPref = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/food-choices"
+        "http://127.0.0.1:8000/api/user/food-choices"
       );
       if (response.data.status === false) {
         const fetched = response.data.result.map((item) => ({
@@ -791,7 +791,7 @@ const MemberRegistration = ({ franchiseeName }) => {
         };
 
         const response = await axios.post(
-          "https://api.manomilan.com/api/user/register",
+          "http://127.0.0.1:8000/api/user/register",
           payload
         );
         if (response.data?.status === true) {
@@ -1178,7 +1178,7 @@ const MemberRegistration = ({ franchiseeName }) => {
 
       // Submit to backend
       const response = await axios.post(
-        "https://api.manomilan.com/api/franchise/create-member",
+        "http://127.0.0.1:8000/api/franchise/create-member",
         formDataToSend,
         {
           headers: {
@@ -1297,7 +1297,7 @@ const MemberRegistration = ({ franchiseeName }) => {
 const searchMember = async (data) => {
   try {
     const response = await axios.post(
-      "https://api.manomilan.com/api/user/user-exists",
+      "http://127.0.0.1:8000/api/user/user-exists",
       {
         mobileNo: data?.mobNo,
         dob: data?.dob,
@@ -3579,9 +3579,9 @@ const searchMember = async (data) => {
                     dropdown1Label="Religion"
                     dropdown2Label="Caste"
                     dropdown3Label="Subcaste"
-                    api1Url="https://api.manomilan.com/api/user/get-religions"
-                    api2Url="https://api.manomilan.com/api/user/get-caste-by-religion"
-                    api3Url="https://api.manomilan.com/api/user/get-subcaste-by-caste"
+                    api1Url="http://127.0.0.1:8000/api/user/get-religions"
+                    api2Url="http://127.0.0.1:8000/api/user/get-caste-by-religion"
+                    api3Url="http://127.0.0.1:8000/api/user/get-subcaste-by-caste"
                     api1Key="religion"
                     api2Key="caste"
                     api3Key="subCaste"
@@ -3600,9 +3600,9 @@ const searchMember = async (data) => {
                     dropdown1Label="Country"
                     dropdown2Label="State"
                     dropdown3Label="City"
-                    api1Url="https://api.manomilan.com/api/user/get-all-countries"
-                    api2Url="https://api.manomilan.com/api/user/get-state-by-country"
-                    api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
+                    api1Url="http://127.0.0.1:8000/api/user/get-all-countries"
+                    api2Url="http://127.0.0.1:8000/api/user/get-state-by-country"
+                    api3Url="http://127.0.0.1:8000/api/user/get-cities-by-state"
                     api1Key="country"
                     api2Key="state"
                     api3Key="city"
@@ -3621,9 +3621,9 @@ const searchMember = async (data) => {
                     dropdown1Label="Country"
                     dropdown2Label="State"
                     dropdown3Label="City"
-                    api1Url="https://api.manomilan.com/api/user/get-all-countries"
-                    api2Url="https://api.manomilan.com/api/user/get-state-by-country"
-                    api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
+                    api1Url="http://127.0.0.1:8000/api/user/get-all-countries"
+                    api2Url="http://127.0.0.1:8000/api/user/get-state-by-country"
+                    api3Url="http://127.0.0.1:8000/api/user/get-cities-by-state"
                     api1Key="country"
                     api2Key="state"
                     api3Key="city"

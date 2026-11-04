@@ -291,7 +291,9 @@ const Expectations = ({
       { name: "Engineering", degrees: ["CS", "IT", "Mechanical"] },
     ]
   );
-  const [partnerEducation, setPartnerEducation] = useState([]);
+const [partnerEducation, setPartnerEducation] = useState([
+  { degree: "Any Degree", category: "ANY" },
+]);
   const [showChildAcceptance, setShowChildAcceptance] = useState(false);
   const [isAnySelected, setIsAnySelected] = useState(false);
   const token =
@@ -306,22 +308,22 @@ const Expectations = ({
     formState: { errors },
   } = useForm({
     defaultValues: {
-      ageFrom: "",
-      ageTo: "",
-      heightFrom: "",
-      heightTo: "",
-      expectedOccupation: "any",
-      expectedIncome: "",
-      workAbroad: "No",
-      divyangPrefer: "No",
-      expectedNationality: expectedNationalityProp || [],
-      expectedMaritalStatus: "Unmarried",
-      childAccepted: "",
-      partnerEducation: [],
-      religionPreferences: [],
-      nativeLocationPreferences: [],
-      workingLocationPreferences: [],
-    },
+  ageFrom: "0",
+  ageTo: "5",
+  heightFrom: "",
+  heightTo: "",
+  expectedOccupation: ["any"],
+  expectedIncome: "",
+  workAbroad: "No",
+  divyangPrefer: "No",
+  expectedNationality: ["India"],
+  expectedMaritalStatus: "Unmarried",
+  childAccepted: "",
+  partnerEducation: [{ degree: "Any Degree", category: "ANY" }],
+  religionPreferences: [],
+  nativeLocationPreferences: [],
+  workingLocationPreferences: [],
+},
     mode: "onChange",
   });
 
@@ -370,10 +372,11 @@ const Expectations = ({
   const fetchNationalities = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-all-countries"
+        "http://127.0.0.1:8000/api/user/get-all-countries"
       );
       if (response.data.status === true) {
         setNationalities(response.data.result || []);
+        console.log("Nationalities:", response.data.result);
       } else {
         console.error("Failed to fetch nationalities:", response.data.message);
       }
@@ -391,7 +394,7 @@ const Expectations = ({
     const fetchStreams = async () => {
       try {
         const res = await axios.get(
-          "https://api.manomilan.com/api/user/get-all-stream"
+          "http://127.0.0.1:8000/api/user/get-all-stream"
         );
         if (res.data?.status) {
           const streams = res.data.data || [];
@@ -400,7 +403,7 @@ const Expectations = ({
             streams.map(async (s) => {
               try {
                 const r = await axios.post(
-                  "https://api.manomilan.com/api/user/get-degree-by-stream",
+                  "http://127.0.0.1:8000/api/user/get-degree-by-stream",
                   null,
                   { params: { stream: s.stream } }
                 );
@@ -430,7 +433,7 @@ const Expectations = ({
     }
     try {
       const res = await axios.get(
-        "https://api.manomilan.com/api/user/getcurrentuser",
+        "http://127.0.0.1:8000/api/user/getcurrentuser",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -438,45 +441,62 @@ const Expectations = ({
       console.log(res.data);
       if (res.data?.status) {
         const d = res.data.result || {};
-        const normalized = {
-          ageFrom: d.ageFrom ?? "",
-          ageTo: d.ageTo ? String(d.ageTo) : "",
-          heightFrom: d.heightFrom ? String(d.heightFrom) : "",
-          heightTo: d.heightTo ? String(d.heightTo) : "",
-          expectedOccupation: d.expectedOccupation || "any",
-          expectedIncome: d.expectedIncome ? String(d.expectedIncome) : "",
-          workAbroad: d.workAbroad || "No",
-          divyangPrefer: d.divyangPrefer || "No",
-          expectedNationality: Array.isArray(d.expectedNationality)
-            ? d.expectedNationality
-            : [],
-          expectedMaritalStatus: d.expectedMaritalStatus || "Unmarried",
-          childAccepted: d.childAccepted || "",
-          partnerEducation: Array.isArray(d.expectedEducation)
-            ? d.expectedEducation.map((degree) => ({
-                degree,
-                category: "Specific",
-              }))
-            : [],
-          religionPreferences: Array.isArray(d.expectedReligion)
-            ? d.expectedReligion.map((p) => ({
-                id: Date.now() + Math.random(),
-                ...p,
-              }))
-            : [],
-          nativeLocationPreferences: Array.isArray(d.expectedNativeLocation)
-            ? d.expectedNativeLocation.map((p) => ({
-                id: Date.now() + Math.random(),
-                ...p,
-              }))
-            : [],
-          workingLocationPreferences: Array.isArray(d.expectedWorkingLocation)
-            ? d.expectedWorkingLocation.map((p) => ({
-                id: Date.now() + Math.random(),
-                ...p,
-              }))
-            : [],
-        };
+       const normalized = {
+  ageFrom: d.ageFrom ?? "0",
+  ageTo: d.ageTo != null ? String(d.ageTo) : "5",
+  heightFrom: d.heightFrom ? String(d.heightFrom) : "",
+  heightTo: d.heightTo ? String(d.heightTo) : "",
+
+  expectedOccupation: Array.isArray(d.expectedOccupation)
+    ? d.expectedOccupation
+    : d.expectedOccupation
+      ? [d.expectedOccupation]
+      : ["any"],
+
+  expectedIncome: d.expectedIncome ? String(d.expectedIncome) : "",
+  workAbroad: d.workAbroad || "No",
+  divyangPrefer: d.divyangPrefer || "No",
+
+  expectedNationality:
+  Array.isArray(d.expectedNationality) && d.expectedNationality.length
+    ? d.expectedNationality.map((item) =>
+        typeof item === "object" ? item.country : item
+      )
+    : ["India"],
+
+  expectedMaritalStatus: d.expectedMaritalStatus || "Unmarried",
+  childAccepted: d.childAccepted || "",
+
+ partnerEducation: Array.isArray(d.expectedEducation)
+  ? d.expectedEducation.map((item) => ({
+      degree:
+        typeof item === "string" ? item : item.degree,
+      category:
+        typeof item === "string" ? "Specific" : item.category,
+    }))
+  : [],
+
+  religionPreferences: Array.isArray(d.expectedReligion)
+    ? d.expectedReligion.map((p) => ({
+        id: Date.now() + Math.random(),
+        ...p,
+      }))
+    : [],
+
+  nativeLocationPreferences: Array.isArray(d.expectedNativeLocation)
+    ? d.expectedNativeLocation.map((p) => ({
+        id: Date.now() + Math.random(),
+        ...p,
+      }))
+    : [],
+
+  workingLocationPreferences: Array.isArray(d.expectedWorkingLocation)
+    ? d.expectedWorkingLocation.map((p) => ({
+        id: Date.now() + Math.random(),
+        ...p,
+      }))
+    : [],
+};
         reset(normalized);
         setPartnerEducation(normalized.partnerEducation || []);
         replaceReligion(normalized.religionPreferences || []);
@@ -573,16 +593,19 @@ const Expectations = ({
           ageTo: formData.ageTo,
           heightFrom: formData.heightFrom,
           heightTo: formData.heightTo,
-          expectedOccupation: formData.expectedOccupation,
+         expectedOccupation: Array.isArray(formData.expectedOccupation)
+  ? formData.expectedOccupation[0] || "any"
+  : formData.expectedOccupation || "any",
           expectedIncome: formData.expectedIncome,
           workAbroad: formData.workAbroad,
           divyangPrefer: formData.divyangPrefer,
           expectedNationality: formData.expectedNationality,
           expectedMaritalStatus: formData.expectedMaritalStatus,
           childAccepted: formData.childAccepted,
-          expectedEducation: (formData.partnerEducation || []).map(
-            (e) => e.degree
-          ),
+          expectedEducation: (formData.partnerEducation || []).map((e) => ({
+  degree: e.degree,
+  category: e.category,
+})),
           expectedReligion: (formData.religionPreferences || []).map(
             ({ id, ...rest }) => rest
           ),
@@ -596,7 +619,7 @@ const Expectations = ({
       };
 
       const res = await axios.put(
-        "https://api.manomilan.com/api/user/expectation-edit",
+        "http://127.0.0.1:8000/api/user/expectation-edit",
         payload,
         {
           headers: {
@@ -630,55 +653,70 @@ const Expectations = ({
 
         {/* Age/Height grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-red-700 mb-2">
-              Age From
-            </label>
-            <Controller
-              name="ageFrom"
-              control={control}
-              render={({ field }) => (
-                <select
-                  {...field}
-                  className="w-full px-3 py-2 border rounded-md"
-                >
-                  <option value="">From</option>
-                  {Array.from({ length: 21 }, (_, i) => i).map((a) => (
-                    <option key={a} value={a}>
-                      {a}
-                    </option>
-                  ))}
-                </select>
-              )}
-            />
-          </div>
-
-          <div className="mt-5">
-            <label className="block text-sm font-medium text-red-700 mb-2">
-              &nbsp;
-            </label>
-            <Controller
-              name="ageTo"
-              control={control}
-              render={({ field }) => (
-                <select
-                  {...field}
-                  className="w-full px-3 py-2 border rounded-md"
-                >
-                  <option value="">To</option>
-                  {Array.from({ length: 21 }, (_, i) => i).map((a) => (
-                    <option
-                      key={a}
-                      value={a}
-                      disabled={ageFrom !== "" && a <= parseInt(ageFrom)}
-                    >
-                      {a}
-                    </option>
-                  ))}
-                </select>
-              )}
-            />
-          </div>
+           {/* Age From */}
+                     <div>
+                       <label className="block text-sm font-medium text-red-700 mb-2">
+                         Age Difference
+                       </label>
+                       <Controller
+                         name="ageFrom"
+                         control={control}
+                         rules={{ required: "Age from is required" }}
+                         render={({ field }) => (
+                           <select
+                             {...field}
+                             className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                           >
+                             <option value="">From</option>
+                             {Array.from({ length: 31 }, (_, i) => i).map((age) => (
+                               <option key={age} value={age}>
+                                 {age}
+                               </option>
+                             ))}
+                           </select>
+                         )}
+                       />
+                       {errors.ageFrom && (
+                         <p className="text-red-500 text-xs mt-1">
+                           {errors.ageFrom.message}
+                         </p>
+                       )}
+                     </div>
+                     {/* Age To */}
+                     <div className="mt-5">
+                       <label className="block text-sm font-medium text-red-700 mb-2"></label>
+                       <Controller
+                         name="ageTo"
+                         control={control}
+                         rules={{ required: "Age to is required" }}
+                         render={({ field }) => (
+                           <select
+                             {...field}
+                             className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                           >
+                             <option value="">To</option>
+                             {Array.from({ length: 31 }, (_, i) => i).map((age) => (
+                               <option
+                                 key={age}
+                                 value={age}
+                                 disabled={
+                                   ageFrom !== undefined &&
+                                   ageFrom !== "" &&
+                                   age <= parseInt(ageFrom)
+                                 }
+                               >
+                                 {age}
+                               </option>
+                             ))}
+                           </select>
+                         )}
+                       />
+                       {errors.ageTo && (
+                         <p className="text-red-500 text-xs mt-1">
+                           {errors.ageTo.message}
+                         </p>
+                       )}
+                     </div>
 
           <div>
             <label className="block text-sm font-medium text-red-700 mb-2">
@@ -1040,9 +1078,9 @@ const Expectations = ({
             dropdown1Label="Religion"
             dropdown2Label="Caste"
             dropdown3Label="Subcaste"
-            api1Url="https://api.manomilan.com/api/user/get-religions"
-            api2Url="https://api.manomilan.com/api/user/get-caste-by-religion"
-            api3Url="https://api.manomilan.com/api/user/get-subcaste-by-caste"
+            api1Url="http://127.0.0.1:8000/api/user/get-religions"
+            api2Url="http://127.0.0.1:8000/api/user/get-caste-by-religion"
+            api3Url="http://127.0.0.1:8000/api/user/get-subcaste-by-caste"
             api1Key="religion"
             api2Key="caste"
             api3Key="subCaste"
@@ -1064,9 +1102,9 @@ const Expectations = ({
             dropdown1Label="Country"
             dropdown2Label="State"
             dropdown3Label="City"
-            api1Url="https://api.manomilan.com/api/user/get-all-countries"
-            api2Url="https://api.manomilan.com/api/user/get-state-by-country"
-            api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
+            api1Url="http://127.0.0.1:8000/api/user/get-all-countries"
+            api2Url="http://127.0.0.1:8000/api/user/get-state-by-country"
+            api3Url="http://127.0.0.1:8000/api/user/get-cities-by-state"
             api1Key="country"
             api2Key="state"
             api3Key="city"
@@ -1088,9 +1126,9 @@ const Expectations = ({
             dropdown1Label="Country"
             dropdown2Label="State"
             dropdown3Label="City"
-            api1Url="https://api.manomilan.com/api/user/get-all-countries"
-            api2Url="https://api.manomilan.com/api/user/get-state-by-country"
-            api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
+            api1Url="http://127.0.0.1:8000/api/user/get-all-countries"
+            api2Url="http://127.0.0.1:8000/api/user/get-state-by-country"
+            api3Url="http://127.0.0.1:8000/api/user/get-cities-by-state"
             api1Key="country"
             api2Key="state"
             api3Key="city"

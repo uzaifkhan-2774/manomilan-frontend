@@ -40,13 +40,13 @@ export default function ManomilanLogin() {
   let loginEndPt = "";
 
   if (pathname.includes("franchise")) {
-    loginEndPt = "https://api.manomilan.com/api/franchise/login";
+    loginEndPt = "http://127.0.0.1:8000/api/franchise/login";
   } else if (pathname.includes("distributor")) {
-    loginEndPt = "https://api.manomilan.com/api/distributor/login";
+    loginEndPt = "http://127.0.0.1:8000/api/distributor/login";
   } else if (pathname.includes("admin")) {
-    loginEndPt = "https://api.manomilan.com/api/admin/login";
+    loginEndPt = "http://127.0.0.1:8000/api/admin/login";
   } else {
-    loginEndPt = "https://api.manomilan.com/api/user/login";
+    loginEndPt = "http://127.0.0.1:8000/api/user/login";
   }
 
   const handleLogin = async () => {

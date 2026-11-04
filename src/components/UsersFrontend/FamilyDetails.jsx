@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Select from "react-select";
 import { useForm, Controller } from "react-hook-form";
+import { toast } from "react-toastify";
 
 const FamilyDetails = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -37,88 +38,131 @@ const FamilyDetails = () => {
 
   const token = localStorage.getItem("userToken");
 
- const getcurrentuser = async () => {
-    try {
-      const response = await axios.get('https://api.manomilan.com/api/user/getcurrentuser', {
+const getcurrentuser = async () => {
+  try {
+    const response = await axios.get(
+      "http://127.0.0.1:8000/api/user/getcurrentuser",
+      {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
-      if (response.data?.status) {
-        const data = response.data?.result;
-        const brothersCount = data.brothersCount
-          ? String(data.brothersCount) === '3+'
-            ? '3+'
-            : ['0', '1', '2', '3'].includes(String(data.brothersCount))
-              ? String(data.brothersCount)
-              : ''
-          : '';
-        const sisters = data.sisters
-          ? String(data.sisters) === '3+'
-            ? '3+'
-            : ['0', '1', '2', '3'].includes(String(data.sisters))
-              ? String(data.sisters)
-              : ''
-          : '';
-        const nativeCityString = data.nativeCity
-          ? `${data.nativeCity.city}, ${data.nativeCity.state}, ${data.nativeCity.country}`.trim()
-          : '';
-        // Verify if nativeCityString matches any city in cities
-        const matchedCity = cities.find((city) => city.value === nativeCityString);
-        reset({
-          fathersName: data.fathersName || '',
-          mothersName: data.mothersName || '',
-          mamkul: data.mamkul || '',
-          parentsResidence: data.parentsResidence || '',
-          parentsCity: data.parentsCity || '',
-          parentsContact: data.parentsContact || '',
-          whatsApp: data.whatsApp || '',
-          alternateNumber: data.alternateNumber || '',
-          brothersCount,
-          brothers: brothersCount === '3+' ? String(data.brothers || '') : '',
-          sisters,
-          sistersExactCount: sisters === '3+' ? String(data.sistersExactCount || '') : '',
-          nativeVillage: data.nativeVillage || '',
-          nativeCity:nativeCityString || '',
-        });
-        if (!matchedCity && nativeCityString) {
-          setSubmitStatus({
-            type: 'warning',
-            message: 'Native city not found in available cities list',
-          });
+      }
+    );
+
+    if (response.data?.status) {
+      const data = response.data?.result;
+
+      const brothersCount = data.brothersCount
+        ? String(data.brothersCount) === "3+"
+          ? "3+"
+          : ["0", "1", "2", "3"].includes(String(data.brothersCount))
+            ? String(data.brothersCount)
+            : ""
+        : "";
+
+      const sisters = data.sisters
+        ? String(data.sisters) === "3+"
+          ? "3+"
+          : ["0", "1", "2", "3"].includes(String(data.sisters))
+            ? String(data.sisters)
+            : ""
+        : "";
+
+      // Handle both old and corrected nativeCity formats
+      let nativeCity = {
+        country: "",
+        state: "",
+        city: "",
+      };
+
+      if (data.nativeCity) {
+        const savedCity = data.nativeCity.city || "";
+
+        if (savedCity.includes(",")) {
+          const parts = savedCity.split(",").map((item) => item.trim());
+
+          nativeCity = {
+            city: parts[0] || "",
+            state: parts[1] || "",
+            country: parts[2] || data.nativeCity.country || "",
+          };
+        } else {
+          nativeCity = {
+            country: data.nativeCity.country || "",
+            state: data.nativeCity.state || "",
+            city: savedCity,
+          };
         }
       }
-    } catch (error) {
-      console.error('Error fetching user:', error);
-      setSubmitStatus({
-        type: 'error',
-        message: 'Failed to fetch user data',
+
+      reset({
+        fathersName: data.fathersName || "",
+        mothersName: data.mothersName || "",
+        mamkul: data.mamkul || "",
+        parentsResidence: data.parentsResidence || "",
+        parentsCity: data.parentsCity || "",
+        parentsContact: data.parentsContact || "",
+        whatsApp: data.whatsApp || "",
+        alternateNumber: data.alternateNumber || "",
+        brothersCount,
+        brothers: brothersCount === "3+" ? String(data.brothers || "") : "",
+        sisters,
+        sistersExactCount:
+          sisters === "3+" ? String(data.sistersExactCount || "") : "",
+        nativeVillage: data.nativeVillage || "",
+        nativeCity,
       });
     }
-  };
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    setSubmitStatus({
+      type: "error",
+      message: "Failed to fetch user data",
+    });
+  }
+};
 
-  const fetchCities = async () => {
-    try {
-      const response = await axios.get('https://api.manomilan.com/api/user/get-all-cities');
-      if (response.data.status === true) {
-        const transformed = response.data.allLocations.map((item) => {
-          const cityString = `${item.city}, ${item.stateCountry?.state || ''}, ${item.stateCountry?.country || ''}`.trim();
-          return {
-            label: cityString,
-            value: cityString,
-          };
-        });
-        setCities(transformed || []);
-      } else {
-        console.error('Failed to fetch Cities:', response.data.message);
-        setSubmitStatus({ type: 'error', message: 'Failed to fetch cities' });
-      }
-    } catch (error) {
-      console.error('Error fetching Cities:', error);
-      setSubmitStatus({ type: 'error', message: 'Error fetching cities' });
+const fetchCities = async () => {
+  try {
+    const response = await axios.get(
+      "http://127.0.0.1:8000/api/user/get-all-cities"
+    );
+
+    if (response.data.status === true) {
+      const transformed = response.data.allLocations.map((item) => {
+        const city = item.city || "";
+        const state = item.stateCountry?.state || "";
+        const country = item.stateCountry?.country || "";
+
+        const cityString = [city, state, country]
+          .filter(Boolean)
+          .join(", ");
+
+        return {
+          label: cityString,
+          value: cityString,
+          city,
+          state,
+          country,
+        };
+      });
+
+      setCities(transformed);
+    } else {
+      console.error("Failed to fetch Cities:", response.data.message);
+      setSubmitStatus({
+        type: "error",
+        message: "Failed to fetch cities",
+      });
     }
-  };
-
+  } catch (error) {
+    console.error("Error fetching Cities:", error);
+    setSubmitStatus({
+      type: "error",
+      message: "Error fetching cities",
+    });
+  }
+};
   useEffect(() => {
     if (token) {
       getcurrentuser();
@@ -150,7 +194,7 @@ const FamilyDetails = () => {
       };
 
       const response = await axios.put(
-        "https://api.manomilan.com/api/user/editprofile",
+        "http://127.0.0.1:8000/api/user/editprofile",
         { newUpdates },
         {
           headers: {
@@ -162,6 +206,7 @@ const FamilyDetails = () => {
       if (response.data.status) {
         setSubmitStatus({ type: "success", message: response.data.message });
         await getcurrentuser(); // Refresh form with updated data
+        toast.success(response.data.message)
       } else {
         setSubmitStatus({ type: "error", message: response.data.message });
       }
@@ -172,6 +217,7 @@ const FamilyDetails = () => {
           error.response?.data?.message || "Failed to update family details",
       });
       console.error("Error updating family details:", error);
+      toast.error(error.message)
     }
   };
 
@@ -722,43 +768,64 @@ const FamilyDetails = () => {
               </div>
 
               {/* Native City */}
-              <div>
-              <label className="block text-sm font-medium text-red-700 mb-2">
-                Native District / Province
-              </label>
-              <Controller
-                name="nativeCity"
-                control={control}
-                rules={{ required: "Native city is required" }}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    options={cities}
-                    value={cities.find((city) => city.value === field.value)}
-                    onChange={(selectedOption) => field.onChange(selectedOption.value)}
-                    classNamePrefix="react-select"
-                    placeholder="Select Native City"
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        border: 'none',
-                        boxShadow: 'none',
-                        backgroundColor: 'transparent',
-                      }),
-                      dropdownIndicator: (base) => ({
-                        ...base,
-                        padding: 4,
-                      }),
-                      indicatorSeparator: () => ({ display: 'none' }),
-                    }}
-                    className="w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  />
-                )}
-              />
-              {errors.nativeCity && (
-                <p className="text-red-500 text-xs mt-1">{errors.nativeCity.message}</p>
-              )}
-            </div>
+             <div>
+  <label className="block text-sm font-medium text-red-700 mb-2">
+    Native District / Province
+  </label>
+
+ <Controller
+  name="nativeCity"
+  control={control}
+  rules={{ required: "Native city is required" }}
+  render={({ field }) => (
+    <Select
+      {...field}
+      options={cities}
+      value={
+        cities.find(
+          (city) =>
+            city.city === field.value?.city &&
+            city.state === field.value?.state &&
+            city.country === field.value?.country
+        ) || null
+      }
+      onChange={(selectedOption) =>
+        field.onChange(
+          selectedOption
+            ? {
+                country: selectedOption.country,
+                state: selectedOption.state,
+                city: selectedOption.city,
+              }
+            : null
+        )
+      }
+      classNamePrefix="react-select"
+      placeholder="Select Native City"
+      styles={{
+        control: (base) => ({
+          ...base,
+          border: "none",
+          boxShadow: "none",
+          backgroundColor: "transparent",
+        }),
+        dropdownIndicator: (base) => ({
+          ...base,
+          padding: 4,
+        }),
+        indicatorSeparator: () => ({ display: "none" }),
+      }}
+      className="w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+    />
+  )}
+/>
+
+  {errors.nativeCity && (
+    <p className="text-red-500 text-xs mt-1">
+      {errors.nativeCity.message}
+    </p>
+  )}
+</div>
             </div>
           </div>
 

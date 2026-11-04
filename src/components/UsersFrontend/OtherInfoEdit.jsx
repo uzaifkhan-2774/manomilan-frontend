@@ -8,7 +8,7 @@ const OtherInfoEdit = () => {
   const [manglik, setManglik] = useState([]);
   const [foodPref, setFoodPref] = useState([]);
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("userToken");
 
   const {
     control,
@@ -31,7 +31,7 @@ const OtherInfoEdit = () => {
   const getSect = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-sect"
+        "http://127.0.0.1:8000/api/user/get-sect"
       );
       if (response.data.status === true) {
         setSect(response.data.result || []);
@@ -45,7 +45,7 @@ const OtherInfoEdit = () => {
   const getManglik = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-manglik"
+        "http://127.0.0.1:8000/api/user/get-manglik"
       );
       console.log(response.data);
       if (response.data.status === true) {
@@ -61,7 +61,7 @@ const OtherInfoEdit = () => {
   const getFoodPref = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/food-choices"
+        "http://127.0.0.1:8000/api/user/food-choices"
       );
       if (response.data.status === false) {
         const fetched = response.data.result.map((item) => ({
@@ -79,7 +79,7 @@ const OtherInfoEdit = () => {
   const getCurrentUser = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/getcurrentuser",
+        "http://127.0.0.1:8000/api/user/getcurrentuser",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -122,12 +122,19 @@ const OtherInfoEdit = () => {
     getManglik();
     getFoodPref();
     getCurrentUser();
+    
   }, []);
 
   const onSubmit = async (data) => {
+    console.log("Token:", token);
+
+    if (!token || token === "null") {
+  toast.error("Please login again. Authentication token not found.");
+  return;
+}
     try {
       const response = await axios.put(
-        "https://api.manomilan.com/api/user/special-info-edit",
+        "http://127.0.0.1:8000/api/user/special-info-edit",
         { specialInfo: data },
         {
           headers: {

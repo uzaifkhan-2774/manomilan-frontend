@@ -51,7 +51,7 @@ const BasicDetails = () => {
 
   const getcurrentuser=async()=>{
     try {
-      const response = await axios.get("https://api.manomilan.com/api/user/getcurrentuser",{
+      const response = await axios.get("http://127.0.0.1:8000/api/user/getcurrentuser",{
         headers:{
           Authorization:`Bearer ${token}`
         }
@@ -64,8 +64,8 @@ const BasicDetails = () => {
           lastName: data.lastName || "",
           gender: data.gender || "",
           dob: formatDateToDDMMYYYY(data.dob) ||  "",
-          timeOfBirth: "",
-          placeOfBirth: "",
+          timeOfBirth: data.timeOfBirth || "",
+          placeOfBirth: data.placeOfBirth || "",
           maritalStatus: data.maritalStatus || "Unmarried",
           height: data.height || "",
           occupation: data.occupation || "",
@@ -77,7 +77,7 @@ const BasicDetails = () => {
           specs: data.specs,
         })
       }
-      console.log(response.data?.result)
+      // console.log(response.data?.result)
     } catch (error) {
       console.log(error)
     }
@@ -114,7 +114,7 @@ const BasicDetails = () => {
   const fetchNationalities = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/user/get-all-countries"
+        "http://127.0.0.1:8000/api/user/get-all-countries"
       );
       if (response.data.status === true) {
         setNationalities(response.data.result || []);
@@ -129,7 +129,7 @@ const BasicDetails = () => {
   const fetchMotherTongue = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-mother-tongue"
+        "http://127.0.0.1:8000/api/admin/get-mother-tongue"
       );
       if (response.data.status === true) {
         setMotherTongues(response.data.result);
@@ -178,7 +178,7 @@ const BasicDetails = () => {
       };
 
       const response = await axios.put(
-        "https://api.manomilan.com/api/user/editprofile",
+        "http://127.0.0.1:8000/api/user/editprofile",
         { newUpdates },
         {
           headers: {

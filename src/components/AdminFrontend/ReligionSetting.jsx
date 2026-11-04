@@ -28,7 +28,7 @@ const ReligionManagementPanel = () => {
   const viewReligion = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-religion"
+        "http://127.0.0.1:8000/api/admin/get-religion"
       );
       setReligionView(response.data.result || []);
     } catch (error) {
@@ -39,7 +39,7 @@ const ReligionManagementPanel = () => {
   const viewCaste = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-all-castes"
+        "http://127.0.0.1:8000/api/admin/get-all-castes"
       );
       setCasteView(response.data.result || []);
     } catch (error) {
@@ -50,7 +50,7 @@ const ReligionManagementPanel = () => {
   const viewSubcaste = async () => {
     try {
       const response = await axios.get(
-        "https://api.manomilan.com/api/admin/get-all-subcastes"
+        "http://127.0.0.1:8000/api/admin/get-all-subcastes"
       );
       console.log(response.data.result);
       setSubcasteView(response.data.result || []);
@@ -75,7 +75,7 @@ const ReligionManagementPanel = () => {
 
       try {
         const response = await axios.post(
-          "https://api.manomilan.com/api/admin/add-religion",
+          "http://127.0.0.1:8000/api/admin/add-religion",
           mappedData
         );
         if (response.data.status) {
@@ -94,7 +94,7 @@ const ReligionManagementPanel = () => {
   const deleteReligion = async (religion) => {
     try {
       const response = await axios.delete(
-        "https://api.manomilan.com/api/admin/delete-religion",
+        "http://127.0.0.1:8000/api/admin/delete-religion",
         { data: { religion } }
       );
       alert(response.data.message);
@@ -118,7 +118,7 @@ const ReligionManagementPanel = () => {
 
       try {
         const response = await axios.post(
-          "https://api.manomilan.com/api/admin/add-caste",
+          "http://127.0.0.1:8000/api/admin/add-caste",
           mappedData
         );
         if (response.status === 200) {
@@ -140,7 +140,7 @@ const ReligionManagementPanel = () => {
     try {
       // Add your delete API call here
       const response = await axios.delete(
-        "https://api.manomilan.com/api/admin/delete-caste",
+        "http://127.0.0.1:8000/api/admin/delete-caste",
         { data: { religion, caste } }
       );
       alert(response.data.message);
@@ -171,7 +171,7 @@ const ReligionManagementPanel = () => {
       console.log(mappedData);
       try {
         const response = await axios.post(
-          "https://api.manomilan.com/api/admin/add-subcaste",
+          "http://127.0.0.1:8000/api/admin/add-subcaste",
           mappedData
         );
         console.log(response.data);
@@ -191,7 +191,7 @@ const ReligionManagementPanel = () => {
     try {
       // Add your delete API call here
       const response = await axios.delete(
-        "https://api.manomilan.com/api/admin/delete-subcaste",
+        "http://127.0.0.1:8000/api/admin/delete-subcaste",
         { data: { religion, subcaste, caste } }
       );
       alert(response.data.message);
