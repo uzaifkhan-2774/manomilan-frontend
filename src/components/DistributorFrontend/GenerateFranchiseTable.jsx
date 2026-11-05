@@ -47,7 +47,7 @@ const PackagesModal = ({
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/distributor/give-package-to-franchise",
+        "https://api.manomilan.com/api/distributor/give-package-to-franchise",
         payload,
         {
           headers: {
@@ -390,7 +390,7 @@ export default function TableGenerator({ data, activeTab }) {
   const getMainPackagesDetails = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-main-packages"
+        "https://api.manomilan.com/api/admin/get-main-packages"
       );
       if (response.data.status) {
         setGetPackageDetails(response.data?.existingPackages);
@@ -403,7 +403,7 @@ export default function TableGenerator({ data, activeTab }) {
   const getVIPPackagesDetails = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/admin/get-vip-packages"
+        "https://api.manomilan.com/api/admin/get-vip-packages"
       );
       if (response.data.length > 0) {
         setGetVIPPackageDetails(response.data);
@@ -423,7 +423,7 @@ export default function TableGenerator({ data, activeTab }) {
   const franchise = async (id) => {
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/distributor/get-single-franchise`,
+        `https://api.manomilan.com/api/distributor/get-single-franchise`,
         { franchiseId: id },
         {
           headers: {
@@ -460,7 +460,7 @@ export default function TableGenerator({ data, activeTab }) {
   const addPointsToFranchisee = async () => {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/distributor/give-points-to-franchise",
+        "https://api.manomilan.com/api/distributor/give-points-to-franchise",
         {
           Points: addPoints.points,
           transactionPassword: addPoints.password,
@@ -488,7 +488,7 @@ export default function TableGenerator({ data, activeTab }) {
     if (!distributorId) return;
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/distributor/get/franchiseLogs/${distributorId}`,
+        `https://api.manomilan.com/api/distributor/get/franchiseLogs/${distributorId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (response.data.status) {
@@ -507,7 +507,7 @@ export default function TableGenerator({ data, activeTab }) {
     console.log(franchiseId);
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/franchise/get-packages/${franchiseId}`
+        `https://api.manomilan.com/api/franchise/get-packages/${franchiseId}`
       );
       console.log(response.data);
       if (response.data.status) {
@@ -524,7 +524,7 @@ export default function TableGenerator({ data, activeTab }) {
     console.log(franchiseId)
     try {
       const res = await axios.put(
-        "http://127.0.0.1:8000/api/distributor/inactivate-franchise",
+        "https://api.manomilan.com/api/distributor/inactivate-franchise",
         {
           franchiseId: franchiseId,
         },
@@ -728,7 +728,7 @@ export default function TableGenerator({ data, activeTab }) {
           <div className="w-[20%] flex flex-col gap-15 items-start space-y-2">
             <div className="border border-gray-500 h-[200px] w-[200px]">
               <img
-                src={`http://127.0.0.1:8000/upload/${singleFranchisee.franchisePhoto}`}
+                src={`https://api.manomilan.com/upload/${singleFranchisee.franchisePhoto}`}
                 alt=""
               />
             </div>

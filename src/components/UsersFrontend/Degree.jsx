@@ -10,7 +10,7 @@ const StreamDegreeTable = () => {
   useEffect(() => {
     const fetchStreams = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/user/get-all-stream');
+        const response = await axios.get('https://api.manomilan.com/api/user/get-all-stream');
         if (response.data.status) {
           setStreams(response.data.data);
           fetchDegreesForStreams(response.data.data);
@@ -28,7 +28,7 @@ const StreamDegreeTable = () => {
     const degreesData = {};
     for (const stream of streams) {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/api/user/get-degree-by-stream', null, {
+        const response = await axios.post('https://api.manomilan.com/api/user/get-degree-by-stream', null, {
           params: { stream: stream.stream },
         });
         if (response.data.status) {

@@ -372,7 +372,7 @@ const [partnerEducation, setPartnerEducation] = useState([
   const fetchNationalities = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/user/get-all-countries"
+        "https://api.manomilan.com/api/user/get-all-countries"
       );
       if (response.data.status === true) {
         setNationalities(response.data.result || []);
@@ -394,7 +394,7 @@ const [partnerEducation, setPartnerEducation] = useState([
     const fetchStreams = async () => {
       try {
         const res = await axios.get(
-          "http://127.0.0.1:8000/api/user/get-all-stream"
+          "https://api.manomilan.com/api/user/get-all-stream"
         );
         if (res.data?.status) {
           const streams = res.data.data || [];
@@ -403,7 +403,7 @@ const [partnerEducation, setPartnerEducation] = useState([
             streams.map(async (s) => {
               try {
                 const r = await axios.post(
-                  "http://127.0.0.1:8000/api/user/get-degree-by-stream",
+                  "https://api.manomilan.com/api/user/get-degree-by-stream",
                   null,
                   { params: { stream: s.stream } }
                 );
@@ -433,7 +433,7 @@ const [partnerEducation, setPartnerEducation] = useState([
     }
     try {
       const res = await axios.get(
-        "http://127.0.0.1:8000/api/user/getcurrentuser",
+        "https://api.manomilan.com/api/user/getcurrentuser",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -619,7 +619,7 @@ const [partnerEducation, setPartnerEducation] = useState([
       };
 
       const res = await axios.put(
-        "http://127.0.0.1:8000/api/user/expectation-edit",
+        "https://api.manomilan.com/api/user/expectation-edit",
         payload,
         {
           headers: {
@@ -1078,9 +1078,9 @@ const [partnerEducation, setPartnerEducation] = useState([
             dropdown1Label="Religion"
             dropdown2Label="Caste"
             dropdown3Label="Subcaste"
-            api1Url="http://127.0.0.1:8000/api/user/get-religions"
-            api2Url="http://127.0.0.1:8000/api/user/get-caste-by-religion"
-            api3Url="http://127.0.0.1:8000/api/user/get-subcaste-by-caste"
+            api1Url="https://api.manomilan.com/api/user/get-religions"
+            api2Url="https://api.manomilan.com/api/user/get-caste-by-religion"
+            api3Url="https://api.manomilan.com/api/user/get-subcaste-by-caste"
             api1Key="religion"
             api2Key="caste"
             api3Key="subCaste"
@@ -1102,9 +1102,9 @@ const [partnerEducation, setPartnerEducation] = useState([
             dropdown1Label="Country"
             dropdown2Label="State"
             dropdown3Label="City"
-            api1Url="http://127.0.0.1:8000/api/user/get-all-countries"
-            api2Url="http://127.0.0.1:8000/api/user/get-state-by-country"
-            api3Url="http://127.0.0.1:8000/api/user/get-cities-by-state"
+            api1Url="https://api.manomilan.com/api/user/get-all-countries"
+            api2Url="https://api.manomilan.com/api/user/get-state-by-country"
+            api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
             api1Key="country"
             api2Key="state"
             api3Key="city"
@@ -1126,9 +1126,9 @@ const [partnerEducation, setPartnerEducation] = useState([
             dropdown1Label="Country"
             dropdown2Label="State"
             dropdown3Label="City"
-            api1Url="http://127.0.0.1:8000/api/user/get-all-countries"
-            api2Url="http://127.0.0.1:8000/api/user/get-state-by-country"
-            api3Url="http://127.0.0.1:8000/api/user/get-cities-by-state"
+            api1Url="https://api.manomilan.com/api/user/get-all-countries"
+            api2Url="https://api.manomilan.com/api/user/get-state-by-country"
+            api3Url="https://api.manomilan.com/api/user/get-cities-by-state"
             api1Key="country"
             api2Key="state"
             api3Key="city"
