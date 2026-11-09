@@ -63,7 +63,7 @@ const SubsMatrimonyCards = ({ matches, token,subscribeIds }) => {
     >
       <div className="relative">
         <img
-          src={profile.userPhotoStatus === "Approved" ? `https://api.manomilan.com/upload/${profile.userPhotoOne}`:"https://imgs.search.brave.com/rwE-hC6ESt3hBJZhImPkb-KvU26bLDKVe-OKv1y50-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzE0LzQz/LzU1LzE0NDM1NWQ3/YjM2YzVmNjQ2NDM1/NDIzNzk4MjgxY2U5/LmpwZw"}
+          src={profile.userPhotoStatus === "Approved" ? `http://127.0.0.1:8000/upload/${profile.userPhotoOne}`:"https://imgs.search.brave.com/rwE-hC6ESt3hBJZhImPkb-KvU26bLDKVe-OKv1y50-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzE0LzQz/LzU1LzE0NDM1NWQ3/YjM2YzVmNjQ2NDM1/NDIzNzk4MjgxY2U5/LmpwZw"}
           alt={profile.name}
           className="w-full h-70 object-cover"
         />
@@ -153,7 +153,7 @@ const SubsMatrimonyCards = ({ matches, token,subscribeIds }) => {
     const subscribe = async () => {
   try {
     const response = await axios.post(
-      "https://api.manomilan.com/api/user/subscribe",
+      "http://127.0.0.1:8000/api/user/subscribe",
       {
         subscribeUserId: selectedProfile?._id,
       },
@@ -230,7 +230,7 @@ function capitalizeFirstLetter(str) {
                 <div className="text-center mb-4">
                   <div className="w-32 h-40 mx-auto mb-4 bg-gray-300 rounded-lg overflow-hidden">
                     <img
-                      src={selectedProfile.userPhotoStatus==="Approved"? `https://api.manomilan.com/upload/${selectedProfile.userPhotoOne}` : image}
+                      src={selectedProfile.userPhotoStatus==="Approved"? `http://127.0.0.1:8000/upload/${selectedProfile.userPhotoOne}` : image}
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />

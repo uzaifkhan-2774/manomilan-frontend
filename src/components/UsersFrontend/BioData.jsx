@@ -16,13 +16,13 @@ const BiodataProfile = ({ userId }) => {
         let response;
         if (targetId) {
           // admin-style single user endpoint (works when viewing another user)
-          response = await axios.get(`https://api.manomilan.com/api/admin/get-single-user/${targetId}`);
+          response = await axios.get(`http://127.0.0.1:8000/api/admin/get-single-user/${targetId}`);
           // normalize: res.data.user or res.data.result
           const user = response.data?.user || response.data?.result || response.data;
           setBioDataDetails(user);
         } else {
           // fetch current logged-in user
-          response = await axios.get("https://api.manomilan.com/api/user/getcurrentuser", {
+          response = await axios.get("http://127.0.0.1:8000/api/user/getcurrentuser", {
             headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
           });
           const user = response.data?.result || response.data || {};
@@ -75,15 +75,54 @@ const BiodataProfile = ({ userId }) => {
     );
   }
 
-  // Transform education to match expected format (array of objects)
-  const normalizedEducation = bioDataDetails.education?.map((edu) => ({
-    degree: edu,
-  })) || [];
+  // Get the readable degree name from either a string or an object.
+  // Supports both older string data and newer { degree, category } data.
+  const getDegreeName = (educationItem) => {
+    if (typeof educationItem === "string") return educationItem;
 
-  // Transform expectedEducation to match expected format
-  const normalizedExpectedEducation = bioDataDetails.expectedEducation?.map((edu) => ({
-    degree: edu,
-  })) || [];
+    if (!educationItem || typeof educationItem !== "object") return "";
+
+    if (typeof educationItem.degree === "string") {
+      return educationItem.degree;
+    }
+
+    if (
+      educationItem.degree &&
+      typeof educationItem.degree === "object"
+    ) {
+      return (
+        educationItem.degree.degree ||
+        educationItem.degree.name ||
+        educationItem.degree.title ||
+        ""
+      );
+    }
+
+    return (
+      educationItem.name ||
+      educationItem.title ||
+      educationItem.label ||
+      ""
+    );
+  };
+
+  // Normalize education into readable degree strings.
+  const normalizedEducation = (
+    Array.isArray(bioDataDetails.education)
+      ? bioDataDetails.education
+      : []
+  )
+    .map((edu) => ({ degree: getDegreeName(edu) }))
+    .filter((edu) => edu.degree);
+
+  // Normalize expected education in the same way.
+  const normalizedExpectedEducation = (
+    Array.isArray(bioDataDetails.expectedEducation)
+      ? bioDataDetails.expectedEducation
+      : []
+  )
+    .map((edu) => ({ degree: getDegreeName(edu) }))
+    .filter((edu) => edu.degree);
 
   // Extract caste information from expectedReligion if caste is not present
   const casteInfo = bioDataDetails.caste || {
@@ -130,16 +169,16 @@ const BiodataProfile = ({ userId }) => {
                   <img
   src={
     bioDataDetails.profilePic
-      ? `https://api.manomilan.com/upload/${bioDataDetails.profilePic}`
+      ? `http://127.0.0.1:8000/upload/${bioDataDetails.profilePic}`
       : bioDataDetails.userPhotoOne
-      ? `https://api.manomilan.com/upload/${bioDataDetails.userPhotoOne}`
+      ? `http://127.0.0.1:8000/upload/${bioDataDetails.userPhotoOne}`
       : "https://imgs.search.brave.com/rwE-hC6ESt3hBJZhImPkb-KvU26bLDKVe-OKv1y50-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3JpZ2luYWxzLzE0LzQz/LzU1LzE0NDM1NWQ3/YjM2YzVmNjQ2NDM1/NDIzNzk4MjgxY2U5LmpwZw"
   }
 />
 
                 </div>
                 <h2 className="text-xl font-bold mb-2">ID: {bioDataDetails.UserId || id}</h2>
-                <p>{`${getAge(bioDataDetails.dob)} years, ${cmToFeetInches(bioDataDetails.height)} cm`}</p>
+                <p>{`${getAge(bioDataDetails.dob)} years, ${cmToFeetInches(bioDataDetails.height)} Feet`}</p>
                 <p>
                   {`${bioDataDetails.caste.subCaste}, ${bioDataDetails.caste.caste}, ${bioDataDetails.caste.religion}`}
                 </p>

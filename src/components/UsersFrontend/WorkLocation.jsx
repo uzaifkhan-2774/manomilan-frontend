@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 
 const WorkLocation = ({ userId, token: tokenProp }) => {
   const token = tokenProp || localStorage.getItem("token") || localStorage.getItem("userToken");
-  const { control, handleSubmit, reset, formState: { errors }, setValue, getValues } = useForm({
+  const { control, handleSubmit, reset, formState: { errors }, setValue, getValues, watch } = useForm({
     defaultValues: {
       workAbroad: "",
       companyName: "",
@@ -17,6 +17,9 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
       education: [],
     },
   });
+
+  // Subscribe to education changes so the degree buttons re-render immediately.
+  const selectedEducation = watch("education") || [];
 
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -29,7 +32,7 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
 
   const fetchCities = async () => {
     try {
-      const res = await axios.get("https://api.manomilan.com/api/user/get-all-cities");
+      const res = await axios.get("http://127.0.0.1:8000/api/user/get-all-cities");
       if (res.data?.status === true) {
         const transformed = (res.data.allLocations || []).map((item) => ({
           label: `${item.city}, ${item.stateCountry?.state || ""}, ${item.stateCountry?.country || ""}`,
@@ -49,7 +52,7 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
   useEffect(() => {
     const fetchStreamsAndDegrees = async () => {
       try {
-        const streamsRes = await axios.get("https://api.manomilan.com/api/user/get-all-stream");
+        const streamsRes = await axios.get("http://127.0.0.1:8000/api/user/get-all-stream");
         const fetchedStreams = streamsRes?.data?.result || streamsRes?.data?.data || [];
         setStreams(fetchedStreams);
 
@@ -57,7 +60,7 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
         for (const stream of fetchedStreams) {
           try {
             const response = await axios.post(
-              "https://api.manomilan.com/api/user/get-degree-by-stream",
+              "http://127.0.0.1:8000/api/user/get-degree-by-stream",
               null,
               { params: { stream: stream.stream } }
             );
@@ -80,7 +83,7 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
     if (!userId) return;
     try {
       setLoading(true);
-      const res = await axios.get("https://api.manomilan.com/api/user/getcurrentuser",{
+      const res = await axios.get("http://127.0.0.1:8000/api/user/getcurrentuser",{
         headers:{
           Authorization:`Bearer ${token}`
         }
@@ -95,6 +98,7 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
         candidateNumber: user.candidateNumber || user.candidateMobile || "",
         candidateEmail: user.candidateEmail || "",
         workLocation: user.workLocation || "",
+        education: [],
       });
       // ensure react-select selected value exists
       if (user.workLocation) {
@@ -150,7 +154,7 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
     // avoid unnecessary updates
     const cur = getValues("education") || [];
     if (JSON.stringify(normalized) !== JSON.stringify(cur)) {
-      setValue("education", normalized);
+      setValue("education", normalized, { shouldDirty: false });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [degreesByStream, expectedEducationFromServer]);
@@ -165,10 +169,11 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
         candidateEmail: data.candidateEmail || "",
         workLocation: data.workLocation || "",
         workAbroad: data.workAbroad || "",
+        education: data.education || [],
       };
       // update user endpoint - uses PUT to /api/user/:id (keeps shape similar to registration)
       const res = await axios.put(
-        "https://api.manomilan.com/api/user/editprofile",
+        "http://127.0.0.1:8000/api/user/editprofile",
         { newUpdates },
         {
           headers: {
@@ -186,6 +191,7 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
           candidateNumber: res.data.user.candidateNumber || "",
           candidateEmail: res.data.user.candidateEmail || "",
           workLocation: res.data.user.workLocation || "",
+          education: res.data.user.education || data.education || [],
         });
       } else {
         toast.error(res.data?.message || "Update failed");
@@ -221,18 +227,27 @@ const WorkLocation = ({ userId, token: tokenProp }) => {
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-2">
                       {category.degrees.map((deg) => {
-                        const selected = (getValues("education") || []).some((e) => e.degree === deg);
+                        const selected = selectedEducation.some(
+                          (e) => e.degree === deg && e.category === category.name
+                        );
                         return (
                           <button
                             key={deg}
                             type="button"
                             onClick={() => {
                               const cur = getValues("education") || [];
-                              const exists = cur.some((e) => e.degree === deg);
+                              const exists = cur.some(
+                                (e) => e.degree === deg && e.category === category.name
+                              );
                               const updated = exists
-                                ? cur.filter((e) => e.degree !== deg)
+                                ? cur.filter(
+                                    (e) => !(e.degree === deg && e.category === category.name)
+                                  )
                                 : [...cur, { degree: deg, category: category.name }];
-                              setValue("education", updated);
+                              setValue("education", updated, {
+                                shouldDirty: true,
+                                shouldValidate: true,
+                              });
                             }}
                             className={`px-3 py-1.5 rounded-lg text-sm font-medium ${selected ? "bg-red-600 text-white" : "bg-gray-100 text-gray-700 border border-gray-300"}`}
                           >
